@@ -1,0 +1,208 @@
+import { useState } from 'react'
+import { useSettings } from '../../context/SettingsContext'
+import { Plus, Edit2, Trash2, Save } from 'lucide-react'
+import toast from 'react-hot-toast'
+import ImageUpload from '../../components/admin/ImageUpload'
+
+const AdminSiteContent = () => {
+  const { settings, updateSettings, updateSiteContent, updateHeroSlide, addHeroSlide, deleteHeroSlide, updateSideBanner, updatePromoBanner } = useSettings()
+  const [activeTab, setActiveTab] = useState('general')
+  const [showHeroModal, setShowHeroModal] = useState(false)
+  const [editingHero, setEditingHero] = useState(null)
+  const [heroForm, setHeroForm] = useState({ image: '', href: '', alt: '' })
+
+  const handleHeroSubmit = (e) => {
+    e.preventDefault()
+    if (editingHero) {
+      updateHeroSlide(editingHero.id, heroForm)
+      toast.success('Hero slide updated')
+    } else {
+      addHeroSlide(heroForm)
+      toast.success('Hero slide added')
+    }
+    setShowHeroModal(false)
+    setEditingHero(null)
+    setHeroForm({ image: '', href: '', alt: '' })
+  }
+
+  const saveGeneral = () => {
+    toast.success('Settings saved')
+  }
+
+  return (
+    <div>
+      <div className="mb-6">
+        <h1 className="text-2xl font-bold text-gray-900">Site Content</h1>
+        <p className="text-gray-500 mt-1">Manage banners, logo, footer and more</p>
+      </div>
+
+      <div className="flex gap-2 mb-6 border-b flex-wrap">
+        {['general', 'hero', 'banners', 'footer'].map((tab) => (
+          <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 font-medium capitalize ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}>
+            {tab === 'hero' ? 'Hero Slider' : tab === 'banners' ? 'Banners' : tab}
+          </button>
+        ))}
+      </div>
+
+      {activeTab === 'general' && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold mb-4">General Settings</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Site Name</label>
+              <input type="text" value={settings.siteName} onChange={(e) => updateSettings({ siteName: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <ImageUpload label="Site Logo" value={settings.siteLogo || ''} onChange={(val) => updateSettings({ siteLogo: val })} />
+            <div>
+              <label className="block text-sm font-medium mb-1">Email</label>
+              <input type="email" value={settings.siteEmail} onChange={(e) => updateSettings({ siteEmail: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Phone</label>
+              <input type="text" value={settings.sitePhone} onChange={(e) => updateSettings({ sitePhone: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">WhatsApp Number</label>
+              <input type="text" value={settings.whatsappNumber} onChange={(e) => updateSettings({ whatsappNumber: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Call for Order Number</label>
+              <input type="text" value={settings.callOrderNumber || settings.sitePhone || ''} onChange={(e) => updateSettings({ callOrderNumber: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Address</label>
+              <input type="text" value={settings.siteAddress} onChange={(e) => updateSettings({ siteAddress: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Top Bar Text</label>
+              <input type="text" value={settings.topBarText} onChange={(e) => updateSettings({ topBarText: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+          </div>
+          <h3 className="text-lg font-bold mb-3 mt-6">Social Links</h3>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Facebook</label>
+              <input type="text" value={settings.facebook} onChange={(e) => updateSettings({ facebook: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Instagram</label>
+              <input type="text" value={settings.instagram} onChange={(e) => updateSettings({ instagram: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">YouTube</label>
+              <input type="text" value={settings.youtube} onChange={(e) => updateSettings({ youtube: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+          </div>
+          <button onClick={saveGeneral} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"><Save size={18} /> Save</button>
+        </div>
+      )}
+
+      {activeTab === 'hero' && (
+        <div>
+          <div className="flex justify-between mb-4">
+            <h2 className="text-xl font-bold">Hero Slider</h2>
+            <button onClick={() => { setEditingHero(null); setHeroForm({ image: '', href: '', alt: '' }); setShowHeroModal(true) }} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><Plus size={20} /> Add Slide</button>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            {(settings.siteContent?.heroSlides || []).map((slide) => (
+              <div key={slide.id} className="bg-white rounded-lg shadow overflow-hidden">
+                <img src={slide.image} alt={slide.alt} className="w-full h-48 object-cover" />
+                <div className="p-4">
+                  <p className="text-sm text-gray-600 mb-2">Link: {slide.href}</p>
+                  <p className="text-sm text-gray-600 mb-3">Alt: {slide.alt}</p>
+                  <div className="flex gap-2">
+                    <button onClick={() => { setEditingHero(slide); setHeroForm(slide); setShowHeroModal(true) }} className="flex items-center gap-1 text-blue-600 hover:text-blue-800"><Edit2 size={16} /> Edit</button>
+                    <button onClick={() => { if (confirm('Delete?')) { deleteHeroSlide(slide.id); toast.success('Deleted') } }} className="flex items-center gap-1 text-red-600 hover:text-red-800"><Trash2 size={16} /> Delete</button>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'banners' && (
+        <div className="space-y-6">
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold mb-4">Side Banners</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {(settings.siteContent?.sideBanners || []).map((banner) => (
+                <div key={banner.id} className="border rounded overflow-hidden">
+                  <img src={banner.image} alt={banner.alt} className="w-full h-32 object-cover" />
+                  <div className="p-3 space-y-2">
+                    <ImageUpload label="Side Banner Image" value={banner.image} onChange={(val) => updateSideBanner(banner.id, { image: val })} />
+                    <input type="text" value={banner.href} onChange={(e) => updateSideBanner(banner.id, { href: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Link" />
+                    <input type="text" value={banner.alt} onChange={(e) => updateSideBanner(banner.id, { alt: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Alt text" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold mb-4">Promo Banners</h2>
+            <div className="space-y-4">
+              {(settings.siteContent?.promoBanners || []).map((banner) => (
+                <div key={banner.id} className="border rounded overflow-hidden">
+                  <img src={banner.image} alt={banner.alt} className="w-full h-40 object-cover" />
+                  <div className="p-3 space-y-2">
+                    <ImageUpload label="Promo Banner Image" value={banner.image} onChange={(val) => updatePromoBanner(banner.id, { image: val })} />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                      <input type="text" value={banner.href} onChange={(e) => updatePromoBanner(banner.id, { href: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Link" />
+                      <input type="text" value={banner.alt} onChange={(e) => updatePromoBanner(banner.id, { alt: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Alt text" />
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {activeTab === 'footer' && (
+        <div className="bg-white rounded-lg shadow p-6">
+          <h2 className="text-xl font-bold mb-4">Footer Content</h2>
+          <div className="space-y-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Footer About Text</label>
+              <textarea value={settings.siteContent?.footerAbout || ''} onChange={(e) => updateSiteContent({ footerAbout: e.target.value })} className="w-full px-3 py-2 border rounded" rows={4} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Copyright Text</label>
+              <input type="text" value={settings.siteContent?.footerCopyright || ''} onChange={(e) => updateSiteContent({ footerCopyright: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Newsletter Text</label>
+              <input type="text" value={settings.siteContent?.newsletterText || ''} onChange={(e) => updateSiteContent({ newsletterText: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+          </div>
+          <button onClick={saveGeneral} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"><Save size={18} /> Save</button>
+        </div>
+      )}
+
+      {showHeroModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+            <h2 className="text-xl font-bold mb-4">{editingHero ? 'Edit Slide' : 'Add Slide'}</h2>
+            <form onSubmit={handleHeroSubmit} className="space-y-4">
+              <ImageUpload label="Hero Image" value={heroForm.image} onChange={(val) => setHeroForm({ ...heroForm, image: val })} />
+              <div>
+                <label className="block text-sm font-medium mb-1">Link (href)</label>
+                <input type="text" value={heroForm.href} onChange={(e) => setHeroForm({ ...heroForm, href: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="/collections/honey" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Alt Text</label>
+                <input type="text" value={heroForm.alt} onChange={(e) => setHeroForm({ ...heroForm, alt: e.target.value })} className="w-full px-3 py-2 border rounded" />
+              </div>
+              <div className="flex gap-2">
+                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Save</button>
+                <button type="button" onClick={() => { setShowHeroModal(false); setEditingHero(null) }} className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default AdminSiteContent
