@@ -19,6 +19,7 @@ import { districts, divisions, upazilas } from '../data/locations'
 import { useAuth } from '../context/AuthContext'
 import { useCart } from '../context/CartContext'
 import { useLanguage } from '../i18n/LanguageContext'
+import { useSettings } from '../context/SettingsContext'
 
 const Checkout = () => {
   const {
@@ -35,6 +36,7 @@ const Checkout = () => {
   } = useCart()
   const { user, placeOrder } = useAuth()
   const { t, tx } = useLanguage()
+  const { settings } = useSettings()
   const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
@@ -136,7 +138,13 @@ const Checkout = () => {
     { id: 'cod', label: t('checkout.cod'), note: t('checkout.codNote'), icon: Truck },
     { id: 'bkash', label: t('checkout.bkash'), note: t('checkout.mobileNote'), accent: 'bg-[#E2136E]' },
     { id: 'nagad', label: t('checkout.nagad'), note: t('checkout.mobileNote'), accent: 'bg-[#F6921E]' },
-  ]
+  ].filter((option) => {
+    const config = settings.paymentMethods?.[option.id]
+    return config ? config.enabled !== false : true
+  })
+
+  const activePayment = settings.paymentMethods?.[formData.paymentMethod] || {}
+  const activeNumber = activePayment.number || settings.callOrderNumber || settings.sitePhone || ''
 
   return (
     <div className="container-gb py-3">
@@ -402,8 +410,11 @@ const Checkout = () => {
                     <p className="text-[10px] uppercase tracking-wide text-gray-400">
                       {tx('Merchant number', 'মার্চেন্ট নম্বর')}
                     </p>
-                    <p className="text-base font-bold text-ink">01700 000000</p>
+                    <p className="text-base font-bold text-ink">{activeNumber || '—'}</p>
                   </div>
+                  {activePayment.instructions && (
+                    <p className="mt-2 text-[11px] leading-5 text-ink-muted">{activePayment.instructions}</p>
+                  )}
                   <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
                     <div>
                       <label htmlFor="senderNumber" className="label text-xs">
@@ -439,8 +450,8 @@ const Checkout = () => {
               <p className="flex items-start gap-2 rounded-md bg-green-50 px-3 py-2 text-[11px] text-green-700">
                 <ShieldCheck size={14} className="mt-0.5 shrink-0" />
                 {tx(
-                  'This is a demo store. No real payment is collected and no order is dispatched.',
-                  'এটি একটি ডেমো স্টোর। প্রকৃত পেমেন্ট নেওয়া হয় না এবং অর্ডার পাঠানো হয় না।'
+                  'Your order is confirmed after we verify the payment. Our team will call you to confirm.',
+                  'পেমেন্ট যাচাই করার পর আপনার অর্ডার নিশ্চিত হবে। আমাদের টিম কল করে কনফার্ম করবে।'
                 )}
               </p>
             </div>

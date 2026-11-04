@@ -66,8 +66,18 @@ const defaultSettings = {
   // Payment
   paymentMethods: {
     cod: { enabled: true, name: 'Cash on Delivery' },
-    bkash: { enabled: true, name: 'bKash', number: '', instructions: '' },
-    nagad: { enabled: true, name: 'Nagad', number: '', instructions: '' },
+    bkash: {
+      enabled: true,
+      name: 'bKash',
+      number: '01321208940',
+      instructions: 'Send money to this bKash number, then enter your sender number and transaction ID below.',
+    },
+    nagad: {
+      enabled: true,
+      name: 'Nagad',
+      number: '01321208940',
+      instructions: 'Send money to this Nagad number, then enter your sender number and transaction ID below.',
+    },
     rocket: { enabled: true, name: 'Rocket', number: '', instructions: '' },
     card: { enabled: false, name: 'Debit/Credit Card' },
   },
@@ -103,6 +113,16 @@ export const SettingsProvider = ({ children }) => {
         const parsed = JSON.parse(saved)
         const merged = JSON.parse(JSON.stringify({ ...defaultSettings, ...parsed }))
         merged.siteContent = JSON.parse(JSON.stringify({ ...defaultSettings.siteContent, ...(parsed.siteContent || {}) }))
+        merged.paymentMethods = { ...defaultSettings.paymentMethods, ...(parsed.paymentMethods || {}) }
+        Object.keys(defaultSettings.paymentMethods).forEach((key) => {
+          merged.paymentMethods[key] = {
+            ...defaultSettings.paymentMethods[key],
+            ...(parsed.paymentMethods?.[key] || {}),
+          }
+          if (!merged.paymentMethods[key].number) {
+            merged.paymentMethods[key].number = defaultSettings.paymentMethods[key].number || ''
+          }
+        })
         if (Array.isArray(parsed.siteContent?.heroSlides) && parsed.siteContent.heroSlides.length > 0) {
           merged.siteContent.heroSlides = parsed.siteContent.heroSlides
         } else {
