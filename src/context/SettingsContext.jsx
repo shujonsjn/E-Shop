@@ -101,9 +101,25 @@ export const SettingsProvider = ({ children }) => {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
         const parsed = JSON.parse(saved)
-        const merged = { ...defaultSettings, ...parsed }
-        if (!merged.homeLayout || !Array.isArray(merged.homeLayout) || merged.homeLayout.length === 0) {
-          merged.homeLayout = defaultHomeLayout
+        const merged = JSON.parse(JSON.stringify({ ...defaultSettings, ...parsed }))
+        merged.siteContent = JSON.parse(JSON.stringify({ ...defaultSettings.siteContent, ...(parsed.siteContent || {}) }))
+        if (Array.isArray(parsed.siteContent?.heroSlides) && parsed.siteContent.heroSlides.length > 0) {
+          merged.siteContent.heroSlides = parsed.siteContent.heroSlides
+        } else {
+          merged.siteContent.heroSlides = JSON.parse(JSON.stringify(defaultSettings.siteContent.heroSlides))
+        }
+        if (Array.isArray(parsed.siteContent?.sideBanners)) {
+          merged.siteContent.sideBanners = parsed.siteContent.sideBanners
+        } else {
+          merged.siteContent.sideBanners = JSON.parse(JSON.stringify(defaultSettings.siteContent.sideBanners))
+        }
+        if (Array.isArray(parsed.siteContent?.promoBanners)) {
+          merged.siteContent.promoBanners = parsed.siteContent.promoBanners
+        } else {
+          merged.siteContent.promoBanners = JSON.parse(JSON.stringify(defaultSettings.siteContent.promoBanners))
+        }
+        if (!Array.isArray(merged.homeLayout) || merged.homeLayout.length === 0) {
+          merged.homeLayout = JSON.parse(JSON.stringify(defaultHomeLayout))
         } else {
           merged.homeLayout = merged.homeLayout.map((item, idx) => ({ order: idx, enabled: true, ...item }))
         }
@@ -112,7 +128,7 @@ export const SettingsProvider = ({ children }) => {
     } catch {
       /* ignore */
     }
-    return defaultSettings
+    return JSON.parse(JSON.stringify(defaultSettings))
   })
 
   useEffect(() => {
@@ -293,32 +309,47 @@ export const SettingsProvider = ({ children }) => {
       siteContent: { ...prev.siteContent, ...updates },
     }))
   }
-  const updateHeroSlide = (id, updates) => {
-    setSettings((prev) => ({
-      ...prev,
-      siteContent: {
-        ...prev.siteContent,
-        heroSlides: prev.siteContent.heroSlides.map((s) => (s.id === id ? { ...s, ...updates } : s)),
-      },
-    }))
-  }
   const addHeroSlide = (slide) => {
-    setSettings((prev) => ({
-      ...prev,
-      siteContent: {
-        ...prev.siteContent,
-        heroSlides: [...(prev.siteContent.heroSlides || []), { ...slide, id: Date.now() }],
-      },
-    }))
+    setSettings((prev) => {
+      const slides = Array.isArray(prev.siteContent?.heroSlides) ? [...prev.siteContent.heroSlides] : []
+      const updated = {
+        ...prev,
+        siteContent: {
+          ...(prev.siteContent || {}),
+          heroSlides: [...slides, { ...slide, id: Date.now() + Math.random() }],
+        },
+      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)) } catch {}
+      return updated
+    })
+  }
+  const updateHeroSlide = (id, updates) => {
+    setSettings((prev) => {
+      const slides = Array.isArray(prev.siteContent?.heroSlides) ? prev.siteContent.heroSlides : []
+      const updated = {
+        ...prev,
+        siteContent: {
+          ...(prev.siteContent || {}),
+          heroSlides: slides.map((s) => (String(s.id) === String(id) ? { ...s, ...updates } : s)),
+        },
+      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)) } catch {}
+      return updated
+    })
   }
   const deleteHeroSlide = (id) => {
-    setSettings((prev) => ({
-      ...prev,
-      siteContent: {
-        ...prev.siteContent,
-        heroSlides: prev.siteContent.heroSlides.filter((s) => s.id !== id),
-      },
-    }))
+    setSettings((prev) => {
+      const slides = Array.isArray(prev.siteContent?.heroSlides) ? prev.siteContent.heroSlides : []
+      const updated = {
+        ...prev,
+        siteContent: {
+          ...(prev.siteContent || {}),
+          heroSlides: slides.filter((s) => String(s.id) !== String(id)),
+        },
+      }
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(updated)) } catch {}
+      return updated
+    })
   }
   const updateSideBanner = (id, updates) => {
     setSettings((prev) => ({

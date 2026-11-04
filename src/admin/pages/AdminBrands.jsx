@@ -1,31 +1,17 @@
 import { useEffect, useState } from 'react'
-import { Plus, Edit2, Trash2, X } from 'lucide-react'
+import { Plus, Edit2, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
-import { brands as defaultBrands } from '../../data/catalog'
+import { getMergedBrands } from '../../utils/mergeBrands'
 
 const STORAGE_KEY = 'gb_admin_brands'
 
 const AdminBrands = () => {
-  const [brands, setBrands] = useState(() => {
-    try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed
-      }
-    } catch {}
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(defaultBrands))
-    } catch {}
-    return defaultBrands
-  })
+  const [brands, setBrands] = useState([])
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(brands))
-    } catch {}
-  }, [brands])
+    setBrands(getMergedBrands())
+  }, [])
 
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)

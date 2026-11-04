@@ -4,19 +4,41 @@ import { products as catalogProducts } from '../data/catalog'
 const ProductsContext = createContext()
 const STORAGE_KEY = 'gb_products'
 const VERSION_KEY = 'gb_catalog_version'
-const CATALOG_VERSION = 'gb-v2'
+const CATALOG_VERSION = 'gb-v3'
 
 const loadInitialProducts = () => {
   try {
-    if (localStorage.getItem(VERSION_KEY) !== CATALOG_VERSION) {
-      localStorage.setItem(VERSION_KEY, CATALOG_VERSION)
-    }
     const saved = localStorage.getItem(STORAGE_KEY)
+    const savedVersion = localStorage.getItem(VERSION_KEY)
+    if (savedVersion !== CATALOG_VERSION) {
+      localStorage.setItem(VERSION_KEY, CATALOG_VERSION)
+      if (saved) {
+        const parsed = JSON.parse(saved)
+        if (Array.isArray(parsed)) {
+          const catalogMap = new Map(catalogProducts.map(p => [p.slug, p]))
+          const merged = parsed.map(p => {
+            if (catalogMap.has(p.slug)) {
+              const cp = catalogMap.get(p.slug)
+              return { ...cp, id: p.id, createdAt: p.createdAt }
+            }
+            return p
+          })
+          catalogProducts.forEach(cp => {
+            if (!merged.find(p => p.slug === cp.slug)) {
+              merged.push(cp)
+            }
+          })
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
+          return merged
+        }
+      }
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(catalogProducts))
+      return catalogProducts
+    }
     if (saved) {
       const parsed = JSON.parse(saved)
       if (Array.isArray(parsed) && parsed.length > 0) return parsed
     }
-    // First time - import from catalog
     localStorage.setItem(STORAGE_KEY, JSON.stringify(catalogProducts))
     return catalogProducts
   } catch {

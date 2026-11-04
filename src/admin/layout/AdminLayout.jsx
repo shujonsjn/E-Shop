@@ -101,7 +101,7 @@ const AdminLayout = () => {
                 <Home size={18} className="text-white" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-gray-900">GhorerBazar</h2>
+                <h2 className="text-base font-bold text-gray-900">Admin</h2>
                 <p className="text-xs text-gray-500">Admin Panel</p>
               </div>
             </Link>

@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, X } from 'lucide-react'
 import { useProducts } from '../../context/ProductsContext'
-import { categories as defaultCategories, brands as defaultBrands } from '../../data/catalog'
+import { categories as defaultCategories } from '../../data/catalog'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
+import { getMergedBrands } from '../../utils/mergeBrands'
 
 const slugify = (value) =>
   String(value || '')
@@ -19,7 +20,7 @@ const emptyForm = {
   slug: '',
   category: '',
   subcategory: '',
-  brand: 'GhorerBazar',
+  brand: '',
   unit: '',
   price: '',
   oldPrice: '',
@@ -45,24 +46,38 @@ const AdminProductForm = () => {
   const existingProduct = isEditMode ? getProductById(id) : null
 
   const [adminCategories, setAdminCategories] = useState([])
-  const [brands, setBrands] = useState(defaultBrands)
+  const [brands, setBrands] = useState([])
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('gb_admin_categories')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) setAdminCategories(parsed)
+    const load = () => {
+      try {
+        const saved = localStorage.getItem('gb_admin_categories')
+        if (saved) {
+          const parsed = JSON.parse(saved)
+          if (Array.isArray(parsed) && parsed.length > 0) setAdminCategories(parsed)
+        }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
+      try {
+        const savedB = localStorage.getItem('gb_admin_brands')
+        if (savedB) {
+          const parsed = JSON.parse(savedB)
+          if (Array.isArray(parsed)) setBrands(parsed)
+          else setBrands(getMergedBrands())
+        } else {
+          setBrands(getMergedBrands())
+        }
+      } catch {
+        setBrands(getMergedBrands())
+      }
     }
-    try {
-      const savedB = localStorage.getItem('gb_admin_brands')
-      if (savedB) {
-        const parsed = JSON.parse(savedB)
-        if (Array.isArray(parsed)) setBrands(parsed)
-      }
-    } catch {}
+    load()
+    window.addEventListener('storage', load)
+    window.addEventListener('focus', load)
+    return () => {
+      window.removeEventListener('storage', load)
+      window.removeEventListener('focus', load)
+    }
   }, [])
 
   const mergedCategories = (() => {
@@ -141,7 +156,7 @@ const AdminProductForm = () => {
       slug: product.slug || '',
       category: product.category || '',
       subcategory: product.subcategory || '',
-      brand: product.brand || 'GhorerBazar',
+      brand: product.brand || '',
       unit: product.unit || '',
       price: product.price ?? '',
       oldPrice: product.oldPrice || '',
@@ -211,7 +226,7 @@ const AdminProductForm = () => {
       slug,
       category: formData.category,
       subcategory: formData.subcategory,
-      brand: formData.brand || 'GhorerBazar',
+      brand: formData.brand || '',
       unit: formData.unit.trim(),
       price,
       oldPrice: oldPrice > price ? oldPrice : 0,

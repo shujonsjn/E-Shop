@@ -13,16 +13,22 @@ const AdminSiteContent = () => {
 
   const handleHeroSubmit = (e) => {
     e.preventDefault()
+    if (!heroForm.image) {
+      toast.error('Please add an image')
+      return
+    }
     if (editingHero) {
-      updateHeroSlide(editingHero.id, heroForm)
+      updateHeroSlide(editingHero.id, { ...heroForm })
       toast.success('Hero slide updated')
     } else {
-      addHeroSlide(heroForm)
+      addHeroSlide({ ...heroForm })
       toast.success('Hero slide added')
     }
-    setShowHeroModal(false)
-    setEditingHero(null)
-    setHeroForm({ image: '', href: '', alt: '' })
+    setTimeout(() => {
+      setShowHeroModal(false)
+      setEditingHero(null)
+      setHeroForm({ image: '', href: '', alt: '' })
+    }, 100)
   }
 
   const saveGeneral = () => {
@@ -101,23 +107,40 @@ const AdminSiteContent = () => {
         <div>
           <div className="flex justify-between mb-4">
             <h2 className="text-xl font-bold">Hero Slider</h2>
-            <button onClick={() => { setEditingHero(null); setHeroForm({ image: '', href: '', alt: '' }); setShowHeroModal(true) }} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><Plus size={20} /> Add Slide</button>
+            <div className="flex gap-2">
+              <button onClick={() => {
+                const { updateSettings } = useSettings()
+                const demo = [
+                  { id: Date.now()+1, image: 'https://cdn.ghorerbazar.com/banner/lrMlR1792818389-light-1001x401.png', href: '/collections/honey', alt: 'Pure honey collection' },
+                  { id: Date.now()+2, image: 'https://cdn.ghorerbazar.com/banner/mM4zY1791177103-light-1000x400.jpg', href: '/collections/dates', alt: 'Premium dates collection' },
+                  { id: Date.now()+3, image: 'https://cdn.ghorerbazar.com/banner/kdvcy1786290971-light-1000x400.png', href: '/collections/oil-ghee', alt: 'Cooking essentials' },
+                ]
+                const current = Array.isArray(settings.siteContent?.heroSlides) ? settings.siteContent.heroSlides : []
+                updateSettings({ siteContent: { ...(settings.siteContent||{}), heroSlides: [...current, ...demo] } })
+                toast.success('Demo slides added')
+              }} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Add Demo Slides</button>
+              <button onClick={() => { setEditingHero(null); setHeroForm({ image: '', href: '', alt: '' }); setShowHeroModal(true) }} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><Plus size={20} /> Add Slide</button>
+            </div>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {(settings.siteContent?.heroSlides || []).map((slide) => (
-              <div key={slide.id} className="bg-white rounded-lg shadow overflow-hidden">
-                <img src={slide.image} alt={slide.alt} className="w-full h-48 object-cover" />
-                <div className="p-4">
-                  <p className="text-sm text-gray-600 mb-2">Link: {slide.href}</p>
-                  <p className="text-sm text-gray-600 mb-3">Alt: {slide.alt}</p>
-                  <div className="flex gap-2">
-                    <button onClick={() => { setEditingHero(slide); setHeroForm(slide); setShowHeroModal(true) }} className="flex items-center gap-1 text-blue-600 hover:text-blue-800"><Edit2 size={16} /> Edit</button>
-                    <button onClick={() => { if (confirm('Delete?')) { deleteHeroSlide(slide.id); toast.success('Deleted') } }} className="flex items-center gap-1 text-red-600 hover:text-red-800"><Trash2 size={16} /> Delete</button>
+          {(settings.siteContent?.heroSlides || []).length === 0 ? (
+            <div className="text-center py-8 text-gray-500 bg-white rounded-lg shadow">No slides added yet</div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {Array.isArray(settings.siteContent?.heroSlides) && settings.siteContent.heroSlides.map((slide) => (
+                <div key={slide.id} className="bg-white rounded-lg shadow overflow-hidden">
+                  {slide.image ? <img src={slide.image} alt={slide.alt || 'Hero slide'} className="w-full h-48 object-cover" /> : <div className="w-full h-48 bg-gray-100 flex items-center justify-center text-gray-400">No Image</div>}
+                  <div className="p-4">
+                    <p className="text-sm text-gray-600 mb-2">Link: {slide.href || '-'}</p>
+                    <p className="text-sm text-gray-600 mb-3">Alt: {slide.alt || '-'}</p>
+                    <div className="flex gap-2">
+                      <button onClick={() => { setEditingHero(slide); setHeroForm({ image: slide.image || '', href: slide.href || '', alt: slide.alt || '' }); setShowHeroModal(true) }} className="flex items-center gap-1 text-blue-600 hover:text-blue-800"><Edit2 size={16} /> Edit</button>
+                      <button onClick={() => { if (confirm('Delete this slide?')) { deleteHeroSlide(slide.id); toast.success('Deleted') } }} className="flex items-center gap-1 text-red-600 hover:text-red-800"><Trash2 size={16} /> Delete</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          )}
         </div>
       )}
 

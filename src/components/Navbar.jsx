@@ -62,6 +62,7 @@ const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false)
   const [searchOpen, setSearchOpen] = useState(false)
   const [megaOpen, setMegaOpen] = useState(false)
+  const [activeMegaCat, setActiveMegaCat] = useState(null)
   const [openMobileCat, setOpenMobileCat] = useState('')
   const [query, setQuery] = useState('')
   const [showSuggest, setShowSuggest] = useState(false)
@@ -175,7 +176,7 @@ const Navbar = () => {
             <Menu size={22} />
           </button>
 
-          <Link to="/" className="flex shrink-0 flex-col leading-none" aria-label="GhorerBazar home">
+          <Link to="/" className="flex shrink-0 flex-col leading-none" aria-label={`${settings.siteName} home`}>
             <span className="text-xl font-extrabold tracking-tight sm:text-2xl">
               {settings.siteLogo ? (
                 <img src={settings.siteLogo} alt={settings.siteName} className="h-10" />
@@ -327,7 +328,10 @@ const Navbar = () => {
           <div className="container-gb flex h-11 items-center gap-1">
             <button
               type="button"
-              onMouseEnter={() => setMegaOpen(true)}
+              onMouseEnter={() => {
+                setMegaOpen(true)
+                setActiveMegaCat(categories[0]?.slug || null)
+              }}
               onClick={() => setMegaOpen((open) => !open)}
               className="inline-flex h-full items-center gap-2 bg-brand px-4 text-sm font-bold text-white"
             >
@@ -395,47 +399,72 @@ const Navbar = () => {
         {/* Mega menu */}
         {megaOpen && (
           <div
-            className="absolute left-0 right-0 top-full hidden border-t border-gray-100 bg-white shadow-2xl lg:block"
+            className="absolute left-0 right-0 top-full hidden lg:block"
             onMouseEnter={() => setMegaOpen(true)}
-            onMouseLeave={() => setMegaOpen(false)}
+            onMouseLeave={() => {
+              setMegaOpen(false)
+              setActiveMegaCat(null)
+            }}
           >
-            <div className="container-gb grid grid-cols-4 gap-x-8 gap-y-6 py-7">
-              {categories.map((category) => (
-                <div key={category.slug}>
-                  <Link
-                    to={`/collections/${category.slug}`}
-                    onClick={() => setMegaOpen(false)}
-                    className="inline-flex items-center gap-2 text-sm font-bold text-ink transition hover:text-brand"
-                  >
-                    <img src={category.image} alt="" className="h-7 w-7 object-contain" />
-                    {tx(category.name, category.name_bn)}
-                  </Link>
-                  <ul className="mt-2 space-y-1.5 pl-9">
-                    {category.children.map((child) => (
-                      <li key={child.slug}>
-                        <Link
-                          to={`/collections/${category.slug}/${child.slug}`}
-                          onClick={() => setMegaOpen(false)}
-                          className="text-[12.5px] text-ink-muted transition hover:text-brand"
-                        >
-                          {tx(child.name, child.name_bn)}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
+            <div className="container-gb">
+              <div className="flex border border-t-0 border-gray-200 bg-white shadow-lg">
+                <div className="w-[250px] border-r border-gray-200">
+                  {categories.map((category) => (
+                    <button
+                      key={category.slug}
+                      type="button"
+                      onMouseEnter={() => setActiveMegaCat(category.slug)}
+                      onClick={() => {
+                        setMegaOpen(false)
+                        navigate(`/collections/${category.slug}`)
+                      }}
+                      className={`flex w-full items-center justify-between px-3 py-1.5 text-left text-[13px] transition ${
+                        activeMegaCat === category.slug
+                          ? 'bg-gray-100 font-medium text-ink'
+                          : 'text-ink hover:bg-gray-100'
+                      }`}
+                    >
+                      <span className="flex items-center gap-2">
+                        <img src={category.image} alt="" className="h-5 w-5 object-contain" />
+                        <span className="line-clamp-1">{tx(category.name, category.name_bn)}</span>
+                      </span>
+                      {category.children.length > 0 && <ChevronRight size={14} className="text-gray-400" />}
+                    </button>
+                  ))}
                 </div>
-              ))}
-              <div className="col-span-4 flex items-center justify-between border-t border-gray-100 pt-4">
-                <Link
-                  to="/shop"
-                  onClick={() => setMegaOpen(false)}
-                  className="inline-flex items-center gap-1 text-sm font-bold text-brand hover:text-brand-dark"
-                >
-                  {t('home.browseAll')} <ChevronRight size={15} />
-                </Link>
-                <span className="text-xs text-ink-muted">
-                  {products.length} {t('common.items')}
-                </span>
+                <div className="flex-1 px-6 py-4">
+                  {(() => {
+                    const activeCat = categories.find((c) => c.slug === activeMegaCat) || categories[0]
+                    if (!activeCat) return null
+                    return (
+                      <div>
+                        <Link
+                          to={`/collections/${activeCat.slug}`}
+                          onClick={() => setMegaOpen(false)}
+                          className="mb-3 inline-block text-sm font-bold text-ink hover:text-brand"
+                        >
+                          {tx(activeCat.name, activeCat.name_bn)}
+                        </Link>
+                        {activeCat.children.length > 0 ? (
+                          <div className="flex flex-col gap-1">
+                            {activeCat.children.map((child) => (
+                              <Link
+                                key={child.slug}
+                                to={`/collections/${activeCat.slug}/${child.slug}`}
+                                onClick={() => setMegaOpen(false)}
+                                className="py-1 text-[13px] text-ink hover:text-brand"
+                              >
+                                {tx(child.name, child.name_bn)}
+                              </Link>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-ink-muted">{tx('No subcategories', 'সাবক্যাটেগরি নেই')}</p>
+                        )}
+                      </div>
+                    )
+                  })()}
+                </div>
               </div>
             </div>
           </div>

@@ -19,11 +19,14 @@ export const getMergedCategories = () => {
       if (Array.isArray(adminCats)) {
         // If admin deleted default categories, add to deleted list
         defaultCategories.forEach((dc) => {
+          if (!dc || !dc.slug) return
+          if (dc.slug === 'showpiece') return
           const exists = adminCats.find((ac) => ac.slug === dc.slug)
           if (!exists && !deleted.includes(dc.slug)) {
             deleted.push(dc.slug)
           }
         })
+        deleted = deleted.filter((d) => d !== 'showpiece')
         localStorage.setItem(DELETED_KEY, JSON.stringify([...new Set(deleted)]))
       }
     } catch {}
@@ -34,6 +37,13 @@ export const getMergedCategories = () => {
     // Add default categories (skip deleted)
     defaultCategories.forEach((c) => {
       if (!c || !c.slug) return
+      if (c.slug === 'showpiece') {
+        map.set(c.slug, {
+          ...c,
+          children: Array.isArray(c.children) ? [...c.children] : [],
+        })
+        return
+      }
       if (deleted.includes(c.slug)) return
       map.set(c.slug, {
         ...c,
@@ -52,6 +62,7 @@ export const getMergedCategories = () => {
     if (Array.isArray(adminCats)) {
       adminCats.forEach((ac) => {
         if (!ac.slug) return
+        if (ac.slug === 'showpiece') return
         if (deleted.includes(ac.slug)) return
 
         if (map.has(ac.slug)) {

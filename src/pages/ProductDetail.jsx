@@ -24,6 +24,7 @@ import { useAuth } from '../context/AuthContext'
 import { useReview } from '../context/ReviewContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { getCategory, getSubcategory } from '../data/catalog'
+import { useSettings } from '../context/SettingsContext'
 
 const ProductDetail = () => {
   const params = useParams()
@@ -35,6 +36,7 @@ const ProductDetail = () => {
   const { user } = useAuth()
   const { getProductReviews, addReview, hasUserReviewed } = useReview()
   const { t, tx } = useLanguage()
+  const { settings } = useSettings()
 
   const product = getProduct(key)
   const [quantity, setQuantity] = useState(1)
@@ -78,7 +80,7 @@ const ProductDetail = () => {
       ? [rawDescription]
       : []
   const features = Array.isArray(rawFeatures) ? rawFeatures : rawFeatures ? [rawFeatures] : []
-  const brandSlug = String(product.brand || 'GhorerBazar').toLowerCase().replace(/\s+/g, '-')
+  const brandSlug = String(product.brand || '').toLowerCase().replace(/\s+/g, '-')
 
   const distribution = [5, 4, 3, 2, 1].map((star) => {
     const count = reviews.filter((review) => review.rating === star).length
@@ -118,8 +120,10 @@ const ProductDetail = () => {
     { label: displayName },
   ]
 
-  const whatsappUrl = `https://api.whatsapp.com/send/?phone=8801321208940&text=${encodeURIComponent(
-    `Hello GhorerBazar, I want to order: ${product.name} (${product.unit})`
+  const rawPhone = settings?.whatsappNumber || settings?.callOrderNumber || settings?.sitePhone || '+8801321208940'
+  const waPhone = String(rawPhone).replace(/[^0-9]/g, '')
+  const whatsappUrl = `https://api.whatsapp.com/send/?phone=${waPhone}&text=${encodeURIComponent(
+    `Hello ${settings?.siteName || ''}, I want to order: ${product.name} (${product.unit})`
   )}`
 
   return (
@@ -288,7 +292,7 @@ const ProductDetail = () => {
                 <MessageCircle size={15} />
                 {t('product.orderOnWhatsApp')}
               </a>
-              <a href="tel:+8809642922922" className="btn-dark py-2.5 text-xs">
+              <a href={`tel:${settings?.callOrderNumber || settings?.sitePhone || '+8809642922922'}`} className="btn-dark py-2.5 text-xs">
                 <Phone size={15} />
                 {t('product.callForOrder')}
               </a>

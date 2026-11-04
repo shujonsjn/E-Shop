@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, BadgeCheck } from 'lucide-react'
 import { Breadcrumbs, PageBanner } from '../components/ui'
-import { bannerImage, brands as defaultBrands } from '../data/catalog'
+import { bannerImage } from '../data/catalog'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
+import { getMergedBrands } from '../utils/mergeBrands'
 
 const brandBlurbs = {
   ghorerbazar: {
@@ -32,27 +33,20 @@ const brandBlurbs = {
 const Brands = () => {
   const { products } = useProducts()
   const { t, tx } = useLanguage()
-  const [brands, setBrands] = useState(defaultBrands)
+  const [brands, setBrands] = useState([])
 
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem('gb_admin_brands')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed)) setBrands(parsed)
-      }
-    } catch {}
-    const handler = () => {
-      try {
-        const saved = localStorage.getItem('gb_admin_brands')
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          if (Array.isArray(parsed)) setBrands(parsed)
-        }
-      } catch {}
+    const load = () => {
+      setBrands(getMergedBrands())
     }
+    load()
+    const handler = () => load()
     window.addEventListener('storage', handler)
-    return () => window.removeEventListener('storage', handler)
+    window.addEventListener('focus', handler)
+    return () => {
+      window.removeEventListener('storage', handler)
+      window.removeEventListener('focus', handler)
+    }
   }, [])
 
   const countFor = (brand) =>

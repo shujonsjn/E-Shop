@@ -12,11 +12,12 @@ import {
 import HeroSlider from '../components/HeroSlider'
 import ProductCard from '../components/ProductCard'
 import { RatingStars, SectionHeading } from '../components/ui'
-import { brands, testimonials } from '../data/catalog'
+import { testimonials } from '../data/catalog'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
 import { getMergedCategories } from '../utils/mergeCategories'
+import { getMergedBrands } from '../utils/mergeBrands'
 
 const getRemaining = () => {
   const now = new Date()
@@ -49,6 +50,7 @@ const Home = () => {
   const { t, tx } = useLanguage()
   const { settings } = useSettings()
   const [categories, setCategories] = useState([])
+  const [brandsList, setBrandsList] = useState([])
   const sideBanners = settings.siteContent?.sideBanners || []
   const promoBanners = settings.siteContent?.promoBanners || []
   const [time, setTime] = useState(getRemaining)
@@ -58,10 +60,18 @@ const Home = () => {
     .filter((s) => s.enabled !== false)
 
   useEffect(() => {
-    setCategories(getMergedCategories())
-    const handleStorage = () => setCategories(getMergedCategories())
+    const load = () => {
+      setCategories(getMergedCategories())
+      setBrandsList(getMergedBrands())
+    }
+    load()
+    const handleStorage = () => load()
     window.addEventListener('storage', handleStorage)
-    return () => window.removeEventListener('storage', handleStorage)
+    window.addEventListener('focus', handleStorage)
+    return () => {
+      window.removeEventListener('storage', handleStorage)
+      window.removeEventListener('focus', handleStorage)
+    }
   }, [])
 
   useEffect(() => {
@@ -126,7 +136,7 @@ const Home = () => {
                   >
                     <img
                       src={banner.image}
-                      alt={banner.alt}
+                      alt={banner.alt || 'Banner'}
                       className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
                       loading="lazy"
                     />
@@ -250,17 +260,17 @@ const Home = () => {
         return (
           <section key={section.id} className="container-gb mt-10">
             <SectionHeading title={t('home.ourBrands')} subtitle={t('home.ourBrandsSub')} href="/brands" />
-            <div className="grid grid-cols-3 gap-2 sm:grid-cols-5 sm:gap-3">
-              {brands.map((brand) => (
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8">
+              {(brandsList.length > 0 ? brandsList : []).map((brand) => (
                 <Link
                   key={brand.slug}
                   to={`/brand/${brand.slug}`}
-                  className="grid h-16 place-items-center rounded-lg border border-gray-100 bg-white p-3 shadow-card transition hover:border-brand/40 hover:shadow-lift sm:h-20"
+                  className="group flex h-16 items-center justify-center rounded border border-gray-200 bg-white px-3 transition hover:border-brand hover:shadow-sm sm:h-18"
                 >
                   <img
                     src={brand.logo}
                     alt={brand.name}
-                    className="max-h-full max-w-full object-contain opacity-80 transition hover:opacity-100"
+                    className="max-h-[70%] max-w-full object-contain"
                     loading="lazy"
                   />
                 </Link>
@@ -364,7 +374,7 @@ const Home = () => {
               <div className="hidden grid-rows-2 gap-3 lg:grid">
                 {sideBanners.map((banner) => (
                   <Link key={banner.id} to={banner.href} className="group relative overflow-hidden rounded-lg bg-cream">
-                    <img src={banner.image} alt={banner.alt} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" />
+                    <img src={banner.image} alt={banner.alt || 'Banner'} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" />
                   </Link>
                 ))}
               </div>

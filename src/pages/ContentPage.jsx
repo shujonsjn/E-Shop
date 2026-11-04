@@ -5,6 +5,7 @@ import { Breadcrumbs, EmptyState, PageBanner } from '../components/ui'
 import { bannerImage } from '../data/catalog'
 import { getPage, pages as defaultPages } from '../data/pages'
 import { useLanguage } from '../i18n/LanguageContext'
+import { useSettings } from '../context/SettingsContext'
 
 const quickLinks = [
   ['about-us', 'About Us', 'আমাদের সম্পর্কে'],
@@ -22,6 +23,7 @@ const quickLinks = [
 const ContentPage = () => {
   const { slug } = useParams()
   const { t, tx, isBn } = useLanguage()
+  const { settings } = useSettings()
   const [pagesData, setPagesData] = useState(defaultPages)
 
   useEffect(() => {
@@ -141,18 +143,18 @@ const ContentPage = () => {
             <h2 className="text-[13px] font-bold text-ink">{t('track.needHelp')}</h2>
             <ul className="mt-2 space-y-2 text-[12px] text-ink-muted">
               <li>
-                <a href={`tel:${(localStorage.getItem('gb_settings') ? JSON.parse(localStorage.getItem('gb_settings')).callOrderNumber : null) || (localStorage.getItem('gb_settings') ? JSON.parse(localStorage.getItem('gb_settings')).sitePhone : null) || '+8809642922922'}`} className="flex items-center gap-2 hover:text-brand">
-                  <Phone size={13} className="text-brand" /> {(localStorage.getItem('gb_settings') ? JSON.parse(localStorage.getItem('gb_settings')).callOrderNumber : null) || (localStorage.getItem('gb_settings') ? JSON.parse(localStorage.getItem('gb_settings')).sitePhone : null) || '+8809642922922'}
+                <a href={`tel:${settings?.callOrderNumber || settings?.sitePhone || '+8809642922922'}`} className="flex items-center gap-2 hover:text-brand">
+                  <Phone size={13} className="text-brand" /> {settings?.callOrderNumber || settings?.sitePhone || '+8809642922922'}
                 </a>
               </li>
               <li>
                 <a
-                  href={`https://api.whatsapp.com/send/?phone=${(localStorage.getItem('gb_settings') ? JSON.parse(localStorage.getItem('gb_settings')).whatsappNumber : null) || '8801321208940'}&text=Hello%20GhorerBazar`}
+                  href={`https://api.whatsapp.com/send/?phone=${String(settings?.whatsappNumber || settings?.callOrderNumber || '').replace(/[^0-9]/g, '')}&text=${encodeURIComponent('Hello ' + (settings?.siteName || ''))}`}
                   target="_blank"
                   rel="noreferrer"
                   className="flex items-center gap-2 hover:text-brand"
                 >
-                  <MessageCircle size={13} className="text-brand" /> {(localStorage.getItem('gb_settings') ? JSON.parse(localStorage.getItem('gb_settings')).whatsappNumber : null) || '+8801321208940'}
+                  <MessageCircle size={13} className="text-brand" /> {settings?.whatsappNumber || settings?.callOrderNumber || '+8801321208940'}
                 </a>
               </li>
               <li>
