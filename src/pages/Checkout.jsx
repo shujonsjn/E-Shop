@@ -414,7 +414,7 @@ const Checkout = () => {
 
               {formData.paymentMethod !== 'cod' && (
                 <div className="rounded-md border border-gray-200 bg-cream/60 p-3">
-                  <p className="text-[12px] text-ink-muted">{t('checkout.mobileNote')}</p>
+                  <p className="text-[12px] text-ink-muted">{mobileNote(formData.paymentMethod)}</p>
                   <div className="mt-2 rounded border border-gray-200 bg-white px-3 py-2">
                     <p className="text-[10px] uppercase tracking-wide text-gray-400">
                       {tx('Merchant number', 'মার্চেন্ট নম্বর')}
