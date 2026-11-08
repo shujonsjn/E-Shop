@@ -201,8 +201,8 @@ const OrderSuccess = () => {
 
         <p className="mt-4 text-center text-[11px] text-gray-400">
           {tx(
-            'This is a demo storefront. The order is saved only in this browser and is not dispatched.',
-            'এটি একটি ডেমো স্টোরফ্রন্ট। অর্ডারটি শুধু এই ব্রাউজারে সংরক্ষিত, কোথাও পাঠানো হয় না।'
+            'Our team will call you shortly to confirm the order and delivery time.',
+            'আমাদের টিম অর্ডার ও ডেলিভারির সময় নিশ্চিত করতে শীঘ্রই আপনাকে কল করবে।'
           )}
         </p>
       </div>

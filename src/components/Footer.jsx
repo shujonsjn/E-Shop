@@ -119,7 +119,9 @@ const Footer = () => {
               {tx('Pure food, honest price', 'খাঁটি খাবার, সৎ দাম')}
             </span>
           </Link>
-          <p className="mt-4 max-w-xs text-[13px] leading-6 text-white/55">{settings.siteContent?.footerAbout || t('footer.aboutText')}</p>
+          <p className="mt-4 max-w-xs text-[13px] leading-6 text-white/55">
+            {(settings.siteContent?.footerAbout || t('footer.aboutText')).replace(/GhorerBazar/g, settings.siteName)}
+          </p>
           <ul className="mt-4 space-y-2 text-[13px] text-white/60">
             <li className="flex items-start gap-2">
               <MapPin size={14} className="mt-0.5 shrink-0 text-brand" />
@@ -248,12 +250,13 @@ const Footer = () => {
       <div className="border-t border-white/10">
         <div className="container-gb flex flex-col items-center justify-between gap-2 py-4 text-[11px] text-white/40 sm:flex-row">
           <p>
-            {settings.siteContent?.footerCopyright || `© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`}
+            {(settings.siteContent?.footerCopyright || `© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`)
+              .replace(/GhorerBazar/g, settings.siteName)}
           </p>
           <p>
             {tx(
-              'Frontend demo — orders and payments are simulated.',
-              'ফ্রন্টএন্ড ডেমো — অর্ডার ও পেমেন্ট সিমুলেটেড।'
+              'Secure checkout · Cash on delivery available',
+              'নিরাপদ চেকআউট · ক্যাশ অন ডেলিভারি সুবিধা'
             )}
           </p>
         </div>

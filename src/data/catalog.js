@@ -1,13 +1,44 @@
 // GhorerBazar-style demo catalog. All prices are in BDT.
-// Product photography is loaded from the public GhorerBazar CDN for demo fidelity.
-// Replace with your own media before any public launch.
+// Product photography is stored locally under /public/images so the storefront
+// never depends on an external CDN being reachable.
+const localBanners = {
+  'KQlqd1788006502-4000x1039.jpeg': '/images/banner/promo-1.jpg',
+  'nr4nq1788005117-1000x400.png': '/images/banner/promo-2.jpg',
+  'lrMlR1792818389-light-1001x401.png': '/images/hero/hero-1.jpg',
+  'mM4zY1791177103-light-1000x400.jpg': '/images/hero/hero-2.jpg',
+  'kdvcy1786290971-light-1000x400.png': '/images/hero/hero-3.jpg',
+  'iiROP1792818389-light-501x281.png': '/images/banner/side-1.jpg',
+  'CMSdo1791180033-light-500x279.jpg': '/images/banner/side-2.jpg',
+}
 
-const cdn = (folder, file) => `https://cdn.ghorerbazar.com/${folder}/${file}`
-export const productImage = (file) => cdn('productImages', file)
-export const categoryImage = (file) => cdn('category_images', file)
-export const bannerImage = (file) => cdn('banner', file)
-export const brandImage = (file) => cdn('brand_images', file)
-export const testimonialImage = (file) => cdn('testimonial', file)
+export const productImage = (file) => `/images/products/${file}`
+export const categoryImage = (file) => `/images/categories/${file}`
+export const bannerImage = (file) => localBanners[file] || '/images/banner/promo-1.jpg'
+export const brandImage = (file) => `/images/brands/${file}`
+export const testimonialImage = (file) => `/images/avatar/${file}`
+
+const productPools = {
+  honey: ['/images/products/honey/p1.jpg', '/images/products/honey/p2.jpg', '/images/products/honey/p3.jpg', '/images/products/honey/p4.jpg', '/images/products/honey/p5.jpg'],
+  'oil-ghee': ['/images/products/oil-ghee/p1.jpg', '/images/products/oil-ghee/p2.jpg', '/images/products/oil-ghee/p3.jpg', '/images/products/oil-ghee/p4.jpg', '/images/products/oil-ghee/p5.jpg'],
+  dates: ['/images/products/dates/p1.jpg', '/images/products/dates/p2.jpg', '/images/products/dates/p3.jpg', '/images/products/dates/p4.jpg', '/images/products/dates/p5.jpg'],
+  spices: ['/images/products/spices/p1.jpg', '/images/products/spices/p2.jpg', '/images/products/spices/p3.jpg', '/images/products/spices/p4.jpg', '/images/products/spices/p5.jpg'],
+  'nuts-seeds': ['/images/products/nuts-seeds/p1.jpg', '/images/products/nuts-seeds/p2.jpg', '/images/products/nuts-seeds/p3.jpg', '/images/products/nuts-seeds/p4.jpg'],
+  rice: ['/images/products/rice/p1.jpg', '/images/products/rice/p2.jpg', '/images/products/rice/p3.jpg'],
+  'flours-lentils': ['/images/products/flours-lentils/p1.jpg', '/images/products/flours-lentils/p2.jpg', '/images/products/flours-lentils/p3.jpg'],
+  organic: ['/images/products/organic/p1.jpg', '/images/products/organic/p2.jpg', '/images/products/organic/p3.jpg'],
+  'functional-food': ['/images/products/functional-food/p1.jpg', '/images/products/functional-food/p2.jpg'],
+  pickle: ['/images/products/pickle/p1.jpg', '/images/products/pickle/p2.jpg', '/images/products/pickle/p3.jpg'],
+  showpiece: ['/images/products/showpiece/p1.jpg', '/images/products/showpiece/p2.jpg', '/images/products/showpiece/p3.jpg', '/images/products/showpiece/p4.jpg', '/images/products/showpiece/p5.jpg', '/images/products/showpiece/p6.jpg'],
+  'shoes-bags': ['/images/products/shoes-bags/p1.jpg', '/images/products/shoes-bags/p2.jpg', '/images/products/shoes-bags/p3.jpg', '/images/products/shoes-bags/p4.jpg'],
+  beverage: ['/images/products/beverage/p1.jpg', '/images/products/beverage/p2.jpg', '/images/products/beverage/p3.jpg', '/images/products/beverage/p4.jpg'],
+}
+
+const pickProductImage = (category, slug) => {
+  const pool = productPools[category] || productPools.honey
+  let hash = 0
+  for (let i = 0; i < slug.length; i += 1) hash = (hash * 31 + slug.charCodeAt(i)) >>> 0
+  return pool[hash % pool.length]
+}
 
 export const categories = [
   {
@@ -148,45 +179,45 @@ export const categories = [
       { slug: 'bags', name: 'Bags', name_bn: 'ব্যাগ' },
     ],
   },
-]
+].map((category) => ({ ...category, image: `/images/categories/${category.slug}.jpg` }))
 
 export const brands = [
-  { slug: 'ghorerbazar', name: 'GhorerBazar', name_bn: 'ঘরের বাজার', logo: brandImage('7hNKq1768887947.png') },
-  { slug: 'glarvest', name: 'Glarvest', name_bn: 'গ্লারভেস্ট', logo: brandImage('RNTIU1763611802.png') },
-  { slug: 'khejuri', name: 'Khejuri', name_bn: 'খেজুরি', logo: brandImage('8Gpl21757919440.png') },
-  { slug: 'shosti-food', name: 'Shosti Food', name_bn: 'শস্তি ফুড', logo: brandImage('8matO1757919401.png') },
-  { slug: 'honeyraj', name: 'Honeyraj', name_bn: 'হানিরাজ', logo: brandImage('lCfRt1759553456.png') },
+  { slug: 'ghorerbazar', name: 'GhorerBazar', name_bn: 'ঘরের বাজার', logo: '/images/brands/ghorerbazar.svg' },
+  { slug: 'glarvest', name: 'Glarvest', name_bn: 'গ্লারভেস্ট', logo: '/images/brands/glarvest.svg' },
+  { slug: 'khejuri', name: 'Khejuri', name_bn: 'খেজুরি', logo: '/images/brands/khejuri.svg' },
+  { slug: 'shosti-food', name: 'Shosti Food', name_bn: 'শস্তি ফুড', logo: '/images/brands/shosti-food.svg' },
+  { slug: 'honeyraj', name: 'Honeyraj', name_bn: 'হানিরাজ', logo: '/images/brands/honeyraj.svg' },
 ]
 
 export const heroSlides = [
   {
     id: 1,
-    image: bannerImage('lrMlR1792818389-light-1001x401.png'),
+    image: '/images/hero/hero-1.jpg',
     href: '/collections/honey',
     alt: 'Pure honey collection',
   },
   {
     id: 2,
-    image: bannerImage('mM4zY1791177103-light-1000x400.jpg'),
+    image: '/images/hero/hero-2.jpg',
     href: '/collections/dates',
     alt: 'Premium dates collection',
   },
   {
     id: 3,
-    image: bannerImage('kdvcy1786290971-light-1000x400.png'),
+    image: '/images/hero/hero-3.jpg',
     href: '/collections/oil-ghee',
     alt: 'Cooking essentials',
   },
 ]
 
 export const sideBanners = [
-  { id: 1, image: bannerImage('iiROP1792818389-light-501x281.png'), href: '/collections/dates', alt: 'Dates offer' },
-  { id: 2, image: bannerImage('CMSdo1791180033-light-500x279.jpg'), href: '/offer-zone', alt: 'Special offer' },
+  { id: 1, image: '/images/banner/side-1.jpg', href: '/collections/dates', alt: 'Dates offer' },
+  { id: 2, image: '/images/banner/side-2.jpg', href: '/offer-zone', alt: 'Special offer' },
 ]
 
 export const promoBanners = [
-  { id: 1, image: bannerImage('KQlqd1788006502-4000x1039.jpeg'), href: '/collections/oil-ghee', alt: 'Cooking essentials' },
-  { id: 2, image: bannerImage('nr4nq1788005117-1000x400.png'), href: '/collections/honey', alt: 'Natural honey' },
+  { id: 1, image: '/images/banner/promo-1.jpg', href: '/collections/oil-ghee', alt: 'Cooking essentials' },
+  { id: 2, image: '/images/banner/promo-2.jpg', href: '/collections/honey', alt: 'Natural honey' },
 ]
 
 export const testimonials = [
@@ -196,7 +227,7 @@ export const testimonials = [
     name_bn: 'ফারহানা আক্তার',
     location: 'Dhaka',
     location_bn: 'ঢাকা',
-    avatar: testimonialImage('NgeCj1758183204.jpg'),
+    avatar: '/images/avatar/avatar-1.jpg',
     rating: 5,
     text: 'The honey tastes exactly like the raw honey we get from our village. Packaging was sealed and delivery reached within two days.',
     text_bn: 'মধুর স্বাদ একেবারে গ্রামের খাঁটি মধুর মতো। প্যাকেজিং সিলড ছিল আর দুই দিনের মধ্যে ডেলিভারি পেয়েছি।',
@@ -207,7 +238,7 @@ export const testimonials = [
     name_bn: 'তানভীর আহমেদ',
     location: 'Chattogram',
     location_bn: 'চট্টগ্রাম',
-    avatar: testimonialImage('7XD7v1758183150.jpg'),
+    avatar: '/images/avatar/avatar-2.jpg',
     rating: 5,
     text: 'Ordered Medjool dates for iftar. Fresh, soft and big — better than what I usually buy from the local market.',
     text_bn: 'ইফতারের জন্য মেজদুল খেজুর অর্ডার করেছিলাম। টাটকা, নরম আর বড় — বাজারের চেয়ে অনেক ভালো।',
@@ -218,7 +249,7 @@ export const testimonials = [
     name_bn: 'নুসরাত জাহান',
     location: 'Sylhet',
     location_bn: 'সিলেট',
-    avatar: testimonialImage('PZDyt1758183005.jpg'),
+    avatar: '/images/avatar/avatar-3.jpg',
     rating: 4,
     text: 'Gawa ghee smells amazing. I use it for everyday cooking and the 1kg jar lasts my family a long time.',
     text_bn: 'গাওয়া ঘিয়ের ঘ্রাণ দারুণ। প্রতিদিনের রান্নায় ব্যবহার করি, ১ কেজি জার পরিবারের জন্য অনেকদিন চলে।',
@@ -229,7 +260,7 @@ export const testimonials = [
     name_bn: 'রাকিব হাসান',
     location: 'Rajshahi',
     location_bn: 'রাজশাহী',
-    avatar: testimonialImage('0Jti61758182944.png'),
+    avatar: '/images/avatar/avatar-4.jpg',
     rating: 5,
     text: 'Customer support answered on WhatsApp within minutes and helped me pick the right olive oil. Genuine service.',
     text_bn: 'হোয়াটসঅ্যাপে কয়েক মিনিটেই সাপোর্ট পেয়েছি, ঠিক অলিভ অয়েল বেছে নিতে সাহায্য করেছে। সত্যিকারের সার্ভিস।',
@@ -240,7 +271,7 @@ export const testimonials = [
     name_bn: 'সুমাইয়া ইসলাম',
     location: 'Khulna',
     location_bn: 'খুলনা',
-    avatar: testimonialImage('3qPit1758182893.jpg'),
+    avatar: '/images/avatar/avatar-5.jpg',
     rating: 5,
     text: 'I have reordered the masala combo three times. Fresh aroma, no fillers, and the price is fair for the quality.',
     text_bn: 'মসলা কম্বো তিনবার অর্ডার করেছি। টাটকা ঘ্রাণ, ভেজাল নেই, আর দামও মানের তুলনায় ন্যায্য।',
@@ -514,9 +545,18 @@ const rawProducts = [
   { slug: 'handbag', name: 'Handbag', name_bn: 'হ্যান্ডব্যাগ', price: 1650, oldPrice: 2150, image: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1000&auto=format&fit=crop', category: 'shoes-bags', subcategory: 'bags', unit: 'pcs', badges: ['Sale'], rating: 4.8, reviewCount: 62, sold: 310, externalImage: 'https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=1000&auto=format&fit=crop' },
 ]
 
+const brandFor = (item) => {
+  if (item.brand) return item.brand
+  if (item.category === 'honey') return 'Honeyraj'
+  if (item.category === 'dates') return 'Khejuri'
+  if (item.category === 'oil-ghee') return item.subcategory === 'olive-oil' ? 'Glarvest' : 'GhorerBazar'
+  if (['spices', 'flours-lentils', 'rice', 'pickle', 'functional-food'].includes(item.category)) return 'Shosti Food'
+  return 'GhorerBazar'
+}
+
 export const products = rawProducts.map((item, index) => {
   const copy = categoryCopy[item.category] || categoryCopy.honey
-  const image = item.externalImage || productImage(item.image)
+  const image = item.externalImage || pickProductImage(item.category, item.slug)
   return {
     id: index + 1,
     slug: item.slug,
@@ -528,7 +568,7 @@ export const products = rawProducts.map((item, index) => {
     gallery: item.gallery || [image],
     category: item.category,
     subcategory: item.subcategory,
-    brand: item.brand || '',
+    brand: brandFor(item),
     unit: item.unit || '',
     badges: item.badges || [],
     stock: item.stock ?? 12 + ((index * 7) % 40),
@@ -537,7 +577,7 @@ export const products = rawProducts.map((item, index) => {
     reviewCount: item.reviewCount || 0,
     featured: Boolean(item.featured),
     topSelling: Boolean(item.top),
-    tags: [item.name, item.category, item.subcategory, item.brand || '', item.unit].filter(Boolean)
+    tags: [item.name, item.category, item.subcategory, brandFor(item), item.unit].filter(Boolean)
       .filter(Boolean)
       .map((tag) => String(tag).toLowerCase()),
     short: copy.short,

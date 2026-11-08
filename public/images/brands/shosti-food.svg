@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="100" viewBox="0 0 320 100" role="img" aria-label="Shosti Food">
+  <circle cx="50" cy="50" r="26" fill="#fbeae6"/>
+  <path d="M36 40h28v6H36zM38 50h24v4H38zM42 58h16v4H42z" fill="#c0392b"/>
+  <text x="88" y="47" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-weight="700" fill="#b03325">Shosti Food</text>
+  <text x="90" y="68" font-family="Arial, Helvetica, sans-serif" font-size="10.5" letter-spacing="2.4" fill="#b08d86">SPICES &amp; PANTRY</text>
+</svg>

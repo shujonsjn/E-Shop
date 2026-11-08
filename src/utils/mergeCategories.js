@@ -2,8 +2,35 @@ import { categories as defaultCategories } from '../data/catalog'
 
 const STORAGE_KEY = 'gb_admin_categories'
 const DELETED_KEY = 'gb_admin_categories_deleted'
+const MIGRATION_KEY = 'gb_categories_fix_v2'
+
+const runMigration = () => {
+  try {
+    if (localStorage.getItem(MIGRATION_KEY)) return
+    const defaultSlugs = defaultCategories
+      .map((c) => c && c.slug)
+      .filter((slug) => slug && slug !== 'showpiece')
+    let deleted = []
+    try {
+      deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]')
+    } catch {
+      deleted = []
+    }
+    const allDeleted = Array.isArray(deleted) && defaultSlugs.every((slug) => deleted.includes(slug))
+    // Safety net: an earlier build could mark every default category as deleted,
+    // which left the storefront with a single category. Restore the catalog.
+    if (allDeleted) {
+      localStorage.removeItem(DELETED_KEY)
+      localStorage.removeItem(STORAGE_KEY)
+    }
+    localStorage.setItem(MIGRATION_KEY, '1')
+  } catch {
+    /* ignore */
+  }
+}
 
 export const getMergedCategories = () => {
+  runMigration()
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
     let deleted = []
@@ -12,26 +39,8 @@ export const getMergedCategories = () => {
     } catch {
       deleted = []
     }
-    
-    // Also check if deleted from admin categories
-    try {
-      const adminCats = saved ? JSON.parse(saved) : []
-      if (Array.isArray(adminCats)) {
-        // If admin deleted default categories, add to deleted list
-        defaultCategories.forEach((dc) => {
-          if (!dc || !dc.slug) return
-          if (dc.slug === 'showpiece') return
-          const exists = adminCats.find((ac) => ac.slug === dc.slug)
-          if (!exists && !deleted.includes(dc.slug)) {
-            deleted.push(dc.slug)
-          }
-        })
-        deleted = deleted.filter((d) => d !== 'showpiece')
-        localStorage.setItem(DELETED_KEY, JSON.stringify([...new Set(deleted)]))
-      }
-    } catch {}
-    
-    deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]')
+    if (!Array.isArray(deleted)) deleted = []
+
     const map = new Map()
 
     // Add default categories (skip deleted)
@@ -99,7 +108,7 @@ export const getMergedCategories = () => {
             ...existing,
             name: ac.name || existing.name,
             name_bn: ac.name_bn || existing.name_bn || ac.name,
-            image: ac.image || existing.image,
+            image: /cdn\.ghorerbazar\.com/.test(ac.image || '') ? existing.image : (ac.image || existing.image),
             children: Array.from(existingChildrenMap.values()),
           })
         } else {
@@ -120,7 +129,7 @@ export const getMergedCategories = () => {
             slug: ac.slug,
             name: ac.name,
             name_bn: ac.name_bn || ac.name,
-            image: ac.image || '',
+            image: /cdn\.ghorerbazar\.com/.test(ac.image || '') ? '' : (ac.image || ''),
             children: children.filter((c) => c.slug),
           })
         }

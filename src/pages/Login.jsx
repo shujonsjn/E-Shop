@@ -12,13 +12,6 @@ const demoAccounts = [
     label: 'Demo customer',
     labelBn: 'ডেমো ক্রেতা',
   },
-  {
-    role: 'admin',
-    email: 'admin@shoeshop.com',
-    password: 'admin123',
-    label: 'Admin panel',
-    labelBn: 'অ্যাডমিন প্যানেল',
-  },
 ]
 
 const Login = () => {

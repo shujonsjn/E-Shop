@@ -4,7 +4,7 @@ import { products as catalogProducts } from '../data/catalog'
 const ProductsContext = createContext()
 const STORAGE_KEY = 'gb_products'
 const VERSION_KEY = 'gb_catalog_version'
-const CATALOG_VERSION = 'gb-v3'
+const CATALOG_VERSION = 'gb-v5'
 
 const loadInitialProducts = () => {
   try {

@@ -43,6 +43,20 @@ const HeroSlider = () => {
               className="h-full w-full object-cover"
               loading={slideIndex === 0 ? 'eager' : 'lazy'}
             />
+            <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/45 via-black/5 to-transparent" />
+            <div className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-3 p-4 sm:p-6">
+              <div className="min-w-0">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/70">
+                  Featured
+                </p>
+                <p className="mt-1 truncate text-base font-bold text-white drop-shadow sm:text-xl">
+                  {slide.alt}
+                </p>
+              </div>
+              <span className="hidden shrink-0 rounded-full bg-white px-4 py-2 text-xs font-bold text-ink shadow-sm sm:inline-flex">
+                Shop now
+              </span>
+            </div>
           </Link>
         ))}
       </div>

@@ -157,6 +157,9 @@ export const SettingsProvider = ({ children }) => {
     } catch {
       /* ignore */
     }
+    if (settings.siteName) {
+      document.title = `${settings.siteName} — Online Shopping in Bangladesh`
+    }
   }, [settings])
 
   const updateSettings = (updates) => {

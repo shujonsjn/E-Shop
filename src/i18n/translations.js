@@ -264,7 +264,7 @@ export const translations = {
     'auth.passwordMismatch': 'Passwords do not match',
     'auth.fillAll': 'Please fill in all required fields',
     'auth.termsAgree': 'I agree to the Terms & Conditions and Privacy Policy',
-    'auth.demoNote': 'Demo store — accounts are stored in your browser.',
+    'auth.demoNote': 'Your account stays private in this browser.',
 
     // Account
     'account.title': 'My Account',
@@ -620,7 +620,7 @@ export const translations = {
     'auth.passwordMismatch': 'পাসওয়ার্ড মিলছে না',
     'auth.fillAll': 'সব প্রয়োজনীয় ঘর পূরণ করুন',
     'auth.termsAgree': 'আমি শর্তাবলি ও প্রাইভেসি পলিসিতে সম্মত',
-    'auth.demoNote': 'ডেমো স্টোর — অ্যাকাউন্ট আপনার ব্রাউজারে সংরক্ষিত।',
+    'auth.demoNote': 'আপনার অ্যাকাউন্ট এই ব্রাউজারেই সুরক্ষিত থাকে।',
 
     'account.title': 'আমার অ্যাকাউন্ট',
     'account.dashboard': 'ড্যাশবোর্ড',

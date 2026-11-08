@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="320" height="100" viewBox="0 0 320 100" role="img" aria-label="Glarvest">
+  <circle cx="50" cy="50" r="26" fill="#f7f0dc"/>
+  <path d="M50 26c8 8 13 16 13 24a13 13 0 0 1-26 0c0-8 5-16 13-24Z" fill="#b8860b"/>
+  <path d="M50 38v22" stroke="#f7f0dc" stroke-width="2.5" stroke-linecap="round"/>
+  <text x="88" y="48" font-family="Georgia, 'Times New Roman', serif" font-size="30" font-weight="700" fill="#9a6f07">Glarvest</text>
+  <text x="90" y="69" font-family="Arial, Helvetica, sans-serif" font-size="10.5" letter-spacing="2.4" fill="#9c8f6e">OLIVE OIL</text>
+</svg>

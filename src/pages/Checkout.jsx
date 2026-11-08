@@ -134,10 +134,19 @@ const Checkout = () => {
     )
   }
 
+  const mobileNote = (id) => {
+    const number = settings.paymentMethods?.[id]?.number
+    if (!number) return t('checkout.mobileNote')
+    return tx(
+      `Send the total to ${number} and enter the details below.`,
+      `মোট টাকা ${number} নম্বরে পাঠিয়ে নিচে বিস্তারিত দিন।`
+    )
+  }
+
   const paymentOptions = [
     { id: 'cod', label: t('checkout.cod'), note: t('checkout.codNote'), icon: Truck },
-    { id: 'bkash', label: t('checkout.bkash'), note: t('checkout.mobileNote'), accent: 'bg-[#E2136E]' },
-    { id: 'nagad', label: t('checkout.nagad'), note: t('checkout.mobileNote'), accent: 'bg-[#F6921E]' },
+    { id: 'bkash', label: t('checkout.bkash'), note: mobileNote('bkash'), accent: 'bg-[#E2136E]' },
+    { id: 'nagad', label: t('checkout.nagad'), note: mobileNote('nagad'), accent: 'bg-[#F6921E]' },
   ].filter((option) => {
     const config = settings.paymentMethods?.[option.id]
     return config ? config.enabled !== false : true

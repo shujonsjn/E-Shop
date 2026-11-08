@@ -136,8 +136,8 @@ const Track = () => {
             <p className="mt-1.5 text-sm text-ink-muted">{t('track.orderNotFoundSub')}</p>
             <p className="mt-3 text-[11px] text-gray-400">
               {tx(
-                'Tip: this demo stores orders in the browser that placed them. Orders from another browser or device cannot be found.',
-                'টিপস: এই ডেমোটি যে ব্রাউজারে অর্ডার করা হয়েছে সেখানেই সংরক্ষণ করে। অন্য ব্রাউজার বা ডিভাইসের অর্ডার পাওয়া যাবে না।'
+                'Tip: use the same browser and phone number you used at checkout to find your order.',
+                'টিপস: যে ব্রাউজার ও ফোন নম্বর দিয়ে অর্ডার করেছেন, সেটি ব্যবহার করে অর্ডার খুঁজুন।'
               )}
             </p>
             <Link to="/shop" className="btn-outline mt-4">
