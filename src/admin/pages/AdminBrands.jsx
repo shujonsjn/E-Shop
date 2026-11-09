@@ -116,7 +116,14 @@ const AdminBrands = () => {
                 <label className="block text-sm font-medium mb-1">Slug</label>
                 <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full px-3 py-2 border rounded" required />
               </div>
-              <ImageUpload label="Brand Logo" value={form.logo} onChange={(val) => setForm({ ...form, logo: val })} />
+              <ImageUpload
+                label="Brand Logo"
+                value={form.logo}
+                onChange={(val) => setForm({ ...form, logo: val })}
+                width={320}
+                height={100}
+                fit="contain"
+              />
               <div className="flex gap-2">
                 <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Save</button>
                 <button type="button" onClick={() => { setShowModal(false); setEditing(null); setForm({ name: '', name_bn: '', slug: '', logo: '' }) }} className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">Cancel</button>

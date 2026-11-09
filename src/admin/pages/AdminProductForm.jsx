@@ -352,7 +352,7 @@ const AdminProductForm = () => {
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
               <h2 className="text-lg font-semibold text-gray-900 mb-4">Images</h2>
-              <ImageUpload label="" multiple onAddMultiple={handleAddImage} />
+              <ImageUpload label="" multiple width={800} height={800} onAddMultiple={handleAddImage} />
 
               {formData.images.length > 0 && (
                 <div className="mt-6">

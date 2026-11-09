@@ -256,7 +256,14 @@ const AdminCategories = () => {
                 <label className="block text-sm font-medium mb-1">Slug</label>
                 <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full px-3 py-2 border rounded" required />
               </div>
-              <ImageUpload label="Category Icon/Image" value={form.image || ''} onChange={(val) => setForm({ ...form, image: val })} />
+              <ImageUpload
+                label="Category Icon/Image"
+                value={form.image || ''}
+                onChange={(val) => setForm({ ...form, image: val })}
+                width={400}
+                height={400}
+                fit="contain"
+              />
               <div>
                 <label className="block text-sm font-medium mb-1">Subcategories</label>
                 <div className="space-y-2 mb-2">

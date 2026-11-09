@@ -42,6 +42,22 @@ const AdminSiteContent = () => {
         <p className="text-gray-500 mt-1">Manage banners, logo, footer and more</p>
       </div>
 
+      <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50 p-4">
+        <p className="text-sm font-semibold text-blue-900">Image sizes (auto-fixed on upload)</p>
+        <p className="mt-1 text-xs text-blue-800">
+          যেকোনো সাইজের ছবি আপলোড করলেও নিচের সাইজে অটো রিসাইজ/ক্রপ হয়ে সেভ হবে।
+        </p>
+        <div className="mt-3 grid grid-cols-1 gap-1.5 text-[12px] text-blue-900 sm:grid-cols-2 lg:grid-cols-3">
+          <span>• Site Logo — <b>400 × 100</b> (fit inside)</span>
+          <span>• Hero Slide — <b>1400 × 600</b> (7:3)</span>
+          <span>• Side Banner — <b>600 × 340</b></span>
+          <span>• Promo Banner — <b>1200 × 480</b> (5:2)</span>
+          <span>• Category Icon — <b>400 × 400</b> (fit inside)</span>
+          <span>• Product Image — <b>800 × 800</b></span>
+          <span>• Brand Logo — <b>320 × 100</b> (fit inside)</span>
+        </div>
+      </div>
+
       <div className="flex gap-2 mb-6 border-b flex-wrap">
         {['general', 'hero', 'banners', 'footer'].map((tab) => (
           <button key={tab} onClick={() => setActiveTab(tab)} className={`px-4 py-2 font-medium capitalize ${activeTab === tab ? 'border-b-2 border-blue-600 text-blue-600' : 'text-gray-600'}`}>
@@ -58,7 +74,14 @@ const AdminSiteContent = () => {
               <label className="block text-sm font-medium mb-1">Site Name</label>
               <input type="text" value={settings.siteName} onChange={(e) => updateSettings({ siteName: e.target.value })} className="w-full px-3 py-2 border rounded" />
             </div>
-            <ImageUpload label="Site Logo" value={settings.siteLogo || ''} onChange={(val) => updateSettings({ siteLogo: val })} />
+            <ImageUpload
+              label="Site Logo"
+              value={settings.siteLogo || ''}
+              onChange={(val) => updateSettings({ siteLogo: val })}
+              width={400}
+              height={100}
+              fit="contain"
+            />
             <div>
               <label className="block text-sm font-medium mb-1">Email</label>
               <input type="email" value={settings.siteEmail} onChange={(e) => updateSettings({ siteEmail: e.target.value })} className="w-full px-3 py-2 border rounded" />
@@ -109,14 +132,13 @@ const AdminSiteContent = () => {
             <h2 className="text-xl font-bold">Hero Slider</h2>
             <div className="flex gap-2">
               <button onClick={() => {
-                const { updateSettings } = useSettings()
                 const demo = [
-                  { id: Date.now()+1, image: 'https://cdn.ghorerbazar.com/banner/lrMlR1792818389-light-1001x401.png', href: '/collections/honey', alt: 'Pure honey collection' },
-                  { id: Date.now()+2, image: 'https://cdn.ghorerbazar.com/banner/mM4zY1791177103-light-1000x400.jpg', href: '/collections/dates', alt: 'Premium dates collection' },
-                  { id: Date.now()+3, image: 'https://cdn.ghorerbazar.com/banner/kdvcy1786290971-light-1000x400.png', href: '/collections/oil-ghee', alt: 'Cooking essentials' },
+                  { id: Date.now() + 1, image: '/images/hero/hero-1.jpg', href: '/collections/honey', alt: 'Pure honey collection' },
+                  { id: Date.now() + 2, image: '/images/hero/hero-2.jpg', href: '/collections/dates', alt: 'Premium dates collection' },
+                  { id: Date.now() + 3, image: '/images/hero/hero-3.jpg', href: '/collections/oil-ghee', alt: 'Cooking essentials' },
                 ]
                 const current = Array.isArray(settings.siteContent?.heroSlides) ? settings.siteContent.heroSlides : []
-                updateSettings({ siteContent: { ...(settings.siteContent||{}), heroSlides: [...current, ...demo] } })
+                updateSettings({ siteContent: { ...(settings.siteContent || {}), heroSlides: [...current, ...demo] } })
                 toast.success('Demo slides added')
               }} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Add Demo Slides</button>
               <button onClick={() => { setEditingHero(null); setHeroForm({ image: '', href: '', alt: '' }); setShowHeroModal(true) }} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><Plus size={20} /> Add Slide</button>
@@ -153,7 +175,13 @@ const AdminSiteContent = () => {
                 <div key={banner.id} className="border rounded overflow-hidden">
                   <img src={banner.image} alt={banner.alt} className="w-full h-32 object-cover" />
                   <div className="p-3 space-y-2">
-                    <ImageUpload label="Side Banner Image" value={banner.image} onChange={(val) => updateSideBanner(banner.id, { image: val })} />
+                    <ImageUpload
+                      label="Side Banner Image"
+                      value={banner.image}
+                      onChange={(val) => updateSideBanner(banner.id, { image: val })}
+                      width={600}
+                      height={340}
+                    />
                     <input type="text" value={banner.href} onChange={(e) => updateSideBanner(banner.id, { href: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Link" />
                     <input type="text" value={banner.alt} onChange={(e) => updateSideBanner(banner.id, { alt: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Alt text" />
                   </div>
@@ -168,7 +196,13 @@ const AdminSiteContent = () => {
                 <div key={banner.id} className="border rounded overflow-hidden">
                   <img src={banner.image} alt={banner.alt} className="w-full h-40 object-cover" />
                   <div className="p-3 space-y-2">
-                    <ImageUpload label="Promo Banner Image" value={banner.image} onChange={(val) => updatePromoBanner(banner.id, { image: val })} />
+                    <ImageUpload
+                      label="Promo Banner Image"
+                      value={banner.image}
+                      onChange={(val) => updatePromoBanner(banner.id, { image: val })}
+                      width={1200}
+                      height={480}
+                    />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
                       <input type="text" value={banner.href} onChange={(e) => updatePromoBanner(banner.id, { href: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Link" />
                       <input type="text" value={banner.alt} onChange={(e) => updatePromoBanner(banner.id, { alt: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Alt text" />
@@ -207,7 +241,13 @@ const AdminSiteContent = () => {
           <div className="bg-white rounded-lg p-6 w-full max-w-md">
             <h2 className="text-xl font-bold mb-4">{editingHero ? 'Edit Slide' : 'Add Slide'}</h2>
             <form onSubmit={handleHeroSubmit} className="space-y-4">
-              <ImageUpload label="Hero Image" value={heroForm.image} onChange={(val) => setHeroForm({ ...heroForm, image: val })} />
+              <ImageUpload
+                label="Hero Image"
+                value={heroForm.image}
+                onChange={(val) => setHeroForm({ ...heroForm, image: val })}
+                width={1400}
+                height={600}
+              />
               <div>
                 <label className="block text-sm font-medium mb-1">Link (href)</label>
                 <input type="text" value={heroForm.href} onChange={(e) => setHeroForm({ ...heroForm, href: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="/collections/honey" />

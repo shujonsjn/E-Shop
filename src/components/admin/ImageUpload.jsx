@@ -9,34 +9,82 @@ const readAsDataUrl = (file) =>
     reader.readAsDataURL(file)
   })
 
-// Keep browser storage small: downscale and convert uploads to webp.
-const optimizeImage = async (file) => {
-  const original = await readAsDataUrl(file)
-  if (!file.type?.startsWith('image/') || file.type === 'image/svg+xml') return original
-  return new Promise((resolve) => {
+const loadImage = (src) =>
+  new Promise((resolve, reject) => {
     const img = new Image()
-    img.onload = () => {
-      try {
-        const maxSide = 900
-        const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
-        if (scale === 1 && file.size <= 120 * 1024) {
-          resolve(original)
-          return
-        }
-        const canvas = document.createElement('canvas')
-        canvas.width = Math.max(1, Math.round(img.width * scale))
-        canvas.height = Math.max(1, Math.round(img.height * scale))
-        const ctx = canvas.getContext('2d')
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
-        const optimized = canvas.toDataURL('image/webp', 0.85)
-        resolve(optimized && optimized.length < original.length ? optimized : original)
-      } catch {
-        resolve(original)
-      }
-    }
-    img.onerror = () => resolve(original)
-    img.src = original
+    img.onload = () => resolve(img)
+    img.onerror = reject
+    img.src = src
   })
+
+// Renders whatever the admin uploads into the exact slot size the site uses,
+// so a 4000px photo and a 300px photo both end up identical (and light).
+const renderToSize = async (source, { width, height, fit = 'cover', quality = 0.85 } = {}) => {
+  if (!width || !height) return null
+  const img = await loadImage(source)
+  const canvas = document.createElement('canvas')
+  canvas.width = width
+  canvas.height = height
+  const ctx = canvas.getContext('2d')
+  ctx.imageSmoothingEnabled = true
+  ctx.imageSmoothingQuality = 'high'
+
+  if (fit === 'contain') {
+    const scale = Math.min(width / img.width, height / img.height)
+    const w = Math.max(1, Math.round(img.width * scale))
+    const h = Math.max(1, Math.round(img.height * scale))
+    ctx.drawImage(img, Math.round((width - w) / 2), Math.round((height - h) / 2), w, h)
+  } else {
+    const scale = Math.max(width / img.width, height / img.height)
+    const w = img.width * scale
+    const h = img.height * scale
+    ctx.drawImage(img, (width - w) / 2, (height - h) / 2, w, h)
+  }
+
+  const out = canvas.toDataURL('image/webp', quality)
+  return out.startsWith('data:image/webp') ? out : canvas.toDataURL('image/jpeg', quality)
+}
+
+export const optimizeImage = async (file, options = {}) => {
+  const original = await readAsDataUrl(file)
+  const isVector = file.type === 'image/svg+xml' || file.type === 'image/gif'
+  if (!file.type?.startsWith('image/') || isVector) return original
+
+  try {
+    if (options.width && options.height) {
+      return await renderToSize(original, options)
+    }
+    const img = await loadImage(original)
+    const maxSide = options.maxSide || 900
+    const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+    if (scale === 1 && file.size <= 120 * 1024) return original
+    const canvas = document.createElement('canvas')
+    canvas.width = Math.max(1, Math.round(img.width * scale))
+    canvas.height = Math.max(1, Math.round(img.height * scale))
+    const ctx = canvas.getContext('2d')
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    const optimized = canvas.toDataURL('image/webp', 0.85)
+    return optimized && optimized.length < original.length ? optimized : original
+  } catch {
+    return original
+  }
+}
+
+// Remote URLs are only rewritten when the host allows CORS; otherwise the
+// original URL is kept so the admin never loses the value they typed.
+const optimizeUrl = async (url, options = {}) => {
+  if (!options.width || !options.height) return url
+  if (url.startsWith('data:')) return url
+  try {
+    const res = await fetch(url, { mode: 'cors' })
+    if (!res.ok) return url
+    const blob = await res.blob()
+    if (!blob.type.startsWith('image/')) return url
+    const file = new File([blob], 'remote-image', { type: blob.type })
+    return await optimizeImage(file, options)
+  } catch {
+    return url
+  }
 }
 
 const ImageUpload = ({
@@ -45,49 +93,66 @@ const ImageUpload = ({
   label = 'Image',
   multiple = false,
   onAddMultiple,
+  width,
+  height,
+  fit = 'cover',
   className = '',
 }) => {
   const fileInputRef = useRef(null)
   const [uploadMethod, setUploadMethod] = useState('file')
   const [urlInput, setUrlInput] = useState('')
+  const [busy, setBusy] = useState(false)
+
+  const options = { width, height, fit }
+  const sizeLabel = width && height ? `${width} × ${height} px` : 'auto'
 
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
-    if (multiple && onAddMultiple) {
-      for (const file of files) {
-        if (file.size > 5 * 1024 * 1024) {
-          alert('Image size must be less than 5 MB')
-          continue
+    setBusy(true)
+    try {
+      if (multiple && onAddMultiple) {
+        for (const file of files) {
+          if (file.size > 5 * 1024 * 1024) {
+            alert('Image size must be less than 5 MB')
+            continue
+          }
+          onAddMultiple(await optimizeImage(file, options))
         }
-        onAddMultiple(await optimizeImage(file))
+        e.target.value = null
+        return
       }
-      e.target.value = null
-      return
-    }
 
-    // single image
-    const file = files[0]
-    if (file.size > 5 * 1024 * 1024) {
-      alert('Image size must be less than 5 MB')
+      const file = files[0]
+      if (file.size > 5 * 1024 * 1024) {
+        alert('Image size must be less than 5 MB')
+        e.target.value = null
+        return
+      }
+      const dataUrl = await optimizeImage(file, options)
+      if (onChange) onChange(dataUrl)
       e.target.value = null
-      return
+    } finally {
+      setBusy(false)
     }
-    const dataUrl = await optimizeImage(file)
-    if (onChange) onChange(dataUrl)
-    e.target.value = null
   }
 
-  const handleAddUrl = () => {
+  const handleAddUrl = async () => {
     if (!urlInput.trim()) return
-    if (multiple && onAddMultiple) {
-      onAddMultiple(urlInput.trim())
+    const url = urlInput.trim()
+    setBusy(true)
+    try {
+      const finalUrl = multiple ? url : await optimizeUrl(url, options)
+      if (multiple && onAddMultiple) {
+        onAddMultiple(finalUrl)
+      } else if (onChange) {
+        onChange(finalUrl)
+      }
       setUrlInput('')
-      return
+    } finally {
+      setBusy(false)
     }
-    if (onChange) onChange(urlInput.trim())
-    setUrlInput('')
   }
 
   return (
@@ -129,7 +194,7 @@ const ImageUpload = ({
           <div className="flex flex-col items-center justify-center">
             <Upload className="w-8 h-8 mb-2 text-gray-400" />
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">Click to upload</span> from local device
+              <span className="font-semibold">{busy ? 'Processing…' : 'Click to upload'}</span> from local device
             </p>
             <p className="text-xs text-gray-500">PNG, JPG, JPEG (max 5 MB)</p>
           </div>
@@ -154,16 +219,26 @@ const ImageUpload = ({
           <button
             type="button"
             onClick={handleAddUrl}
-            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition"
+            disabled={busy}
+            className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition disabled:opacity-60"
           >
-            Add
+            {busy ? '…' : 'Add'}
           </button>
         </div>
       )}
 
+      <p className="mt-2 text-[11px] text-gray-500">
+        Auto-fixed size: <span className="font-semibold text-gray-700">{sizeLabel}</span>
+        {width && height ? ` (${fit === 'contain' ? 'fit inside, trimmed' : 'cropped to fill'})` : ''}
+      </p>
+
       {!multiple && value && (
         <div className="mt-3 relative inline-block">
-          <img src={value} alt="Preview" className="h-24 w-24 object-contain border rounded-lg" />
+          <img
+            src={value}
+            alt="Preview"
+            className="h-24 w-24 object-contain border rounded-lg bg-white"
+          />
           {onChange && (
             <button
               type="button"
