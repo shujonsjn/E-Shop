@@ -10,6 +10,7 @@ import {
 } from 'lucide-react'
 import { Breadcrumbs, StatusBadge, formatTaka } from '../components/ui'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 
 const OrderSuccess = () => {
@@ -17,6 +18,7 @@ const OrderSuccess = () => {
   const location = useLocation()
   const { getOrderById } = useAuth()
   const { t, tx } = useLanguage()
+  const { settings } = useSettings()
 
   const order = location.state?.order || getOrderById(id)
 
@@ -80,7 +82,9 @@ const OrderSuccess = () => {
               <CheckCircle2 size={36} />
             </span>
             <h1 className="mt-4 text-xl font-bold text-ink sm:text-2xl">{t('checkout.orderPlaced')}</h1>
-            <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">{t('checkout.orderPlacedSub')}</p>
+            <p className="mx-auto mt-2 max-w-md text-sm text-ink-muted">
+              {t('checkout.orderPlacedSub').replace('GhorerBazar', settings.siteName)}
+            </p>
 
             <div className="mx-auto mt-5 inline-flex flex-col items-center rounded-lg border border-dashed border-brand/40 bg-white px-6 py-3">
               <span className="text-[10.5px] font-bold uppercase tracking-wider text-ink-muted">

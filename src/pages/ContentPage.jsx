@@ -37,6 +37,14 @@ const ContentPage = () => {
   }, [slug])
 
   const page = pagesData[slug] || getPage(slug)
+  const brandText = (value) => {
+    if (Array.isArray(value)) return value.map(brandText)
+    if (typeof value !== 'string') return value
+    return value
+      .replace(/GhorerBazar/g, settings.siteName || 'GhorerBazar')
+      .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || 'hello@ghorerbazar.demo')
+  }
+  const contactEmail = settings.siteEmail || 'hello@ghorerbazar.demo'
   const pagesList = pagesData
 
   if (!page) {
@@ -76,9 +84,9 @@ const ContentPage = () => {
         <article className="card p-5 sm:p-7">
           <div className="space-y-7">
             {page.sections.map((section, index) => {
-              const heading = isBn && section.heading_bn ? section.heading_bn : section.heading
-              const body = isBn && section.body_bn ? section.body_bn : section.body
-              const bullets = isBn && section.bullets_bn ? section.bullets_bn : section.bullets
+              const heading = brandText(isBn && section.heading_bn ? section.heading_bn : section.heading)
+              const body = brandText(isBn && section.body_bn ? section.body_bn : section.body)
+              const bullets = brandText(isBn && section.bullets_bn ? section.bullets_bn : section.bullets)
               const paragraphs = Array.isArray(body) ? body : body ? [body] : []
               const list = Array.isArray(bullets) ? bullets : []
 
@@ -158,8 +166,8 @@ const ContentPage = () => {
                 </a>
               </li>
               <li>
-                <a href="mailto:hello@ghorerbazar.demo" className="flex items-center gap-2 hover:text-brand">
-                  <Mail size={13} className="text-brand" /> hello@ghorerbazar.demo
+                <a href={`mailto:${contactEmail}`} className="flex items-center gap-2 hover:text-brand">
+                  <Mail size={13} className="text-brand" /> {contactEmail}
                 </a>
               </li>
             </ul>

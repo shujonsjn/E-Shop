@@ -12,20 +12,17 @@ import { LanguageProvider } from './i18n/LanguageContext.jsx'
 import { SettingsProvider } from './context/SettingsContext.jsx'
 import { Toaster } from 'react-hot-toast'
 
-// One-time reset so the grocery catalog replaces any cached shoe-shop data.
-// Auth/account data is intentionally left untouched.
-const BOOT_VERSION = 'gb-v1'
+// One-time hard reset of everything this storefront keeps in the browser.
+// Bump BOOT_VERSION whenever the bundled catalog/settings must replace cached data.
+const BOOT_VERSION = 'gb-v2'
 if (localStorage.getItem('gb_boot_version') !== BOOT_VERSION) {
-  ;[
-    'shoeshop_products',
-    'shoeshop_cart',
-    'shoeshop_catalog_version',
-    'shoeshop_content_version',
-    'shoeshop_simple_categories',
-    'shoeshop_category_menu',
-    'homeContent',
-    'shoeshop_orders',
-  ].forEach((key) => localStorage.removeItem(key))
+  try {
+    Object.keys(localStorage)
+      .filter((key) => key.startsWith('gb_') || key.startsWith('shoeshop_'))
+      .forEach((key) => localStorage.removeItem(key))
+  } catch {
+    /* ignore */
+  }
   localStorage.setItem('gb_boot_version', BOOT_VERSION)
 }
 

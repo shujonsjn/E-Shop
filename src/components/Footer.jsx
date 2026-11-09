@@ -208,7 +208,7 @@ const Footer = () => {
 
         <div>
           <h4 className="mb-3 text-sm font-bold">{t('footer.downloadApp')}</h4>
-          <p className="mb-3 text-[12px] text-white/50">{t('footer.appNote')}</p>
+          <p className="mb-3 text-[12px] text-white/50">{t('footer.appNote').replace('GhorerBazar', settings.siteName)}</p>
           <div className="space-y-2">
             <a
               href="#"

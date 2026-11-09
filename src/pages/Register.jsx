@@ -3,10 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Mail, Phone, ShieldCheck, User } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 
 const Register = () => {
   const { register } = useAuth()
+  const { settings } = useSettings()
   const { t, tx } = useLanguage()
   const navigate = useNavigate()
   const location = useLocation()
@@ -60,7 +62,9 @@ const Register = () => {
                 <span className="text-ink">Bazar</span>
               </Link>
               <h1 className="mt-3 text-lg font-bold text-ink sm:text-xl">{t('auth.register')}</h1>
-              <p className="mt-1 text-xs text-ink-muted sm:text-sm">{t('auth.registerSubtitle')}</p>
+              <p className="mt-1 text-xs text-ink-muted sm:text-sm">
+            {t('auth.registerSubtitle').replace('GhorerBazar', settings.siteName)}
+          </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3.5 p-5 sm:p-6">
