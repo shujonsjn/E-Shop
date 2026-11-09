@@ -4,6 +4,7 @@ import { Plus, Edit2, Trash2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
 import { categories as defaultCategories } from '../../data/catalog'
+import { runCategoryMigration } from '../../utils/mergeCategories'
 
 const STORAGE_KEY = 'gb_admin_categories'
 const DELETED_KEY = 'gb_admin_categories_deleted'
@@ -11,6 +12,7 @@ const DELETED_KEY = 'gb_admin_categories_deleted'
 const AdminCategories = () => {
   const { products } = useProducts()
   const [categories, setCategories] = useState(() => {
+    runCategoryMigration()
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       let deleted = []
@@ -138,17 +140,16 @@ const AdminCategories = () => {
     let updated
     if (editing) {
       updated = categories.map((c) => (c.id === editing.id ? { ...c, name: form.name, name_bn: form.name_bn, slug: form.slug, subcategories: subs, subcategoryList: subList, image: form.image } : c))
-      toast.success('Category updated')
     } else {
       updated = [...categories, { id: Date.now(), name: form.name, name_bn: form.name_bn, slug: form.slug, subcategories: subs, subcategoryList: subList, image: form.image, enabled: true }]
-      toast.success('Category added')
     }
     setCategories(updated)
     try {
       localStorage.setItem('gb_admin_categories', JSON.stringify(updated))
       window.dispatchEvent(new Event('storage'))
+      toast.success(editing ? 'Category updated' : 'Category added')
     } catch {
-      /* ignore */
+      toast.error('Could not save — browser storage is full. Try a smaller image.')
     }
     setShowModal(false)
     setEditing(null)

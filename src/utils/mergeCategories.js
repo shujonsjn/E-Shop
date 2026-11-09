@@ -4,8 +4,7 @@ const STORAGE_KEY = 'gb_admin_categories'
 const DELETED_KEY = 'gb_admin_categories_deleted'
 const MIGRATION_KEY = 'gb_categories_fix_v2'
 
-const runMigration = () => {
-  try {
+const runMigration = () => {  try {
     if (localStorage.getItem(MIGRATION_KEY)) return
     const defaultSlugs = defaultCategories
       .map((c) => c && c.slug)
@@ -29,6 +28,8 @@ const runMigration = () => {
   }
 }
 
+export const runCategoryMigration = runMigration
+
 export const getMergedCategories = () => {
   runMigration()
   try {
@@ -42,18 +43,17 @@ export const getMergedCategories = () => {
     if (!Array.isArray(deleted)) deleted = []
 
     const map = new Map()
+    const safeImage = (value, fallback) => {
+      if (!value) return fallback
+      if (typeof value !== 'string') return fallback
+      if (/cdn\.ghorerbazar\.com/.test(value)) return fallback
+      return value
+    }
 
     // Add default categories (skip deleted)
     defaultCategories.forEach((c) => {
       if (!c || !c.slug) return
-      if (c.slug === 'showpiece') {
-        map.set(c.slug, {
-          ...c,
-          children: Array.isArray(c.children) ? [...c.children] : [],
-        })
-        return
-      }
-      if (deleted.includes(c.slug)) return
+      if (c.slug !== 'showpiece' && deleted.includes(c.slug)) return
       map.set(c.slug, {
         ...c,
         children: Array.isArray(c.children) ? [...c.children] : [],
@@ -71,8 +71,7 @@ export const getMergedCategories = () => {
     if (Array.isArray(adminCats)) {
       adminCats.forEach((ac) => {
         if (!ac.slug) return
-        if (ac.slug === 'showpiece') return
-        if (deleted.includes(ac.slug)) return
+        if (ac.slug !== 'showpiece' && deleted.includes(ac.slug)) return
 
         if (map.has(ac.slug)) {
           const existing = map.get(ac.slug)
@@ -108,7 +107,7 @@ export const getMergedCategories = () => {
             ...existing,
             name: ac.name || existing.name,
             name_bn: ac.name_bn || existing.name_bn || ac.name,
-            image: /cdn\.ghorerbazar\.com/.test(ac.image || '') ? existing.image : (ac.image || existing.image),
+            image: safeImage(ac.image, existing.image),
             children: Array.from(existingChildrenMap.values()),
           })
         } else {
@@ -129,7 +128,7 @@ export const getMergedCategories = () => {
             slug: ac.slug,
             name: ac.name,
             name_bn: ac.name_bn || ac.name,
-            image: /cdn\.ghorerbazar\.com/.test(ac.image || '') ? '' : (ac.image || ''),
+            image: safeImage(ac.image, ''),
             children: children.filter((c) => c.slug),
           })
         }

@@ -1,6 +1,44 @@
 import { useRef, useState } from 'react'
 import { Upload, Link as LinkIcon, X } from 'lucide-react'
 
+const readAsDataUrl = (file) =>
+  new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onloadend = () => resolve(reader.result)
+    reader.onerror = reject
+    reader.readAsDataURL(file)
+  })
+
+// Keep browser storage small: downscale and convert uploads to webp.
+const optimizeImage = async (file) => {
+  const original = await readAsDataUrl(file)
+  if (!file.type?.startsWith('image/') || file.type === 'image/svg+xml') return original
+  return new Promise((resolve) => {
+    const img = new Image()
+    img.onload = () => {
+      try {
+        const maxSide = 900
+        const scale = Math.min(1, maxSide / Math.max(img.width, img.height))
+        if (scale === 1 && file.size <= 120 * 1024) {
+          resolve(original)
+          return
+        }
+        const canvas = document.createElement('canvas')
+        canvas.width = Math.max(1, Math.round(img.width * scale))
+        canvas.height = Math.max(1, Math.round(img.height * scale))
+        const ctx = canvas.getContext('2d')
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+        const optimized = canvas.toDataURL('image/webp', 0.85)
+        resolve(optimized && optimized.length < original.length ? optimized : original)
+      } catch {
+        resolve(original)
+      }
+    }
+    img.onerror = () => resolve(original)
+    img.src = original
+  })
+}
+
 const ImageUpload = ({
   value = '',
   onChange,
@@ -13,22 +51,18 @@ const ImageUpload = ({
   const [uploadMethod, setUploadMethod] = useState('file')
   const [urlInput, setUrlInput] = useState('')
 
-  const handleFileChange = (e) => {
+  const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
 
     if (multiple && onAddMultiple) {
-      files.forEach((file) => {
+      for (const file of files) {
         if (file.size > 5 * 1024 * 1024) {
           alert('Image size must be less than 5 MB')
-          return
+          continue
         }
-        const reader = new FileReader()
-        reader.onloadend = () => {
-          onAddMultiple(reader.result)
-        }
-        reader.readAsDataURL(file)
-      })
+        onAddMultiple(await optimizeImage(file))
+      }
       e.target.value = null
       return
     }
@@ -40,11 +74,8 @@ const ImageUpload = ({
       e.target.value = null
       return
     }
-    const reader = new FileReader()
-    reader.onloadend = () => {
-      if (onChange) onChange(reader.result)
-    }
-    reader.readAsDataURL(file)
+    const dataUrl = await optimizeImage(file)
+    if (onChange) onChange(dataUrl)
     e.target.value = null
   }
 
