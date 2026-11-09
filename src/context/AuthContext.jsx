@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { saveStore } from '../services/store'
 
 const AuthContext = createContext()
 
@@ -82,20 +83,29 @@ export const AuthProvider = ({ children }) => {
   }, [user])
 
   useEffect(() => {
-    try {
-      localStorage.setItem('shoeshop_users', JSON.stringify(users))
-    } catch {
-      /* ignore */
-    }
+    saveStore('users', users)
   }, [users])
 
   useEffect(() => {
-    try {
-      localStorage.setItem('shoeshop_orders', JSON.stringify(orders))
-    } catch {
-      /* ignore */
-    }
+    saveStore('orders', orders)
   }, [orders])
+
+  useEffect(() => {
+    const reload = (event) => {
+      const keys = event?.detail
+      if (Array.isArray(keys) && keys.length > 0 && !keys.some((k) => k === 'orders' || k === 'users')) return
+      try {
+        const savedOrders = localStorage.getItem('shoeshop_orders')
+        if (savedOrders) setOrders(JSON.parse(savedOrders))
+        const savedUsers = localStorage.getItem('shoeshop_users')
+        if (savedUsers) setUsers(JSON.parse(savedUsers))
+      } catch {
+        /* ignore */
+      }
+    }
+    window.addEventListener('gb:remote', reload)
+    return () => window.removeEventListener('gb:remote', reload)
+  }, [])
 
   const register = (name, email, password, phone = '') => {
     const normalizedEmail = String(email).trim().toLowerCase()

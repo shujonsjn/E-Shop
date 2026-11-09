@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
+import { saveStore } from '../services/store'
 
 const ReviewContext = createContext()
 const STORAGE_KEY = 'gb_reviews'
@@ -49,12 +50,23 @@ export const ReviewProvider = ({ children }) => {
   const [reviews, setReviews] = useState(loadReviews)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(reviews))
-    } catch {
-      /* ignore */
-    }
+    saveStore('reviews', reviews)
   }, [reviews])
+
+  useEffect(() => {
+    const reload = (event) => {
+      const keys = event?.detail
+      if (Array.isArray(keys) && keys.length > 0 && !keys.includes('reviews')) return
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY)
+        if (raw) setReviews(JSON.parse(raw))
+      } catch {
+        /* ignore */
+      }
+    }
+    window.addEventListener('gb:remote', reload)
+    return () => window.removeEventListener('gb:remote', reload)
+  }, [])
 
   const addReview = (reviewData) => {
     const existingReview = reviews.find(

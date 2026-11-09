@@ -1,4 +1,5 @@
 import { createContext, useContext, useEffect, useState } from 'react'
+import { saveStore } from '../services/store'
 
 const SettingsContext = createContext()
 
@@ -105,45 +106,48 @@ export const useSettings = () => {
   return context
 }
 
+const mergeSavedSettings = (parsed) => {
+  const merged = JSON.parse(JSON.stringify({ ...defaultSettings, ...parsed }))
+  merged.siteContent = JSON.parse(JSON.stringify({ ...defaultSettings.siteContent, ...(parsed.siteContent || {}) }))
+  merged.paymentMethods = { ...defaultSettings.paymentMethods, ...(parsed.paymentMethods || {}) }
+  Object.keys(defaultSettings.paymentMethods).forEach((key) => {
+    merged.paymentMethods[key] = {
+      ...defaultSettings.paymentMethods[key],
+      ...(parsed.paymentMethods?.[key] || {}),
+    }
+    if (!merged.paymentMethods[key].number) {
+      merged.paymentMethods[key].number = defaultSettings.paymentMethods[key].number || ''
+    }
+  })
+  if (Array.isArray(parsed.siteContent?.heroSlides) && parsed.siteContent.heroSlides.length > 0) {
+    merged.siteContent.heroSlides = parsed.siteContent.heroSlides
+  } else {
+    merged.siteContent.heroSlides = JSON.parse(JSON.stringify(defaultSettings.siteContent.heroSlides))
+  }
+  if (Array.isArray(parsed.siteContent?.sideBanners)) {
+    merged.siteContent.sideBanners = parsed.siteContent.sideBanners
+  } else {
+    merged.siteContent.sideBanners = JSON.parse(JSON.stringify(defaultSettings.siteContent.sideBanners))
+  }
+  if (Array.isArray(parsed.siteContent?.promoBanners)) {
+    merged.siteContent.promoBanners = parsed.siteContent.promoBanners
+  } else {
+    merged.siteContent.promoBanners = JSON.parse(JSON.stringify(defaultSettings.siteContent.promoBanners))
+  }
+  if (!Array.isArray(merged.homeLayout) || merged.homeLayout.length === 0) {
+    merged.homeLayout = JSON.parse(JSON.stringify(defaultHomeLayout))
+  } else {
+    merged.homeLayout = merged.homeLayout.map((item, idx) => ({ order: idx, enabled: true, ...item }))
+  }
+  return merged
+}
+
 export const SettingsProvider = ({ children }) => {
   const [settings, setSettings] = useState(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY)
       if (saved) {
-        const parsed = JSON.parse(saved)
-        const merged = JSON.parse(JSON.stringify({ ...defaultSettings, ...parsed }))
-        merged.siteContent = JSON.parse(JSON.stringify({ ...defaultSettings.siteContent, ...(parsed.siteContent || {}) }))
-        merged.paymentMethods = { ...defaultSettings.paymentMethods, ...(parsed.paymentMethods || {}) }
-        Object.keys(defaultSettings.paymentMethods).forEach((key) => {
-          merged.paymentMethods[key] = {
-            ...defaultSettings.paymentMethods[key],
-            ...(parsed.paymentMethods?.[key] || {}),
-          }
-          if (!merged.paymentMethods[key].number) {
-            merged.paymentMethods[key].number = defaultSettings.paymentMethods[key].number || ''
-          }
-        })
-        if (Array.isArray(parsed.siteContent?.heroSlides) && parsed.siteContent.heroSlides.length > 0) {
-          merged.siteContent.heroSlides = parsed.siteContent.heroSlides
-        } else {
-          merged.siteContent.heroSlides = JSON.parse(JSON.stringify(defaultSettings.siteContent.heroSlides))
-        }
-        if (Array.isArray(parsed.siteContent?.sideBanners)) {
-          merged.siteContent.sideBanners = parsed.siteContent.sideBanners
-        } else {
-          merged.siteContent.sideBanners = JSON.parse(JSON.stringify(defaultSettings.siteContent.sideBanners))
-        }
-        if (Array.isArray(parsed.siteContent?.promoBanners)) {
-          merged.siteContent.promoBanners = parsed.siteContent.promoBanners
-        } else {
-          merged.siteContent.promoBanners = JSON.parse(JSON.stringify(defaultSettings.siteContent.promoBanners))
-        }
-        if (!Array.isArray(merged.homeLayout) || merged.homeLayout.length === 0) {
-          merged.homeLayout = JSON.parse(JSON.stringify(defaultHomeLayout))
-        } else {
-          merged.homeLayout = merged.homeLayout.map((item, idx) => ({ order: idx, enabled: true, ...item }))
-        }
-        return merged
+        return mergeSavedSettings(JSON.parse(saved))
       }
     } catch {
       /* ignore */
@@ -152,15 +156,26 @@ export const SettingsProvider = ({ children }) => {
   })
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(settings))
-    } catch {
-      /* ignore */
-    }
     if (settings.siteName) {
       document.title = `${settings.siteName} — Online Shopping in Bangladesh`
     }
+    saveStore('settings', settings)
   }, [settings])
+
+  useEffect(() => {
+    const reload = (event) => {
+      const keys = event?.detail
+      if (Array.isArray(keys) && keys.length > 0 && !keys.includes('settings')) return
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY)
+        if (saved) setSettings(mergeSavedSettings(JSON.parse(saved)))
+      } catch {
+        /* ignore */
+      }
+    }
+    window.addEventListener('gb:remote', reload)
+    return () => window.removeEventListener('gb:remote', reload)
+  }, [])
 
   const updateSettings = (updates) => {
     setSettings((prev) => ({ ...prev, ...updates }))

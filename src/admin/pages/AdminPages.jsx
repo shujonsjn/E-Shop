@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { Plus, Edit2, Trash2, Save, X } from 'lucide-react'
 import { pages as defaultPages } from '../../data/pages'
 import toast from 'react-hot-toast'
+import { saveStore } from '../../services/store'
 
 const STORAGE_KEY = 'gb_admin_pages'
 
@@ -28,10 +29,8 @@ const AdminPages = () => {
       if (p.slug) map[p.slug] = p
     })
     setPages(next)
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(map))
-      window.dispatchEvent(new Event('storage'))
-    } catch {}
+    saveStore('pages', map)
+    window.dispatchEvent(new Event('storage'))
   }
 
   const addSection = () => {

@@ -3,8 +3,7 @@ import { Plus, Edit2, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
 import { getMergedBrands } from '../../utils/mergeBrands'
-
-const STORAGE_KEY = 'gb_admin_brands'
+import { saveStore } from '../../services/store'
 
 const AdminBrands = () => {
   const [brands, setBrands] = useState([])
@@ -28,10 +27,11 @@ const AdminBrands = () => {
       toast.success('Brand added')
     }
     setBrands(updated)
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
+    if (saveStore('brands', updated)) {
       window.dispatchEvent(new Event('storage'))
-    } catch {}
+    } else {
+      toast.error('Could not save — browser storage is full. Try a smaller logo.')
+    }
     setShowModal(false)
     setEditing(null)
     setForm({ name: '', name_bn: '', slug: '', logo: '' })
@@ -47,10 +47,8 @@ const AdminBrands = () => {
     if (confirm('Delete this brand?')) {
       const updated = brands.filter((b) => b.slug !== slug)
       setBrands(updated)
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updated))
-        window.dispatchEvent(new Event('storage'))
-      } catch {}
+      saveStore('brands', updated)
+      window.dispatchEvent(new Event('storage'))
       toast.success('Brand deleted')
     }
   }

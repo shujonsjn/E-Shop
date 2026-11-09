@@ -10,6 +10,7 @@ import { WishlistProvider } from './context/WishlistContext.jsx'
 import { ProductsProvider } from './context/ProductsContext.jsx'
 import { LanguageProvider } from './i18n/LanguageContext.jsx'
 import { SettingsProvider } from './context/SettingsContext.jsx'
+import RemoteSync from './components/RemoteSync.jsx'
 import { Toaster } from 'react-hot-toast'
 
 // One-time hard reset of everything this storefront keeps in the browser.
@@ -36,6 +37,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
               <CartProvider>
                 <WishlistProvider>
                   <ReviewProvider>
+                    <RemoteSync />
                     <App />
                     <Toaster
                       position="top-center"

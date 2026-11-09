@@ -5,6 +5,7 @@ import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
 import { categories as defaultCategories } from '../../data/catalog'
 import { runCategoryMigration } from '../../utils/mergeCategories'
+import { saveStore } from '../../services/store'
 
 const STORAGE_KEY = 'gb_admin_categories'
 const DELETED_KEY = 'gb_admin_categories_deleted'
@@ -99,11 +100,9 @@ const AdminCategories = () => {
     try {
       const deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]')
       const filtered = categories.filter((c) => c && c.slug && !deleted.includes(c.slug))
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(filtered))
+      saveStore('categories', filtered)
     } catch {
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(categories))
-      } catch {}
+      saveStore('categories', categories)
     }
   }, [categories])
   const [showModal, setShowModal] = useState(false)
@@ -144,11 +143,10 @@ const AdminCategories = () => {
       updated = [...categories, { id: Date.now(), name: form.name, name_bn: form.name_bn, slug: form.slug, subcategories: subs, subcategoryList: subList, image: form.image, enabled: true }]
     }
     setCategories(updated)
-    try {
-      localStorage.setItem('gb_admin_categories', JSON.stringify(updated))
+    if (saveStore('categories', updated)) {
       window.dispatchEvent(new Event('storage'))
       toast.success(editing ? 'Category updated' : 'Category added')
-    } catch {
+    } else {
       toast.error('Could not save — browser storage is full. Try a smaller image.')
     }
     setShowModal(false)
@@ -178,7 +176,7 @@ const AdminCategories = () => {
             localStorage.setItem(DELETED_KEY, JSON.stringify([...new Set(newDeleted)]))
           }
         } catch {}
-        localStorage.setItem('gb_admin_categories', JSON.stringify(updated))
+        saveStore('categories', updated)
         window.dispatchEvent(new Event('storage'))
         // Force reload to update all components
         setTimeout(() => window.location.reload(), 500)

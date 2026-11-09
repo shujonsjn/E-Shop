@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import { products as catalogProducts } from '../data/catalog'
+import { saveStore } from '../services/store'
 
 const ProductsContext = createContext()
 const STORAGE_KEY = 'gb_products'
@@ -59,12 +60,24 @@ export const ProductsProvider = ({ children }) => {
   const [products, setProducts] = useState(loadInitialProducts)
 
   useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(products))
-    } catch {
-      /* storage may be full or unavailable */
-    }
+    saveStore('products', products)
   }, [products])
+
+  useEffect(() => {
+    const reload = (event) => {
+      const keys = event?.detail
+      if (Array.isArray(keys) && keys.length > 0 && !keys.includes('products')) return
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY)
+        const parsed = saved ? JSON.parse(saved) : null
+        if (Array.isArray(parsed) && parsed.length > 0) setProducts(parsed)
+      } catch {
+        /* ignore */
+      }
+    }
+    window.addEventListener('gb:remote', reload)
+    return () => window.removeEventListener('gb:remote', reload)
+  }, [])
 
   const addProduct = (product) => {
     const newProduct = {
