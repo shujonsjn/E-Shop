@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react'
 import { Outlet, useNavigate, Link, useLocation } from 'react-router-dom'
-import { LayoutDashboard, Package, ShoppingBag, Users, LogOut, Star, FolderTree, Truck, Megaphone, CreditCard, Calculator, BarChart3, UserCog, FileText, Layout, File, ChevronDown, ChevronRight, Home, Settings, Globe } from 'lucide-react'
+import { LayoutDashboard, Package, ShoppingBag, Users, LogOut, Star, FolderTree, Truck, Megaphone, CreditCard, Calculator, BarChart3, UserCog, FileText, Layout, File, ChevronDown, ChevronRight, Home, Settings, Globe, Cloud, CloudOff } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import { isSupabaseConfigured } from '../../lib/supabase'
 
 const AdminLayout = () => {
   const { user, logout } = useAuth()
@@ -155,6 +156,15 @@ const AdminLayout = () => {
                 <p className="text-sm text-gray-500">Manage your e-commerce store</p>
               </div>
               <div className="flex items-center gap-3">
+                <span
+                  title={isSupabaseConfigured ? 'Admin changes sync to every device through Supabase.' : 'Local only — add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel to sync everywhere.'}
+                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
+                    isSupabaseConfigured ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
+                  }`}
+                >
+                  {isSupabaseConfigured ? <Cloud size={14} /> : <CloudOff size={14} />}
+                  <span>{isSupabaseConfigured ? 'Cloud sync on' : 'Local only'}</span>
+                </span>
                 <a href="/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg">
                   <Globe size={16} />
                   View Site
