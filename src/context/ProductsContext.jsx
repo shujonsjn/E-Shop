@@ -4,48 +4,32 @@ import { saveStore } from '../services/store'
 
 const ProductsContext = createContext()
 const STORAGE_KEY = 'gb_products'
-const VERSION_KEY = 'gb_catalog_version'
-const CATALOG_VERSION = 'gb-v5'
 
-const loadInitialProducts = () => {
+const readSavedProducts = () => {
   try {
     const saved = localStorage.getItem(STORAGE_KEY)
-    const savedVersion = localStorage.getItem(VERSION_KEY)
-    if (savedVersion !== CATALOG_VERSION) {
-      localStorage.setItem(VERSION_KEY, CATALOG_VERSION)
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed)) {
-          const catalogMap = new Map(catalogProducts.map(p => [p.slug, p]))
-          const merged = parsed.map(p => {
-            if (catalogMap.has(p.slug)) {
-              const cp = catalogMap.get(p.slug)
-              return { ...cp, id: p.id, createdAt: p.createdAt }
-            }
-            return p
-          })
-          catalogProducts.forEach(cp => {
-            if (!merged.find(p => p.slug === cp.slug)) {
-              merged.push(cp)
-            }
-          })
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(merged))
-          return merged
-        }
-      }
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(catalogProducts))
-      return catalogProducts
-    }
-    if (saved) {
-      const parsed = JSON.parse(saved)
-      if (Array.isArray(parsed) && parsed.length > 0) return parsed
-    }
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(catalogProducts))
-    return catalogProducts
+    if (saved === null) return null
+    const parsed = JSON.parse(saved)
+    // An empty list is valid data ("the shop has no products yet"), so it must
+    // not be treated as "nothing stored" and replaced with the demo catalog.
+    return Array.isArray(parsed) ? parsed : null
   } catch {
-    /* ignore corrupt storage */
+    return null
   }
-  return catalogProducts
+}
+
+// The shop starts empty. The bundled demo catalog is only used when the admin
+// explicitly clicks "Import from Catalog" — otherwise products the admin never
+// created (or already deleted) would keep coming back after every reload.
+const loadInitialProducts = () => {
+  const saved = readSavedProducts()
+  if (saved) return saved
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify([]))
+  } catch {
+    /* ignore */
+  }
+  return []
 }
 
 export const useProducts = () => {
@@ -70,7 +54,7 @@ export const ProductsProvider = ({ children }) => {
       try {
         const saved = localStorage.getItem(STORAGE_KEY)
         const parsed = saved ? JSON.parse(saved) : null
-        if (Array.isArray(parsed) && parsed.length > 0) setProducts(parsed)
+        if (Array.isArray(parsed)) setProducts(parsed)
       } catch {
         /* ignore */
       }
@@ -100,6 +84,13 @@ export const ProductsProvider = ({ children }) => {
 
   const deleteProduct = (id) => {
     setProducts((prev) => prev.filter((p) => String(p.id) !== String(id)))
+  }
+
+  // Explicit admin action: load the bundled demo catalog (replaces current list).
+  const importCatalog = () => {
+    const restored = catalogProducts.map((p) => ({ ...p }))
+    setProducts(restored)
+    return restored
   }
 
   const getProductById = (id) => products.find((p) => String(p.id) === String(id))
@@ -148,6 +139,7 @@ export const ProductsProvider = ({ children }) => {
         addProduct,
         updateProduct,
         deleteProduct,
+        importCatalog,
         getProductById,
         getProductBySlug,
         getProduct,

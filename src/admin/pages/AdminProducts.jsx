@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { Plus, Edit, Trash2, RotateCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useProducts } from '../../context/ProductsContext'
-import { categories as defaultCategories, products as catalogProducts } from '../../data/catalog'
+import { categories as defaultCategories } from '../../data/catalog'
 import toast from 'react-hot-toast'
 
 const categoryName = (slug) => {
@@ -18,7 +18,7 @@ const categoryName = (slug) => {
 }
 
 const AdminProducts = () => {
-  const { products, deleteProduct } = useProducts()
+  const { products, deleteProduct, importCatalog } = useProducts()
   const navigate = useNavigate()
   const [adminCategories, setAdminCategories] = useState([])
 
@@ -30,14 +30,13 @@ const AdminProducts = () => {
   }, [])
 
   const resetCatalog = () => {
-    if (confirm('Reset all products to default catalog? This will replace current products.')) {
-      try {
-        localStorage.setItem('gb_products', JSON.stringify(catalogProducts))
-        localStorage.setItem('gb_catalog_version', 'gb-v2')
-        window.location.reload()
-      } catch {
-        toast.error('Failed to reset')
-      }
+    if (
+      confirm(
+        'Import the demo catalog? This replaces the current product list. Your own products will be removed.'
+      )
+    ) {
+      importCatalog()
+      toast.success('Demo catalog imported')
     }
   }
 

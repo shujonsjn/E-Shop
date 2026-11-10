@@ -119,7 +119,9 @@ const mergeSavedSettings = (parsed) => {
       merged.paymentMethods[key].number = defaultSettings.paymentMethods[key].number || ''
     }
   })
-  if (Array.isArray(parsed.siteContent?.heroSlides) && parsed.siteContent.heroSlides.length > 0) {
+  // An explicitly saved (possibly empty) list wins, so deleting the last slide
+  // or banner stays deleted instead of the bundled demo content coming back.
+  if (Array.isArray(parsed.siteContent?.heroSlides)) {
     merged.siteContent.heroSlides = parsed.siteContent.heroSlides
   } else {
     merged.siteContent.heroSlides = JSON.parse(JSON.stringify(defaultSettings.siteContent.heroSlides))
