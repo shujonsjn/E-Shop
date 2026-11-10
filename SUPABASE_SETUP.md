@@ -1,5 +1,14 @@
 # Supabase সেটআপ গাইড (বাংলা)
 
+> ✅ **এই প্রজেক্টে সেটআপ ইতিমধ্যে সম্পন্ন।**
+> - Project: `e-shop` — ref `agfvtgzmhzuxuaetfinv` (Singapore)
+> - Dashboard: https://supabase.com/dashboard/project/agfvtgzmhzuxuaetfinv
+> - URL ও anon key Vercel-এর Environment Variables-এ বসানো আছে (Production/Preview/Development)
+> - `store` টেবিল, RLS policy ও realtime চালু; লাইভে দুই ব্রাউজারে সিঙ্ক টেস্ট করা হয়েছে
+> - ডাটাবেস পাসওয়ার্ড লোকাল `.secrets/supabase-db-password.txt`-এ রাখা আছে (Git-এ যায় না)
+>
+> নিচের গাইডটি শুধু রেফারেন্সের জন্য — নতুন প্রজেক্ট বানাতে চাইলে বা সেটআপ বুঝতে কাজে লাগবে।
+
 এই গাইড ফলো করলে অ্যাডমিন প্যানেলের সব পরিবর্তন **সব ডিভাইসে লাইভ** দেখাবে (শুধু আপনার ব্রাউজারে সেভ থাকবে না)।
 
 > আগে কোডে Supabase ইন্টিগ্রেশন রেডি করা আছে। শুধু নিচের ২টি কাজ বাকি:
