@@ -16,6 +16,16 @@ export const LOCAL_KEYS = {
 const lastSynced = new Map()
 let remoteReady = false
 
+// Site content, catalog and pages may only be written by a signed-in admin
+// (enforced by Supabase RLS). Orders/reviews/users stay writable by guests.
+export const ADMIN_KEYS = new Set(['settings', 'products', 'categories', 'brands', 'pages'])
+let adminSignedIn = false
+
+/** Called by AuthContext whenever the Supabase admin session changes. */
+export const setAdminSignedIn = (value) => {
+  adminSignedIn = Boolean(value)
+}
+
 export const readLocal = (name) => {
   try {
     const raw = localStorage.getItem(LOCAL_KEYS[name])
@@ -42,17 +52,46 @@ const remember = (name, value) => {
   }
 }
 
+// Writes are debounced per key and then executed strictly one after another.
+// Without this, typing in a field fires many saves and a slower earlier
+// request can land after a newer one, reverting the value everywhere.
+const pendingValues = new Map()
+const pushTimers = new Map()
+const pushChains = new Map()
+
 const pushRow = (name, value) => {
   if (!supabase) return
-  supabase
-    .from('store')
-    .upsert({ key: name, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
-    .then(({ error }) => {
-      if (error) {
-        lastSynced.delete(name)
-        console.warn(`[supabase] could not save "${name}": ${error.message}`)
+  pendingValues.set(name, value)
+  if (pushTimers.has(name)) clearTimeout(pushTimers.get(name))
+  pushTimers.set(
+    name,
+    setTimeout(() => {
+      pushTimers.delete(name)
+      const latest = pendingValues.get(name)
+      pendingValues.delete(name)
+      if (latest === undefined) return
+
+      const run = async () => {
+        const { error } = await supabase
+          .from('store')
+          .upsert(
+            { key: name, value: latest, updated_at: new Date().toISOString() },
+            { onConflict: 'key' }
+          )
+        if (error) {
+          lastSynced.delete(name)
+          console.warn(`[supabase] could not save "${name}": ${error.message}`)
+        }
       }
-    })
+
+      const previous = pushChains.get(name) || Promise.resolve()
+      const next = previous.then(run, run)
+      pushChains.set(name, next)
+      next.finally(() => {
+        if (pushChains.get(name) === next) pushChains.delete(name)
+      })
+    }, 200)
+  )
 }
 
 /** Writes locally right away and mirrors to Supabase when configured. */
@@ -63,6 +102,9 @@ export const saveStore = (name, value) => {
   // Until the first pull finishes, only cache locally; otherwise bundled
   // defaults would overwrite the shared data before it has been fetched.
   if (!remoteReady) return true
+  // Never try to write admin-only rows without an authenticated admin; RLS
+  // would reject the request and the storefront would log errors on every load.
+  if (ADMIN_KEYS.has(name) && !adminSignedIn) return true
   let json = ''
   try {
     json = JSON.stringify(value)
@@ -80,6 +122,12 @@ export const pullStore = async () => {
   if (!supabase) {
     remoteReady = true
     return []
+  }
+  try {
+    const { data: sessionData } = await supabase.auth.getSession()
+    adminSignedIn = sessionData?.session?.user?.app_metadata?.role === 'admin'
+  } catch {
+    adminSignedIn = false
   }
   const { data, error } = await supabase.from('store').select('key, value')
   if (error || !Array.isArray(data)) {
@@ -107,6 +155,7 @@ export const pullStore = async () => {
   // First run with an empty project: upload the bundled defaults once.
   Object.keys(LOCAL_KEYS).forEach((name) => {
     if (remoteKeys.has(name)) return
+    if (ADMIN_KEYS.has(name) && !adminSignedIn) return
     const local = readLocal(name)
     if (local === null || local === undefined) return
     remember(name, local)

@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useState } from 'react'
 import toast from 'react-hot-toast'
-import { saveStore } from '../services/store'
+import { saveStore, setAdminSignedIn } from '../services/store'
+import { supabase, isSupabaseConfigured } from '../lib/supabase'
 
 const AuthContext = createContext()
 
@@ -82,6 +83,53 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user])
 
+  // Restore (or drop) the secure admin session. Without a Supabase session a
+  // cached "admin" local user is cleared, so the panel cannot be entered with
+  // a stale localStorage flag alone.
+  useEffect(() => {
+    if (!isSupabaseConfigured || !supabase) {
+      setAdminSignedIn(true)
+      return
+    }
+    let alive = true
+
+    const applySession = (session) => {
+      if (!alive) return
+      const su = session?.user
+      if (su) {
+        const role = su.app_metadata?.role === 'admin' ? 'admin' : 'user'
+        setAdminSignedIn(role === 'admin')
+        setUser((prev) => {
+          if (prev && prev.email === su.email && prev.role === role) return prev
+          return {
+            id: su.id,
+            name: su.user_metadata?.name || 'Admin',
+            email: su.email,
+            role,
+            phone: '',
+            address: '',
+          }
+        })
+      } else {
+        setAdminSignedIn(false)
+        setUser((prev) => (prev && (prev.role === 'admin' || prev.role === 'staff') ? null : prev))
+      }
+    }
+
+    supabase.auth
+      .getSession()
+      .then(({ data }) => applySession(data.session))
+      .catch(() => {})
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) =>
+      applySession(session)
+    )
+
+    return () => {
+      alive = false
+      subscription?.subscription?.unsubscribe()
+    }
+  }, [])
+
   useEffect(() => {
     saveStore('users', users)
   }, [users])
@@ -130,12 +178,54 @@ export const AuthProvider = ({ children }) => {
     return true
   }
 
-  const login = (email, password) => {
+  const login = async (email, password) => {
     const normalizedEmail = String(email).trim().toLowerCase()
+
+    // Secure path: admins authenticate against Supabase Auth, and the session
+    // JWT is what allows their RLS-protected writes.
+    if (isSupabaseConfigured && supabase) {
+      try {
+        const { data, error } = await supabase.auth.signInWithPassword({
+          email: normalizedEmail,
+          password,
+        })
+        if (!error && data?.user) {
+          const role = data.user.app_metadata?.role === 'admin' ? 'admin' : 'user'
+          const secureUser = {
+            id: data.user.id,
+            name: data.user.user_metadata?.name || 'Admin',
+            email: data.user.email,
+            role,
+            phone: '',
+            address: '',
+          }
+          setAdminSignedIn(role === 'admin')
+          setUser(secureUser)
+          toast.success(`Welcome back, ${secureUser.name.split(' ')[0]}`)
+          return secureUser
+        }
+      } catch {
+        /* fall through to the local customer accounts */
+      }
+
+      // A local admin/staff record must never be enough to sign in when the
+      // backend is connected — that would only produce silent write failures.
+      const privileged = users.find(
+        (u) =>
+          u.email.toLowerCase() === normalizedEmail &&
+          (u.role === 'admin' || u.role === 'staff')
+      )
+      if (privileged) {
+        toast.error('This admin account uses the secure password. Please use the Supabase login.')
+        return null
+      }
+    }
+
     const foundUser = users.find(
       (u) => u.email.toLowerCase() === normalizedEmail && u.password === password
     )
     if (foundUser) {
+      setAdminSignedIn(false)
       setUser(foundUser)
       toast.success(`Welcome back, ${foundUser.name.split(' ')[0]}`)
       return foundUser
@@ -145,6 +235,10 @@ export const AuthProvider = ({ children }) => {
   }
 
   const logout = () => {
+    if (isSupabaseConfigured && supabase) {
+      supabase.auth.signOut().catch(() => {})
+    }
+    setAdminSignedIn(false)
     setUser(null)
     localStorage.removeItem('shoeshop_user')
     toast.success('Logged out successfully')

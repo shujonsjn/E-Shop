@@ -24,10 +24,13 @@ const Login = () => {
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
+  const [busy, setBusy] = useState(false)
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    const user = login(email, password)
+    setBusy(true)
+    const user = await login(email, password)
+    setBusy(false)
     if (!user) return
     if (user.role === 'admin') {
       navigate('/admin')
@@ -104,8 +107,8 @@ const Login = () => {
                 </div>
               </div>
 
-              <button type="submit" className="btn-primary w-full py-2.5">
-                {t('auth.login')}
+              <button type="submit" disabled={busy} className="btn-primary w-full py-2.5 disabled:opacity-60">
+                {busy ? 'Signing in…' : t('auth.login')}
               </button>
 
               <p className="text-center text-xs text-ink-muted">

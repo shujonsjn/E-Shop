@@ -1,5 +1,6 @@
 -- E-Shop shared store
 -- Run this once in Supabase: Dashboard -> SQL Editor -> New query -> paste -> Run.
+-- Safe to run again: every object is created idempotently.
 
 create table if not exists public.store (
   key text primary key,
@@ -23,27 +24,50 @@ create trigger store_touch_updated_at
 before update on public.store
 for each row execute function public.touch_store_updated_at();
 
+-- True only for Supabase Auth users whose app_metadata.role is "admin".
+-- The admin account is created once in Authentication -> Users (or via the
+-- Auth Admin API) with app_metadata: {"role":"admin"}.
+create or replace function public.is_admin()
+returns boolean
+language sql
+stable
+as $$
+  select coalesce((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin', false);
+$$;
+
 -- Row level security
 alter table public.store enable row level security;
 
--- The storefront is public, so anyone may read.
+-- Storefront is public, so anyone may read.
 drop policy if exists "store_read" on public.store;
 create policy "store_read" on public.store
   for select using (true);
 
--- Writes are open for this admin panel (it has no real auth yet).
--- If you later add Supabase Auth, replace these with authenticated checks.
+-- Remove the old wide-open write policies, if they are still around.
 drop policy if exists "store_insert" on public.store;
-create policy "store_insert" on public.store
-  for insert with check (true);
-
 drop policy if exists "store_update" on public.store;
-create policy "store_update" on public.store
-  for update using (true) with check (true);
-
 drop policy if exists "store_delete" on public.store;
-create policy "store_delete" on public.store
-  for delete using (true);
+
+-- Only a signed-in admin may create/update/delete site content, catalog,
+-- categories, brands and pages.
+drop policy if exists "store_admin_write" on public.store;
+create policy "store_admin_write" on public.store
+  for all
+  using (public.is_admin())
+  with check (public.is_admin());
+
+-- Guests must still be able to place orders, register and post reviews.
+-- Those actions live in the "orders", "users" and "reviews" rows only.
+drop policy if exists "store_public_insert" on public.store;
+create policy "store_public_insert" on public.store
+  for insert
+  with check (key in ('orders', 'users', 'reviews'));
+
+drop policy if exists "store_public_update" on public.store;
+create policy "store_public_update" on public.store
+  for update
+  using (key in ('orders', 'users', 'reviews'))
+  with check (key in ('orders', 'users', 'reviews'));
 
 -- Realtime so every open browser/tab refreshes as soon as admin saves.
 do $$

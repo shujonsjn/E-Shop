@@ -8,6 +8,8 @@ const AdminLayout = () => {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  // Hooks must run on every render, even when the user is signed out.
+  const [openMenus, setOpenMenus] = useState({})
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
@@ -23,8 +25,6 @@ const AdminLayout = () => {
     logout()
     navigate('/')
   }
-
-  const [openMenus, setOpenMenus] = useState({})
 
   const toggleMenu = (key) => {
     setOpenMenus((prev) => ({ ...prev, [key]: !prev[key] }))

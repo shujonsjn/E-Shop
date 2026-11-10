@@ -5,6 +5,8 @@
 > - Dashboard: https://supabase.com/dashboard/project/agfvtgzmhzuxuaetfinv
 > - URL ও anon key Vercel-এর Environment Variables-এ বসানো আছে (Production/Preview/Development)
 > - `store` টেবিল, RLS policy ও realtime চালু; লাইভে দুই ব্রাউজারে সিঙ্ক টেস্ট করা হয়েছে
+> - অ্যাডমিন লগইন এখন **Supabase Auth** দিয়ে: `admin@shoeshop.com` — পাসওয়ার্ড `.secrets/admin-password.txt`-এ
+> - RLS: সাইট কনটেন্ট/প্রোডাক্ট/ক্যাটাগরি শুধু লগইন করা অ্যাডমিন লিখতে পারে; গেস্ট অর্ডার, রিভিউ ও রেজিস্ট্রেশন আগের মতোই কাজ করে
 > - ডাটাবেস পাসওয়ার্ড লোকাল `.secrets/supabase-db-password.txt`-এ রাখা আছে (Git-এ যায় না)
 >
 > নিচের গাইডটি শুধু রেফারেন্সের জন্য — নতুন প্রজেক্ট বানাতে চাইলে বা সেটআপ বুঝতে কাজে লাগবে।
@@ -112,12 +114,25 @@ Environment variable যোগ করার পর পুরনো deploy-এ �
 
 ---
 
-## পরবর্তীতে (ঐচ্ছিক, নিরাপত্তার জন্য)
+## নিরাপত্তা — এখন যা চালু আছে
 
-এখন অ্যাডমিন প্যানেলে আসল লগইন নেই এবং `anon` key দিয়ে সবাই লিখতে পারে। ভবিষ্যতে চাইলে:
+### অ্যাডমিন লগইন (Supabase Auth)
+- অ্যাডমিন ইমেইল: `admin@shoeshop.com`
+- পাসওয়ার্ড: `.secrets/admin-password.txt` (GitHub-এ নেই)
+- পাসওয়ার্ড বদলাতে: Supabase Dashboard → **Authentication → Users** → ইউজার → **Update password**
+- এই ইউজারের `app_metadata`-এ `{"role":"admin"}` আছে — এটাই তাকে কনটেন্ট লেখার অনুমতি দেয়
 
-- Supabase **Authentication** চালু করে অ্যাডমিন লগইন করা যাবে
-- RLS policy-তে `auth.role() = 'authenticated'` যোগ করে write বন্ধ করা যাবে
-- বড় প্রোডাক্ট ইমেজ Supabase **Storage**-এ রাখা যাবে (এখন base64 হিসেবে ডাটাবেসে থাকে)
+### ডাটাবেসে কী কে লিখতে পারে (RLS)
+| Row | পড়া | লেখা |
+|---|---|---|
+| `settings`, `products`, `categories`, `brands`, `pages` | সবাই | শুধু লগইন করা অ্যাডমিন |
+| `orders`, `users`, `reviews` | সবাই | গেস্টও (চেকআউট, রেজিস্ট্রেশন, রিভিউর জন্য) |
 
-কোনো ধাপে আটকে গেলে স্ক্রিনশট বা error মেসেজ পাঠান, ঠিক করে দেব।
+- `anon` key দিয়ে কেউ সাইট কনটেন্ট বদলাতে পারবে না — Supabase সরাসরি ০ row আপডেট করে (টেস্ট করা হয়েছে)।
+- অ্যাডমিন লগইন ছাড়া শুধু localStorage-এ `role: admin` বসিয়ে অ্যাডমিন প্যানেলে ঢোকা যায় না — সেশন না থাকলে অ্যাপ নিজেই লগআউট করে দেয়।
+
+### এখনও যা লোকাল
+- কাস্টমার অ্যাকাউন্ট (রেজিস্ট্রেশন/লগইন) এখনো লোকালস্টোরেজভিত্তিক; চাইলে পরে Supabase Auth-এ মাইগ্রেট করা যাবে।
+- `AdminStaff` থেকে বানানো স্টাফ অ্যাকাউন্ট Supabase Auth-এ থাকে না, তাই তারা ক্লাউডে লিখতে পারবে না। স্টাফ লাগলে Supabase Auth-এ একই ইমেইলে ইউজার বানিয়ে `app_metadata.role = admin` দিতে হবে।
+
+> নতুন করে ডাটাবেস বানালে `schema.sql` চালানোর পর অবশ্যই উপরের `role: admin` সহ অ্যাডমিন Auth ইউজারটি তৈরি করবেন, নাহলে কনটেন্ট সেভ হবে না।
