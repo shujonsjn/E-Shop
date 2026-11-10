@@ -44,12 +44,33 @@ export const writeLocal = (name, value) => {
   }
 }
 
-const remember = (name, value) => {
-  try {
-    lastSynced.set(name, JSON.stringify(value))
-  } catch {
-    /* ignore */
+// Postgres `jsonb` reorders object keys, so a plain JSON.stringify of the
+// remote row will never equal the local object even when the data is the same.
+// That mismatch used to cause an endless write -> realtime -> write echo loop.
+// Comparable values are therefore serialised with sorted keys.
+const stableStringify = (value) => {
+  const seen = new WeakSet()
+  const walk = (v) => {
+    if (v === null || typeof v !== 'object') return v
+    if (seen.has(v)) return null
+    seen.add(v)
+    if (Array.isArray(v)) return v.map(walk)
+    return Object.keys(v)
+      .sort()
+      .reduce((acc, key) => {
+        acc[key] = walk(v[key])
+        return acc
+      }, {})
   }
+  try {
+    return JSON.stringify(walk(value))
+  } catch {
+    return ''
+  }
+}
+
+const remember = (name, value) => {
+  lastSynced.set(name, stableStringify(value))
 }
 
 // Writes are debounced per key and then executed strictly one after another.
@@ -107,7 +128,7 @@ export const saveStore = (name, value) => {
   if (ADMIN_KEYS.has(name) && !adminSignedIn) return true
   let json = ''
   try {
-    json = JSON.stringify(value)
+    json = stableStringify(value)
   } catch {
     return true
   }
@@ -142,7 +163,7 @@ export const pullStore = async () => {
   data.forEach((row) => {
     if (!(row.key in LOCAL_KEYS)) return
     const current = readLocal(row.key)
-    if (JSON.stringify(current) === JSON.stringify(row.value)) {
+    if (stableStringify(current) === stableStringify(row.value)) {
       remember(row.key, row.value)
       return
     }
