@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { saveStore, setAdminSignedIn } from '../services/store'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
@@ -130,11 +130,22 @@ export const AuthProvider = ({ children }) => {
     }
   }, [])
 
+  const firstUsersSave = useRef(true)
+  const firstOrdersSave = useRef(true)
+
   useEffect(() => {
+    if (firstUsersSave.current) {
+      firstUsersSave.current = false
+      return
+    }
     saveStore('users', users)
   }, [users])
 
   useEffect(() => {
+    if (firstOrdersSave.current) {
+      firstOrdersSave.current = false
+      return
+    }
     saveStore('orders', orders)
   }, [orders])
 

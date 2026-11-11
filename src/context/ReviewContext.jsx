@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { saveStore } from '../services/store'
 
@@ -48,8 +48,13 @@ export const useReview = () => {
 
 export const ReviewProvider = ({ children }) => {
   const [reviews, setReviews] = useState(loadReviews)
+  const firstRun = useRef(true)
 
   useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false
+      return
+    }
     saveStore('reviews', reviews)
   }, [reviews])
 

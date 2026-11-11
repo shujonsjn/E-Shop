@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { products as catalogProducts } from '../data/catalog'
 import { saveStore } from '../services/store'
 
@@ -42,8 +42,13 @@ export const useProducts = () => {
 
 export const ProductsProvider = ({ children }) => {
   const [products, setProducts] = useState(loadInitialProducts)
+  const firstRun = useRef(true)
 
   useEffect(() => {
+    if (firstRun.current) {
+      firstRun.current = false
+      return
+    }
     saveStore('products', products)
   }, [products])
 

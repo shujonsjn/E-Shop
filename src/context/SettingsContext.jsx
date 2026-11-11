@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from 'react'
+import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { saveStore } from '../services/store'
 
 const SettingsContext = createContext()
@@ -157,9 +157,17 @@ export const SettingsProvider = ({ children }) => {
     return JSON.parse(JSON.stringify(defaultSettings))
   })
 
+  const firstRun = useRef(true)
+
   useEffect(() => {
     if (settings.siteName) {
       document.title = `${settings.siteName} — Online Shopping in Bangladesh`
+    }
+    // The first run only reflects data that was just loaded from the cloud;
+    // saving it again would race the pre-render pull.
+    if (firstRun.current) {
+      firstRun.current = false
+      return
     }
     saveStore('settings', settings)
   }, [settings])

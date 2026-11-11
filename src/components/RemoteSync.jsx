@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { pullStore, subscribeStore } from '../services/store'
+import { subscribeStore } from '../services/store'
 
-// Loads shared data from Supabase (if configured) and keeps every open tab in
-// sync. Falls back silently to localStorage when no project is connected.
+// Keeps every open tab in sync once the app has loaded. The first pull happens
+// in main.jsx before React renders, so no cached list can race a user action.
 const RemoteSync = () => {
   useEffect(() => {
     let alive = true
@@ -16,10 +16,6 @@ const RemoteSync = () => {
         window.dispatchEvent(new Event('storage'))
       }
     }
-
-    pullStore()
-      .then(notify)
-      .catch(() => {})
 
     const unsubscribe = subscribeStore((key) => notify([key]))
     return () => {

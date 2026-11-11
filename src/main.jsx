@@ -11,6 +11,7 @@ import { ProductsProvider } from './context/ProductsContext.jsx'
 import { LanguageProvider } from './i18n/LanguageContext.jsx'
 import { SettingsProvider } from './context/SettingsContext.jsx'
 import RemoteSync from './components/RemoteSync.jsx'
+import { pullStore } from './services/store'
 import { Toaster } from 'react-hot-toast'
 
 // One-time hard reset of everything this storefront keeps in the browser.
@@ -27,36 +28,52 @@ if (localStorage.getItem('gb_boot_version') !== BOOT_VERSION) {
   localStorage.setItem('gb_boot_version', BOOT_VERSION)
 }
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
-    <BrowserRouter>
-      <LanguageProvider>
-        <AuthProvider>
-          <ProductsProvider>
-            <SettingsProvider>
-              <CartProvider>
-                <WishlistProvider>
-                  <ReviewProvider>
-                    <RemoteSync />
-                    <App />
-                    <Toaster
-                      position="top-center"
-                      toastOptions={{
-                        style: {
-                          fontSize: '13px',
-                          borderRadius: '8px',
-                          background: '#222831',
-                          color: '#fff',
-                        },
-                      }}
-                    />
-                  </ReviewProvider>
-                </WishlistProvider>
-              </CartProvider>
-            </SettingsProvider>
-          </ProductsProvider>
-        </AuthProvider>
-      </LanguageProvider>
-    </BrowserRouter>
-  </React.StrictMode>,
-)
+const renderApp = () =>
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    <React.StrictMode>
+      <BrowserRouter>
+        <LanguageProvider>
+          <AuthProvider>
+            <ProductsProvider>
+              <SettingsProvider>
+                <CartProvider>
+                  <WishlistProvider>
+                    <ReviewProvider>
+                      <RemoteSync />
+                      <App />
+                      <Toaster
+                        position="top-center"
+                        toastOptions={{
+                          style: {
+                            fontSize: '13px',
+                            borderRadius: '8px',
+                            background: '#222831',
+                            color: '#fff',
+                          },
+                        }}
+                      />
+                    </ReviewProvider>
+                  </WishlistProvider>
+                </CartProvider>
+              </SettingsProvider>
+            </ProductsProvider>
+          </AuthProvider>
+        </LanguageProvider>
+      </BrowserRouter>
+    </React.StrictMode>,
+  )
+
+// Load the shared data before the first render. If React started first, a
+// delete/edit made in the first second could race the cloud pull and push the
+// old cached list back. A slow network just falls back to the local cache; the
+// pull still notifies the app if it finishes later.
+const bootPull = pullStore().catch(() => [])
+bootPull.then((keys) => {
+  if (!Array.isArray(keys) || keys.length === 0) return
+  window.dispatchEvent(new CustomEvent('gb:remote', { detail: keys }))
+  if (keys.some((key) => key === 'categories' || key === 'brands' || key === 'pages')) {
+    window.dispatchEvent(new Event('storage'))
+  }
+})
+const timeout = new Promise((resolve) => setTimeout(resolve, 6000))
+Promise.race([bootPull, timeout]).finally(renderApp)

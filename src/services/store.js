@@ -16,6 +16,12 @@ export const LOCAL_KEYS = {
 const lastSynced = new Map()
 let remoteReady = false
 
+// Counts local edits per key. If the admin edits/deletes something while the
+// very first cloud pull is still in flight, that edit must not be overwritten
+// by the (older) remote value the pull is about to return.
+const editCounters = new Map()
+const bumpEdit = (name) => editCounters.set(name, (editCounters.get(name) || 0) + 1)
+
 // Site content, catalog and pages may only be written by a signed-in admin
 // (enforced by Supabase RLS). Orders/reviews/users stay writable by guests.
 export const ADMIN_KEYS = new Set(['settings', 'products', 'categories', 'brands', 'pages'])
@@ -119,6 +125,7 @@ const pushRow = (name, value) => {
 export const saveStore = (name, value) => {
   const ok = writeLocal(name, value)
   if (!ok) return false
+  bumpEdit(name)
   if (!isSupabaseConfigured) return true
   // Until the first pull finishes, only cache locally; otherwise bundled
   // defaults would overwrite the shared data before it has been fetched.
@@ -150,6 +157,9 @@ export const pullStore = async () => {
   } catch {
     adminSignedIn = false
   }
+  // Snapshot the edit counters before waiting for the network, so an edit made
+  // during the request can be detected and kept instead of being overwritten.
+  const countersBeforePull = new Map(editCounters)
   const { data, error } = await supabase.from('store').select('key, value')
   if (error || !Array.isArray(data)) {
     if (error) console.warn(`[supabase] could not load store: ${error.message}`)
@@ -157,11 +167,18 @@ export const pullStore = async () => {
     return []
   }
 
+  const editedDuringPull = (key) => (editCounters.get(key) || 0) !== (countersBeforePull.get(key) || 0)
+  const dirtyKeys = []
   const remoteKeys = new Set(data.map((row) => row.key))
   const changed = []
 
   data.forEach((row) => {
     if (!(row.key in LOCAL_KEYS)) return
+    // The user changed this row after the pull started: their version wins.
+    if (editedDuringPull(row.key)) {
+      dirtyKeys.push(row.key)
+      return
+    }
     const current = readLocal(row.key)
     if (stableStringify(current) === stableStringify(row.value)) {
       remember(row.key, row.value)
@@ -184,6 +201,14 @@ export const pullStore = async () => {
   })
 
   remoteReady = true
+
+  // Rows the user edited while the pull was in flight are now safe to upload.
+  dirtyKeys.forEach((name) => {
+    const local = readLocal(name)
+    if (local === null || local === undefined) return
+    saveStore(name, local)
+  })
+
   return changed
 }
 
