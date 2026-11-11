@@ -408,8 +408,8 @@ const Navbar = () => {
             }}
           >
             <div className="container-gb">
-              <div className="flex border border-t-0 border-gray-200 bg-white shadow-lg">
-                <div className="w-[250px] border-r border-gray-200">
+              <div className="inline-flex border border-t-0 border-gray-200 bg-white shadow-lg">
+                <div className="w-[250px] shrink-0 border-r border-gray-200">
                   {categories.map((category) => (
                     <button
                       key={category.slug}
@@ -433,16 +433,16 @@ const Navbar = () => {
                     </button>
                   ))}
                 </div>
-                <div className="flex-1 px-6 py-4">
+                <div className="shrink-0 px-6 py-4">
                   {(() => {
                     const activeCat = categories.find((c) => c.slug === activeMegaCat) || categories[0]
                     if (!activeCat) return null
                     return (
-                      <div>
+                      <div className="w-max">
                         <Link
                           to={`/collections/${activeCat.slug}`}
                           onClick={() => setMegaOpen(false)}
-                          className="mb-3 inline-block text-sm font-bold text-ink hover:text-brand"
+                          className="mb-3 inline-block whitespace-nowrap text-sm font-bold text-ink hover:text-brand"
                         >
                           {tx(activeCat.name, activeCat.name_bn)}
                         </Link>
@@ -453,14 +453,14 @@ const Navbar = () => {
                                 key={child.slug}
                                 to={`/collections/${activeCat.slug}/${child.slug}`}
                                 onClick={() => setMegaOpen(false)}
-                                className="py-1 text-[13px] text-ink hover:text-brand"
+                                className="whitespace-nowrap py-1 text-[13px] text-ink hover:text-brand"
                               >
                                 {tx(child.name, child.name_bn)}
                               </Link>
                             ))}
                           </div>
                         ) : (
-                          <p className="text-sm text-ink-muted">{tx('No subcategories', 'সাবক্যাটেগরি নেই')}</p>
+                          <p className="whitespace-nowrap text-sm text-ink-muted">{tx('No subcategories', 'সাবক্যাটেগরি নেই')}</p>
                         )}
                       </div>
                     )
