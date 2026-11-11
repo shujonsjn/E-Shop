@@ -59,6 +59,13 @@ const defaultSettings = {
     footerCopyright: '© 2026 GhorerBazar. All rights reserved.',
     homeSectionTitle: 'Our Products',
     newsletterText: 'Subscribe to get updates on offers and new products',
+    ctaTitle: 'Stock up your kitchen today',
+    ctaTitleBn: 'আজই রান্নাঘরের মজুত বাড়ান',
+    ctaSubtitle: 'Free delivery on orders over ৳2,000 · Cash on delivery available',
+    ctaSubtitleBn: '৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে',
+    ctaButton: 'Shop Now',
+    ctaButtonBn: 'এখনই কিনুন',
+    ctaHref: '/shop',
   },
   
   // Delivery

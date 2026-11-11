@@ -348,17 +348,25 @@ const Home = () => {
             <div className="flex flex-col items-center justify-between gap-4 rounded-lg bg-ink px-5 py-6 text-center sm:flex-row sm:text-left">
               <div>
                 <h3 className="text-lg font-bold text-white sm:text-xl">
-                  {tx('Stock up your kitchen today', 'আজই রান্নাঘরের মজুত বাড়ান')}
+                  {tx(
+                    settings.siteContent?.ctaTitle ?? 'Stock up your kitchen today',
+                    settings.siteContent?.ctaTitleBn ?? 'আজই রান্নাঘরের মজুত বাড়ান'
+                  )}
                 </h3>
                 <p className="mt-1 text-xs text-white/60 sm:text-sm">
                   {tx(
-                    'Free delivery on orders over ৳2,000 · Cash on delivery available',
-                    '৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে'
+                    settings.siteContent?.ctaSubtitle ??
+                      'Free delivery on orders over ৳2,000 · Cash on delivery available',
+                    settings.siteContent?.ctaSubtitleBn ??
+                      '৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে'
                   )}
                 </p>
               </div>
-              <Link to="/shop" className="btn-primary shrink-0">
-                {t('home.heroCta')}
+              <Link to={settings.siteContent?.ctaHref || '/shop'} className="btn-primary shrink-0">
+                {tx(
+                  settings.siteContent?.ctaButton ?? t('home.heroCta'),
+                  settings.siteContent?.ctaButtonBn ?? 'এখনই কিনুন'
+                )}
                 <ArrowRight size={16} />
               </Link>
             </div>

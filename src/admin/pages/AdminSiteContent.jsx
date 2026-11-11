@@ -143,6 +143,40 @@ const AdminSiteContent = () => {
               <input type="text" value={settings.youtube} onChange={(e) => updateSettings({ youtube: e.target.value })} className="w-full px-3 py-2 border rounded" />
             </div>
           </div>
+          <h3 className="text-lg font-bold mb-3 mt-6">Home CTA Banner</h3>
+          <p className="text-sm text-gray-500 mb-3">
+            হোম পেজের নিচের কালো ব্যানার ("Stock up your kitchen today")। খালি রাখলে ডিফল্ট লেখা দেখাবে।
+          </p>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">CTA Title (English)</label>
+              <input type="text" value={settings.siteContent?.ctaTitle ?? ''} onChange={(e) => updateSiteContent({ ctaTitle: e.target.value })} placeholder="Stock up your kitchen today" className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">CTA Title (বাংলা)</label>
+              <input type="text" value={settings.siteContent?.ctaTitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaTitleBn: e.target.value })} placeholder="আজই রান্নাঘরের মজুত বাড়ান" className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">CTA Subtitle (English)</label>
+              <input type="text" value={settings.siteContent?.ctaSubtitle ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitle: e.target.value })} placeholder="Free delivery on orders over ৳2,000 · Cash on delivery available" className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">CTA Subtitle (বাংলা)</label>
+              <input type="text" value={settings.siteContent?.ctaSubtitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitleBn: e.target.value })} placeholder="৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি" className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Button Text (English)</label>
+              <input type="text" value={settings.siteContent?.ctaButton ?? ''} onChange={(e) => updateSiteContent({ ctaButton: e.target.value })} placeholder="Shop Now" className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Button Text (বাংলা)</label>
+              <input type="text" value={settings.siteContent?.ctaButtonBn ?? ''} onChange={(e) => updateSiteContent({ ctaButtonBn: e.target.value })} placeholder="এখনই কিনুন" className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Button Link</label>
+              <input type="text" value={settings.siteContent?.ctaHref ?? ''} onChange={(e) => updateSiteContent({ ctaHref: e.target.value })} placeholder="/shop" className="w-full px-3 py-2 border rounded" />
+            </div>
+          </div>
           <button onClick={saveGeneral} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"><Save size={18} /> Save</button>
         </div>
       )}
