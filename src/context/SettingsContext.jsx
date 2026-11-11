@@ -27,6 +27,8 @@ const defaultHomeLayout = [
 const defaultSettings = {
   // Site info
   siteName: 'GhorerBazar',
+  siteTagline: 'Pure food, honest price',
+  siteTagline_bn: 'খাঁটি খাবার, সৎ দাম',
   siteLogo: '',
   siteEmail: 'info@ghorerbazar.com',
   sitePhone: '+8809642922922',

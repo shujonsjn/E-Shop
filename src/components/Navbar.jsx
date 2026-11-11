@@ -186,7 +186,10 @@ const Navbar = () => {
               )}
             </span>
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-muted sm:block">
-              {tx('Pure food, honest price', 'খাঁটি খাবার, সৎ দাম')}
+              {tx(
+                settings.siteTagline ?? 'Pure food, honest price',
+                settings.siteTagline_bn ?? 'খাঁটি খাবার, সৎ দাম'
+              )}
             </span>
           </Link>
 

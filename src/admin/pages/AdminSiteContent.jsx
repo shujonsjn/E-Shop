@@ -74,6 +74,27 @@ const AdminSiteContent = () => {
               <label className="block text-sm font-medium mb-1">Site Name</label>
               <input type="text" value={settings.siteName} onChange={(e) => updateSettings({ siteName: e.target.value })} className="w-full px-3 py-2 border rounded" />
             </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Tagline (English)</label>
+              <input
+                type="text"
+                value={settings.siteTagline ?? ''}
+                onChange={(e) => updateSettings({ siteTagline: e.target.value })}
+                placeholder="Pure food, honest price"
+                className="w-full px-3 py-2 border rounded"
+              />
+              <p className="mt-1 text-xs text-gray-500">Logo-র নিচে দেখানো হয় (ডেস্কটপে)। খালি রাখলে দেখাবে না।</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Tagline (বাংলা)</label>
+              <input
+                type="text"
+                value={settings.siteTagline_bn ?? ''}
+                onChange={(e) => updateSettings({ siteTagline_bn: e.target.value })}
+                placeholder="খাঁটি খাবার, সৎ দাম"
+                className="w-full px-3 py-2 border rounded"
+              />
+            </div>
             <ImageUpload
               label="Site Logo"
               value={settings.siteLogo || ''}
