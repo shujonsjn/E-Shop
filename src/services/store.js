@@ -169,7 +169,6 @@ export const pullStore = async () => {
 
   const editedDuringPull = (key) => (editCounters.get(key) || 0) !== (countersBeforePull.get(key) || 0)
   const dirtyKeys = []
-  const remoteKeys = new Set(data.map((row) => row.key))
   const changed = []
 
   data.forEach((row) => {
@@ -190,16 +189,11 @@ export const pullStore = async () => {
     }
   })
 
-  // First run with an empty project: upload the bundled defaults once.
-  Object.keys(LOCAL_KEYS).forEach((name) => {
-    if (remoteKeys.has(name)) return
-    if (ADMIN_KEYS.has(name) && !adminSignedIn) return
-    const local = readLocal(name)
-    if (local === null || local === undefined) return
-    remember(name, local)
-    pushRow(name, local)
-  })
-
+  // Deliberately no "upload the bundled defaults" step here. It used to copy
+  // whatever the old demo catalog left in localStorage into the cloud on a
+  // fresh project, which made deleted demo products/categories/brands come
+  // back on every device. Data is only uploaded when an admin explicitly
+  // saves it (saveStore), or via the explicit "Import from Catalog" action.
   remoteReady = true
 
   // Rows the user edited while the pull was in flight are now safe to upload.
