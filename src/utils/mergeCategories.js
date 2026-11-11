@@ -42,7 +42,6 @@ export const getMergedCategories = () => {
     }
     if (!Array.isArray(deleted)) deleted = []
 
-    const map = new Map()
     const safeImage = (value, fallback) => {
       if (!value) return fallback
       if (typeof value !== 'string') return fallback
@@ -50,92 +49,59 @@ export const getMergedCategories = () => {
       return value
     }
 
-    // Add default categories (skip deleted)
-    defaultCategories.forEach((c) => {
-      if (!c || !c.slug) return
-      if (c.slug !== 'showpiece' && deleted.includes(c.slug)) return
-      map.set(c.slug, {
-        ...c,
-        children: Array.isArray(c.children) ? [...c.children] : [],
-      })
-    })
-
-    if (!saved) {
-      return Array.from(map.values())
-    }
-
-    const adminCats = JSON.parse(saved)
-    if (!Array.isArray(adminCats)) return Array.from(map.values())
-
-    // Merge admin categories
-    if (Array.isArray(adminCats)) {
-      adminCats.forEach((ac) => {
-        if (!ac.slug) return
-        if (ac.slug !== 'showpiece' && deleted.includes(ac.slug)) return
-
-        if (map.has(ac.slug)) {
-          const existing = map.get(ac.slug)
-          const existingChildrenMap = new Map(
-            (existing.children || []).map((ch) => [ch.slug, { ...ch }])
-          )
-
-          if (Array.isArray(ac.subcategoryList) && ac.subcategoryList.length > 0) {
-            ac.subcategoryList.forEach((sub) => {
-              if (!sub) return
-              const slug = typeof sub === 'string' ? sub : sub.slug || sub.name
-              if (!slug) return
-              existingChildrenMap.set(slug, {
-                slug,
-                name: typeof sub === 'string' ? sub : sub.name || slug,
-                name_bn: typeof sub === 'string' ? sub : sub.name_bn || sub.name || slug,
-              })
-            })
-          } else if (Array.isArray(ac.subcategories)) {
-            ac.subcategories.forEach((sub) => {
-              if (!sub) return
-              if (!existingChildrenMap.has(sub)) {
-                existingChildrenMap.set(sub, {
-                  slug: sub,
-                  name: sub,
-                  name_bn: sub,
-                })
-              }
-            })
+    const buildChildren = (c) => {
+      if (Array.isArray(c.children) && c.children.length > 0) {
+        return c.children.map((ch) => ({ ...ch }))
+      }
+      const list = Array.isArray(c.subcategoryList)
+        ? c.subcategoryList
+        : Array.isArray(c.subcategories)
+          ? c.subcategories
+          : []
+      return list
+        .filter(Boolean)
+        .map((sub) => {
+          if (typeof sub === 'string') {
+            return {
+              slug: sub.toLowerCase().replace(/\s+/g, '-'),
+              name: sub,
+              name_bn: sub,
+            }
           }
-
-          map.set(ac.slug, {
-            ...existing,
-            name: ac.name || existing.name,
-            name_bn: ac.name_bn || existing.name_bn || ac.name,
-            image: safeImage(ac.image, existing.image),
-            children: Array.from(existingChildrenMap.values()),
-          })
-        } else {
-          const children = Array.isArray(ac.subcategoryList) && ac.subcategoryList.length > 0
-            ? ac.subcategoryList.map((sub) => {
-                if (typeof sub === 'string') return { slug: sub.toLowerCase().replace(/\s+/g, '-'), name: sub, name_bn: sub }
-                return { slug: sub.slug || sub.name, name: sub.name, name_bn: sub.name_bn || sub.name }
-              })
-            : (ac.subcategories || [])
-                .filter(Boolean)
-                .map((sub) => ({
-                  slug: sub.toLowerCase ? sub.toLowerCase().replace(/\s+/g, '-') : sub,
-                  name: sub,
-                  name_bn: sub,
-                }))
-          map.set(ac.slug, {
-            id: ac.id || Date.now(),
-            slug: ac.slug,
-            name: ac.name,
-            name_bn: ac.name_bn || ac.name,
-            image: safeImage(ac.image, ''),
-            children: children.filter((c) => c.slug),
-          })
-        }
-      })
+          return {
+            ...sub,
+            slug: sub.slug || String(sub.name || '').toLowerCase().replace(/\s+/g, '-'),
+            name: sub.name || sub.slug || '',
+            name_bn: sub.name_bn || sub.name || sub.slug || '',
+          }
+        })
+        .filter((sub) => sub.slug)
     }
 
-    return Array.from(map.values())
+    // Once the admin has saved categories, that list is the source of truth
+    // (synced through Supabase). The bundled demo categories are only used
+    // before anything is saved, so deleted categories never come back — not
+    // even on another device/phone.
+    if (saved) {
+      const adminCats = JSON.parse(saved)
+      if (Array.isArray(adminCats) && adminCats.length > 0) {
+        return adminCats
+          .filter((c) => c && c.slug && (c.slug === 'showpiece' || !deleted.includes(c.slug)))
+          .map((c) => ({
+            ...c,
+            image: safeImage(c.image, c.image),
+            children: buildChildren(c),
+          }))
+      }
+    }
+    // Nothing saved yet: fall back to the bundled demo categories.
+    return defaultCategories
+      .filter((c) => c && c.slug && (c.slug === 'showpiece' || !deleted.includes(c.slug)))
+      .map((c) => ({
+        ...c,
+        image: safeImage(c.image, c.image),
+        children: Array.isArray(c.children) ? c.children.map((ch) => ({ ...ch })) : [],
+      }))
   } catch {
     return defaultCategories
   }

@@ -23,7 +23,7 @@ import { useWishlist } from '../context/WishlistContext'
 import { useAuth } from '../context/AuthContext'
 import { useReview } from '../context/ReviewContext'
 import { useLanguage } from '../i18n/LanguageContext'
-import { getCategory, getSubcategory } from '../data/catalog'
+import { getMergedCategories } from '../utils/mergeCategories'
 import { useSettings } from '../context/SettingsContext'
 
 const ProductDetail = () => {
@@ -63,8 +63,10 @@ const ProductDetail = () => {
     )
   }
 
-  const category = getCategory(product.category)
-  const subcategory = getSubcategory(product.category, product.subcategory)
+  const mergedCategories = getMergedCategories()
+  const category = mergedCategories.find((c) => c.slug === product.category)
+  const subcategory =
+    category?.children?.find((ch) => ch.slug === product.subcategory) || null
   const wished = isWishlisted(product.id)
   const gallery = product.gallery?.length ? product.gallery : [product.image]
   const inStock = Number(product.stock ?? 1) > 0

@@ -3,7 +3,9 @@ import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { ChevronDown, Filter, Search, SlidersHorizontal, X } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import { Breadcrumbs, EmptyState, PageBanner } from '../components/ui'
-import { brands, bannerImage, categories, getCategory, getSubcategory } from '../data/catalog'
+import { bannerImage } from '../data/catalog'
+import { getMergedBrands } from '../utils/mergeBrands'
+import { getMergedCategories } from '../utils/mergeCategories'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 
@@ -36,6 +38,7 @@ const FiltersPanel = ({
   toggleFlag,
   selectedBrands,
   toggleBrand,
+  brands,
   priceMin,
   priceMax,
   setPriceMin,
@@ -160,8 +163,11 @@ const Products = () => {
   const [page, setPage] = useState(1)
   const [filtersOpen, setFiltersOpen] = useState(false)
 
-  const category = categorySlug ? getCategory(categorySlug) : null
-  const subcategory = categorySlug && subSlug ? getSubcategory(categorySlug, subSlug) : null
+  const category = categorySlug ? getMergedCategories().find((c) => c.slug === categorySlug) : null
+  const subcategory =
+    categorySlug && subSlug
+      ? (category?.children || []).find((ch) => ch.slug === subSlug) || null
+      : null
 
   useEffect(() => {
     setSearchInput(q)
@@ -277,6 +283,7 @@ const Products = () => {
     toggleFlag,
     selectedBrands,
     toggleBrand,
+    brands: getMergedBrands(),
     priceMin,
     priceMax,
     setPriceMin,

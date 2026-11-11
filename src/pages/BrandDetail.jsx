@@ -2,7 +2,7 @@ import { Link, useParams } from 'react-router-dom'
 import { ArrowRight, PackageSearch } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import { Breadcrumbs, EmptyState } from '../components/ui'
-import { getBrand } from '../data/catalog'
+import { getMergedBrands } from '../utils/mergeBrands'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 
@@ -11,7 +11,7 @@ const BrandDetail = () => {
   const { getProductsByBrand, products } = useProducts()
   const { t, tx } = useLanguage()
 
-  const brand = getBrand(slug)
+  const brand = getMergedBrands().find((b) => b.slug === slug)
   const items = brand ? getProductsByBrand(brand.name) : []
 
   if (!brand) {

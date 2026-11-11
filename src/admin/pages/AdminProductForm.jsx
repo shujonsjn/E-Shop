@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft, X } from 'lucide-react'
 import { useProducts } from '../../context/ProductsContext'
-import { categories as defaultCategories } from '../../data/catalog'
+import { getMergedCategories } from '../../utils/mergeCategories'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
 import { getMergedBrands } from '../../utils/mergeBrands'
@@ -45,19 +45,9 @@ const AdminProductForm = () => {
 
   const existingProduct = isEditMode ? getProductById(id) : null
 
-  const [adminCategories, setAdminCategories] = useState([])
   const [brands, setBrands] = useState([])
   useEffect(() => {
     const load = () => {
-      try {
-        const saved = localStorage.getItem('gb_admin_categories')
-        if (saved) {
-          const parsed = JSON.parse(saved)
-          if (Array.isArray(parsed) && parsed.length > 0) setAdminCategories(parsed)
-        }
-      } catch {
-        /* ignore */
-      }
       try {
         const savedB = localStorage.getItem('gb_admin_brands')
         if (savedB) {
@@ -80,67 +70,7 @@ const AdminProductForm = () => {
     }
   }, [])
 
-  const mergedCategories = (() => {
-    const map = new Map()
-    let deleted = []
-    try {
-      deleted = JSON.parse(localStorage.getItem('gb_admin_categories_deleted') || '[]')
-    } catch {}
-    defaultCategories.forEach((c) => {
-      if (deleted.includes(c.slug)) return
-      map.set(c.slug, { ...c, children: c.children ? [...c.children] : [] })
-    })
-    adminCategories.forEach((ac) => {
-      if (deleted.includes(ac.slug)) return
-      if (!ac.slug) return
-      if (map.has(ac.slug)) {
-        const existing = map.get(ac.slug)
-        const existingChildrenMap = new Map((existing.children || []).map((ch) => [ch.slug, { ...ch }]))
-        if (Array.isArray(ac.subcategoryList) && ac.subcategoryList.length > 0) {
-          ac.subcategoryList.forEach((sub) => {
-            if (!sub) return
-            const slug = typeof sub === 'string' ? sub : sub.slug || sub.name
-            if (!slug) return
-            existingChildrenMap.set(slug, {
-              slug,
-              name: typeof sub === 'string' ? sub : sub.name || slug,
-              name_bn: typeof sub === 'string' ? sub : sub.name_bn || sub.name || slug,
-            })
-          })
-        } else if (Array.isArray(ac.subcategories)) {
-          ac.subcategories.forEach((sub) => {
-            if (!sub) return
-            if (!existingChildrenMap.has(sub)) {
-              existingChildrenMap.set(sub, { slug: sub, name: sub, name_bn: sub })
-            }
-          })
-        }
-        map.set(ac.slug, {
-          ...existing,
-          name: ac.name || existing.name,
-          name_bn: ac.name_bn || existing.name_bn || ac.name,
-          image: ac.image || existing.image,
-          children: Array.from(existingChildrenMap.values()),
-        })
-      } else {
-        const children = Array.isArray(ac.subcategoryList) && ac.subcategoryList.length > 0
-          ? ac.subcategoryList.map((sub) => {
-              if (typeof sub === 'string') return { slug: sub.toLowerCase().replace(/\s+/g, '-'), name: sub, name_bn: sub }
-              return { slug: sub.slug || sub.name, name: sub.name, name_bn: sub.name_bn || sub.name }
-            })
-          : (ac.subcategories || []).filter(Boolean).map((s) => ({ slug: s.toLowerCase ? s.toLowerCase().replace(/\s+/g, '-') : s, name: s, name_bn: s }))
-        map.set(ac.slug, {
-          id: ac.id,
-          slug: ac.slug,
-          name: ac.name,
-          name_bn: ac.name_bn || ac.name,
-          image: ac.image || '',
-          children: children.filter((c) => c.slug),
-        })
-      }
-    })
-    return Array.from(map.values())
-  })()
+  const mergedCategories = getMergedCategories()
 
   const selectedCategory = mergedCategories.find((category) => category.slug === formData.category)
 
