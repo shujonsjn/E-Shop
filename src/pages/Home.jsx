@@ -180,13 +180,19 @@ const Home = () => {
                   to={`/collections/${category.slug}`}
                   className="group flex flex-col items-center gap-2 text-center"
                 >
-                  <span className="grid aspect-square w-full place-items-center rounded-full border border-gray-100 bg-cream p-2 transition group-hover:border-brand group-hover:bg-brand-light">
-                    <img
-                      src={category.image}
-                      alt={tx(category.name, category.name_bn)}
-                      className="h-full w-full object-contain transition-transform duration-300 group-hover:scale-105"
-                      loading="lazy"
-                    />
+                  <span className="relative grid aspect-square w-full place-items-center overflow-hidden rounded-full border border-gray-100 bg-cream transition group-hover:border-brand group-hover:bg-brand-light">
+                    {category.image ? (
+                      <img
+                        src={category.image}
+                        alt={tx(category.name, category.name_bn)}
+                        className="h-full w-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
+                        loading="lazy"
+                      />
+                    ) : (
+                      <span className="text-lg font-bold text-brand">
+                        {(category.name || '?').charAt(0).toUpperCase()}
+                      </span>
+                    )}
                   </span>
                   <span className="line-clamp-2 text-[10.5px] font-semibold leading-4 text-ink transition group-hover:text-brand sm:text-xs">
                     {tx(category.name, category.name_bn)}
