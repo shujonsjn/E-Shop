@@ -13,28 +13,8 @@ export const useAuth = () => {
   return context
 }
 
-const defaultUsers = [
-  {
-    id: 1,
-    name: 'Admin',
-    email: 'admin@shoeshop.com',
-    password: 'admin123',
-    role: 'admin',
-    phone: '',
-    address: '',
-  },
-  {
-    id: 2,
-    name: 'Demo Customer',
-    email: 'customer@example.com',
-    password: 'demo123',
-    role: 'user',
-    phone: '01700000000',
-    address: 'House 12, Road 5, Dhanmondi, Dhaka',
-    createdAt: '2026-01-15T00:00:00.000Z',
-  },
-]
-
+// No built-in accounts. A live store must not ship with a known password, and
+// the demo customer box used to advertise one right on the login page.
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     try {
@@ -46,24 +26,33 @@ export const AuthProvider = ({ children }) => {
   })
 
   const [users, setUsers] = useState(() => {
+    const demoEmails = new Set(['customer@example.com'])
+    const isOldDemoAdmin = (u) =>
+      u && u.email === 'admin@shoeshop.com' && u.role === 'admin' && u.password === 'admin123'
     try {
       const savedUsers = localStorage.getItem('shoeshop_users')
       if (savedUsers) {
         const parsed = JSON.parse(savedUsers)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          // Make sure the documented demo accounts always exist
-          const merged = [...parsed]
-          defaultUsers.forEach((demoUser) => {
-            if (!merged.some((u) => u.email === demoUser.email)) merged.push(demoUser)
-          })
-          return merged
+        if (Array.isArray(parsed)) {
+          // Strip the old hard-coded demo accounts from any device that still
+          // has them cached, so they cannot be used to sign in anymore.
+          const cleaned = parsed.filter(
+            (u) => u && !demoEmails.has(String(u.email).toLowerCase()) && !isOldDemoAdmin(u)
+          )
+          if (cleaned.length !== parsed.length) {
+            try {
+              localStorage.setItem('shoeshop_users', JSON.stringify(cleaned))
+            } catch {
+              /* ignore */
+            }
+          }
+          return cleaned
         }
       }
     } catch {
       /* ignore */
     }
-    localStorage.setItem('shoeshop_users', JSON.stringify(defaultUsers))
-    return defaultUsers
+    return []
   })
 
   const [orders, setOrders] = useState(() => {

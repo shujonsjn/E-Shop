@@ -224,10 +224,10 @@ export const pages = {
         heading: 'Clearing your data',
         heading_bn: 'ডেটা মুছে ফেলা',
         body: [
-          'You can remove everything by clearing this site’s data in your browser settings. Logging out removes the active session but keeps the demo account so you can sign in again.',
+          'You can remove everything by clearing this site’s data in your browser settings. Logging out ends the active session; you can sign in again with your own account.',
         ],
         body_bn: [
-          'ব্রাউজার সেটিংসে এই সাইটের ডেটা মুছে ফেললে সবকিছু মুছে যাবে। লগ আউট করলে শুধু চলমান সেশন শেষ হয়, ডেমো অ্যাকাউন্ট থেকে যায় যাতে আবার সাইন ইন করতে পারেন।',
+          'ব্রাউজার সেটিংসে এই সাইটের ডেটা মুছে ফেললে সবকিছু মুছে যাবে। লগ আউট করলে শুধু চলমান সেশন শেষ হয়; নিজের অ্যাকাউন্ট দিয়ে আবার সাইন ইন করতে পারবেন।',
         ],
       },
       {

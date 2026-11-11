@@ -1,18 +1,8 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Lock, Mail, ShieldCheck, Sparkles } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../i18n/LanguageContext'
-
-const demoAccounts = [
-  {
-    role: 'customer',
-    email: 'customer@example.com',
-    password: 'demo123',
-    label: 'Demo customer',
-    labelBn: 'ডেমো ক্রেতা',
-  },
-]
 
 const Login = () => {
   const { login } = useAuth()
@@ -37,11 +27,6 @@ const Login = () => {
     } else {
       navigate(from || '/account')
     }
-  }
-
-  const fillDemo = (account) => {
-    setEmail(account.email)
-    setPassword(account.password)
   }
 
   return (
@@ -122,33 +107,6 @@ const Login = () => {
                 </Link>
               </p>
             </form>
-          </div>
-
-          <div className="mt-4 rounded-lg border border-brand/20 bg-brand-soft p-4">
-            <p className="flex items-center gap-1.5 text-[12px] font-bold text-ink">
-              <Sparkles size={14} className="text-brand" />
-              {tx('Try a demo account', 'ডেমো অ্যাকাউন্ট দিয়ে দেখুন')}
-            </p>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              {demoAccounts.map((account) => (
-                <button
-                  key={account.email}
-                  type="button"
-                  onClick={() => fillDemo(account)}
-                  className="rounded-md border border-gray-200 bg-white px-2.5 py-2 text-left transition hover:border-brand"
-                >
-                  <span className="block text-[11px] font-bold text-ink">
-                    {tx(account.label, account.labelBn)}
-                  </span>
-                  <span className="block truncate text-[10px] text-ink-muted">{account.email}</span>
-                  <span className="block text-[10px] text-ink-muted">{account.password}</span>
-                </button>
-              ))}
-            </div>
-            <p className="mt-2 flex items-start gap-1.5 text-[10.5px] leading-4 text-ink-muted">
-              <ShieldCheck size={12} className="mt-0.5 shrink-0 text-brand" />
-              {t('auth.demoNote')}
-            </p>
           </div>
         </div>
       </div>
