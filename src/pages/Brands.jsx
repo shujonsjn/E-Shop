@@ -6,6 +6,7 @@ import { bannerImage } from '../data/catalog'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { getMergedBrands } from '../utils/mergeBrands'
+import { useSettings } from '../context/SettingsContext'
 
 const brandBlurbs = {
   ghorerbazar: {
@@ -33,6 +34,7 @@ const brandBlurbs = {
 const Brands = () => {
   const { products } = useProducts()
   const { t, tx } = useLanguage()
+  const { settings } = useSettings()
   const [brands, setBrands] = useState([])
 
   useEffect(() => {
@@ -62,7 +64,7 @@ const Brands = () => {
           'Trusted names we work with directly — from our own label to specialist producers.',
           'আমরা সরাসরি যাদের সাথে কাজ করি — আমাদের নিজস্ব ব্র্যান্ড থেকে বিশেষজ্ঞ উৎপাদক পর্যন্ত।'
         )}
-        image={bannerImage('KQlqd1788006502-4000x1039.jpeg')}
+        image={settings.pageBanners?.brands || bannerImage('KQlqd1788006502-4000x1039.jpeg')}
       />
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">

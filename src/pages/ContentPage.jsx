@@ -78,7 +78,7 @@ const ContentPage = () => {
     <div className="container-gb py-3">
       <Breadcrumbs items={[{ label: t('common.home'), to: '/' }, { label: title }]} />
 
-      <PageBanner title={title} subtitle={subtitle} image={bannerImage('nr4nq1788005117-1000x400.png')} />
+      <PageBanner title={title} subtitle={subtitle} image={settings.pageBanners?.content || settings.pageBanners?.shop || bannerImage('nr4nq1788005117-1000x400.png')} />
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_260px]">
         <article className="card p-5 sm:p-7">

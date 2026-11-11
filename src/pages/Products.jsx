@@ -8,6 +8,7 @@ import { getMergedBrands } from '../utils/mergeBrands'
 import { getMergedCategories } from '../utils/mergeCategories'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
+import { useSettings } from '../context/SettingsContext'
 
 const PAGE_SIZE = 12
 
@@ -146,6 +147,7 @@ const Products = () => {
   const [searchParams, setSearchParams] = useSearchParams()
   const { products, searchProducts } = useProducts()
   const { t, tx } = useLanguage()
+  const { settings } = useSettings()
 
   const isSearch = location.pathname.startsWith('/search')
   const isOffer = location.pathname.startsWith('/offer-zone')
@@ -300,7 +302,11 @@ const Products = () => {
           <PageBanner
             title={title}
             subtitle={subtitle}
-            image={isOffer ? bannerImage('KQlqd1788006502-4000x1039.jpeg') : bannerImage('nr4nq1788005117-1000x400.png')}
+            image={
+              isOffer
+                ? settings.pageBanners?.offer || bannerImage('KQlqd1788006502-4000x1039.jpeg')
+                : settings.pageBanners?.shop || bannerImage('nr4nq1788005117-1000x400.png')
+            }
           />
         </div>
       )}

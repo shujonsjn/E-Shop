@@ -190,6 +190,39 @@ const AdminSiteContent = () => {
       {activeTab === 'banners' && (
         <div className="space-y-6">
           <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-bold mb-1">Page Banners</h2>
+            <p className="text-sm text-gray-500 mb-4">
+              পেজের উপরের বড় ব্যানার। Shop/Category, Offer Zone আর Brands পেজের জন্য আলাদা ছবি দিতে পারবেন।
+              খালি রাখলে ডিফল্ট ছবি দেখাবে।
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <ImageUpload
+                label="Shop / Category Banner"
+                value={settings.pageBanners?.shop || ''}
+                onChange={(val) => updateSettings({ pageBanners: { ...(settings.pageBanners || {}), shop: val } })}
+                width={1400}
+                height={400}
+                fit="cover"
+              />
+              <ImageUpload
+                label="Offer Zone Banner"
+                value={settings.pageBanners?.offer || ''}
+                onChange={(val) => updateSettings({ pageBanners: { ...(settings.pageBanners || {}), offer: val } })}
+                width={1400}
+                height={400}
+                fit="cover"
+              />
+              <ImageUpload
+                label="Brands Page Banner"
+                value={settings.pageBanners?.brands || ''}
+                onChange={(val) => updateSettings({ pageBanners: { ...(settings.pageBanners || {}), brands: val } })}
+                width={1400}
+                height={400}
+                fit="cover"
+              />
+            </div>
+          </div>
+          <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-4">Side Banners</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {(settings.siteContent?.sideBanners || []).map((banner) => (

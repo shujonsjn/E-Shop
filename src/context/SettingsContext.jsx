@@ -42,6 +42,13 @@ const defaultSettings = {
   
   // Home Layout
   homeLayout: defaultHomeLayout,
+
+  // Page top banners (shown on Shop/Category, Offer Zone and Brands pages)
+  pageBanners: {
+    shop: '/images/banner/promo-2.jpg',
+    offer: '/images/banner/promo-1.jpg',
+    brands: '/images/banner/promo-1.jpg',
+  },
   
   // Site Content
   siteContent: {
@@ -112,6 +119,7 @@ const mergeSavedSettings = (parsed) => {
   const merged = JSON.parse(JSON.stringify({ ...defaultSettings, ...parsed }))
   merged.siteContent = JSON.parse(JSON.stringify({ ...defaultSettings.siteContent, ...(parsed.siteContent || {}) }))
   merged.paymentMethods = { ...defaultSettings.paymentMethods, ...(parsed.paymentMethods || {}) }
+  merged.pageBanners = { ...defaultSettings.pageBanners, ...(parsed.pageBanners || {}) }
   Object.keys(defaultSettings.paymentMethods).forEach((key) => {
     merged.paymentMethods[key] = {
       ...defaultSettings.paymentMethods[key],
