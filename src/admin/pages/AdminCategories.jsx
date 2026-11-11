@@ -1,109 +1,31 @@
-import { useEffect, useState } from 'react'
-import { useProducts } from '../../context/ProductsContext'
+import { useEffect, useRef, useState } from 'react'
 import { Plus, Edit2, Trash2, X } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
-import { categories as defaultCategories } from '../../data/catalog'
-import { runCategoryMigration } from '../../utils/mergeCategories'
+import { getMergedCategories, runCategoryMigration } from '../../utils/mergeCategories'
 import { saveStore } from '../../services/store'
 
-const STORAGE_KEY = 'gb_admin_categories'
-const DELETED_KEY = 'gb_admin_categories_deleted'
-
 const AdminCategories = () => {
-  const { products } = useProducts()
   const [categories, setCategories] = useState(() => {
     runCategoryMigration()
+    // Show exactly the synced list. Bundled demo categories are only used when
+    // nothing has ever been saved, so they can never come back after a delete.
     try {
-      const saved = localStorage.getItem(STORAGE_KEY)
-      let deleted = []
-      try {
-        deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]')
-      } catch {}
-      
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          const filtered = parsed.filter((c) => c && c.slug && !deleted.includes(c.slug))
-          // Also check which default cats are missing
-          defaultCategories.forEach((dc) => {
-            if (deleted.includes(dc.slug)) return
-            const exists = filtered.find((c) => c.slug === dc.slug)
-            if (!exists) {
-              filtered.push({
-                id: dc.id,
-                name: dc.name,
-                name_bn: dc.name_bn,
-                slug: dc.slug,
-                image: dc.image,
-                subcategories: (dc.children || []).map((ch) => ch.slug),
-                subcategoryList: (dc.children || []).map((ch) => ({ slug: ch.slug, name: ch.name, name_bn: ch.name_bn })),
-                enabled: true,
-              })
-            }
-          })
-          // Remove default cats that were deleted before
-          const result = filtered.filter((c) => {
-            if (defaultCategories.find((dc) => dc.slug === c.slug)) {
-              return !deleted.includes(c.slug)
-            }
-            return true
-          })
-          if (result.length > 0) {
-            try { localStorage.setItem(STORAGE_KEY, JSON.stringify(result)) } catch {}
-            return result
-          }
-        }
-      }
-      // Import from catalog but filter deleted
-      const initial = defaultCategories
-        .filter((c) => c && c.slug && !deleted.includes(c.slug))
-        .map((cat, idx) => ({
-          id: cat.id || idx + 1,
-          name: cat.name,
-          name_bn: cat.name_bn,
-          slug: cat.slug,
-          image: cat.image,
-          subcategories: (cat.children || []).map((ch) => ch.slug),
-          subcategoryList: (cat.children || []).map((ch) => ({ slug: ch.slug, name: ch.name, name_bn: ch.name_bn })),
-          enabled: true,
-        }))
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial))
-      } catch {}
-      return initial
+      return getMergedCategories()
     } catch {
-      /* ignore */
+      return []
     }
-    try {
-      let deleted = []
-      try { deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]') } catch {}
-      const cats = [...new Set(products.map((p) => p.category).filter(Boolean))].filter((c) => !deleted.includes(c))
-      const initial = cats.map((cat, idx) => ({
-        id: idx + 1,
-        name: cat,
-        slug: cat,
-        subcategories: [...new Set(products.filter((p) => p.category === cat).map((p) => p.subcategory).filter(Boolean))],
-        enabled: true,
-      }))
-      try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(initial))
-      } catch {
-        /* ignore */
-      }
-      return initial
-    } catch {}
-    return []
   })
+  const firstRun = useRef(true)
 
   useEffect(() => {
-    try {
-      const deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]')
-      const filtered = categories.filter((c) => c && c.slug && !deleted.includes(c.slug))
-      saveStore('categories', filtered)
-    } catch {
-      saveStore('categories', categories)
+    // Never write on mount: on a brand-new device that would push the bundled
+    // demo list to the cloud. Real edits call saveStore directly instead.
+    if (firstRun.current) {
+      firstRun.current = false
+      return
     }
+    saveStore('categories', categories)
   }, [categories])
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
@@ -165,21 +87,11 @@ const AdminCategories = () => {
 
   const handleDelete = (id) => {
     if (confirm('Delete this category?')) {
-      const cat = categories.find((c) => c.id === id)
       const updated = categories.filter((c) => c.id !== id)
       setCategories(updated)
       try {
-        try {
-          const deleted = JSON.parse(localStorage.getItem(DELETED_KEY) || '[]')
-          if (cat?.slug && !deleted.includes(cat.slug)) {
-            const newDeleted = [...deleted, cat.slug]
-            localStorage.setItem(DELETED_KEY, JSON.stringify([...new Set(newDeleted)]))
-          }
-        } catch {}
         saveStore('categories', updated)
         window.dispatchEvent(new Event('storage'))
-        // Force reload to update all components
-        setTimeout(() => window.location.reload(), 500)
       } catch {
         /* ignore */
       }

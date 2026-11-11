@@ -2,20 +2,11 @@ import { useState, useEffect } from 'react'
 import { Plus, Edit, Trash2, RotateCcw } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useProducts } from '../../context/ProductsContext'
-import { categories as defaultCategories } from '../../data/catalog'
+import { getMergedCategories } from '../../utils/mergeCategories'
 import toast from 'react-hot-toast'
 
-const categoryName = (slug) => {
-  try {
-    const saved = localStorage.getItem('gb_admin_categories')
-    if (saved) {
-      const adminCats = JSON.parse(saved)
-      const found = adminCats.find((c) => c.slug === slug)
-      if (found) return found.name
-    }
-  } catch {}
-  return defaultCategories.find((category) => category.slug === slug)?.name || slug
-}
+const categoryName = (slug) =>
+  getMergedCategories().find((category) => category.slug === slug)?.name || slug
 
 const AdminProducts = () => {
   const { products, deleteProduct, importCatalog } = useProducts()

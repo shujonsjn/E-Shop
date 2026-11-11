@@ -23,13 +23,11 @@ const Footer = () => {
 
   useEffect(() => {
     const loadCats = () => {
+      // getMergedCategories() already returns exactly the saved+synced list.
       try {
-        let deleted = []
-        try { deleted = JSON.parse(localStorage.getItem('gb_admin_categories_deleted') || '[]') } catch {}
-        const cats = getMergedCategories().filter((c) => !deleted.includes(c.slug))
-        setCategories(cats)
-      } catch {
         setCategories(getMergedCategories())
+      } catch {
+        setCategories([])
       }
       try {
         const saved = localStorage.getItem('gb_admin_pages')

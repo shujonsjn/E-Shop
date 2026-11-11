@@ -1,13 +1,14 @@
 const STORAGE_KEY = 'gb_admin_brands'
 
 export const getMergedBrands = () => {
-  const localLogos = new Set(['ghorerbazar', 'glarvest', 'khejuri', 'shosti-food', 'honeyraj'])
+  // Old deleted demo brands pointed at a CDN that no longer serves them.
+  // Drop such a logo instead of swapping in another brand's demo logo, which
+  // made it look like the old demo brands had come back.
   const sanitize = (brand) => {
     if (!brand || typeof brand !== 'object') return brand
     const logo = String(brand.logo || '')
     if (!logo || logo.includes('cdn.ghorerbazar.com')) {
-      const slug = brand.slug
-      return { ...brand, logo: `/images/brands/${localLogos.has(slug) ? slug : 'ghorerbazar'}.svg` }
+      return { ...brand, logo: '' }
     }
     return brand
   }
