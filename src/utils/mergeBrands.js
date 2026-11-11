@@ -1,5 +1,3 @@
-import { brands as defaultBrands } from '../data/catalog'
-
 const STORAGE_KEY = 'gb_admin_brands'
 
 export const getMergedBrands = () => {
@@ -22,7 +20,10 @@ export const getMergedBrands = () => {
       }
     }
   } catch {}
-  return defaultBrands
+  // No saved brands: the storefront shows none. The bundled demo brands are
+  // not used automatically, otherwise deleted demo data would return on every
+  // new device.
+  return []
 }
 
 export default getMergedBrands
