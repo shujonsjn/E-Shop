@@ -42,6 +42,7 @@ const ContentPage = () => {
     if (typeof value !== 'string') return value
     return value
       .replace(/GhorerBazar/g, settings.siteName || 'GhorerBazar')
+      .replace(/Ghorer Bazar/g, settings.siteName || 'GhorerBazar')
       .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || 'hello@ghorerbazar.demo')
   }
   const contactEmail = settings.siteEmail || 'hello@ghorerbazar.demo'
@@ -70,8 +71,8 @@ const ContentPage = () => {
     )
   }
 
-  const title = isBn && page.title_bn ? page.title_bn : page.title
-  const subtitle = isBn && page.subtitle_bn ? page.subtitle_bn : page.subtitle
+  const title = brandText(isBn && page.title_bn ? page.title_bn : page.title)
+  const subtitle = brandText(isBn && page.subtitle_bn ? page.subtitle_bn : page.subtitle)
   const availableLinks = quickLinks.filter(([linkSlug]) => pagesList[linkSlug])
 
   return (

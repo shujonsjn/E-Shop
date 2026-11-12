@@ -179,10 +179,7 @@ const Navbar = () => {
               {settings.siteLogo ? (
                 <img src={settings.siteLogo} alt={settings.siteName} className="h-10" />
               ) : (
-                <>
-                  <span className="text-brand">{settings.siteName.split('Bazar')[0]}</span>
-                  <span className="text-ink">{settings.siteName.includes('Bazar') ? 'Bazar' : ''}</span>
-                </>
+                <span className="text-brand">{settings.siteName}</span>
               )}
             </span>
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-muted sm:block">
@@ -483,9 +480,14 @@ const Navbar = () => {
           />
           <aside className="absolute left-0 top-0 flex h-full w-[86%] max-w-sm animate-fade-in flex-col bg-white shadow-2xl">
             <div className="flex items-center justify-between border-b border-gray-100 px-4 py-3.5">
-              <Link to="/" className="text-lg font-extrabold" onClick={() => setMenuOpen(false)}>
-                <span className="text-brand">Ghorer</span>
-                <span className="text-ink">Bazar</span>
+              <Link to="/" className="flex items-center" onClick={() => setMenuOpen(false)}>
+                {settings.siteLogo ? (
+                  <img src={settings.siteLogo} alt={settings.siteName} className="h-8" />
+                ) : (
+                  <span className="text-lg font-extrabold tracking-tight text-brand">
+                    {settings.siteName}
+                  </span>
+                )}
               </Link>
               <button
                 type="button"

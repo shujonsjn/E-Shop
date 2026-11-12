@@ -95,6 +95,16 @@ const AdminSiteContent = () => {
                 className="w-full px-3 py-2 border rounded"
               />
             </div>
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium mb-1">SEO Description (search engine)</label>
+              <input
+                type="text"
+                value={settings.siteDescription ?? ''}
+                onChange={(e) => updateSettings({ siteDescription: e.target.value })}
+                placeholder="Shop quality products online in Bangladesh with fast home delivery."
+                className="w-full px-3 py-2 border rounded"
+              />
+            </div>
             <ImageUpload
               label="Site Logo"
               value={settings.siteLogo || ''}

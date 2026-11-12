@@ -29,6 +29,7 @@ const defaultSettings = {
   siteName: 'GhorerBazar',
   siteTagline: 'Pure food, honest price',
   siteTagline_bn: 'খাঁটি খাবার, সৎ দাম',
+  siteDescription: '',
   siteLogo: '',
   siteEmail: 'info@ghorerbazar.com',
   sitePhone: '+8809642922922',
@@ -179,6 +180,17 @@ export const SettingsProvider = ({ children }) => {
   useEffect(() => {
     if (settings.siteName) {
       document.title = `${settings.siteName} — Online Shopping in Bangladesh`
+      const setMeta = (selector, value) => {
+        const el = document.querySelector(selector)
+        if (el && value) el.setAttribute('content', value)
+      }
+      const description =
+        settings.siteDescription ||
+        `Shop quality products online in Bangladesh with fast home delivery from ${settings.siteName}.`
+      setMeta('meta[name="description"]', description)
+      setMeta('meta[property="og:title"]', settings.siteName)
+      setMeta('meta[property="og:description"]', description)
+      setMeta('meta[property="og:site_name"]', settings.siteName)
     }
     // The first run only reflects data that was just loaded from the cloud;
     // saving it again would race the pre-render pull.

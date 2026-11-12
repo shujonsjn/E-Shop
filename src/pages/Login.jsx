@@ -3,10 +3,12 @@ import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../i18n/LanguageContext'
+import { useSettings } from '../context/SettingsContext'
 
 const Login = () => {
   const { login } = useAuth()
   const { t, tx } = useLanguage()
+  const { settings } = useSettings()
   const navigate = useNavigate()
   const location = useLocation()
   const from = location.state?.from
@@ -35,9 +37,12 @@ const Login = () => {
         <div className="w-full max-w-md">
           <div className="card overflow-hidden">
             <div className="border-b border-gray-100 bg-gradient-to-r from-brand-light to-white px-6 py-6 text-center">
-              <Link to="/" className="text-xl font-extrabold">
-                <span className="text-brand">Ghorer</span>
-                <span className="text-ink">Bazar</span>
+              <Link to="/" className="inline-block">
+                {settings.siteLogo ? (
+                  <img src={settings.siteLogo} alt={settings.siteName} className="mx-auto h-10" />
+                ) : (
+                  <span className="text-xl font-extrabold text-brand">{settings.siteName}</span>
+                )}
               </Link>
               <h1 className="mt-3 text-lg font-bold text-ink sm:text-xl">{t('auth.welcomeBack')}</h1>
               <p className="mt-1 text-xs text-ink-muted sm:text-sm">{t('auth.loginSubtitle')}</p>

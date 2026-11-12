@@ -107,14 +107,14 @@ const Footer = () => {
               {settings.siteLogo ? (
                 <img src={settings.siteLogo} alt={settings.siteName} className="h-10" />
               ) : (
-                <>
-                  <span className="text-brand">{settings.siteName.split('Bazar')[0]}</span>
-                  <span className="text-white">{settings.siteName.includes('Bazar') ? 'Bazar' : ''}</span>
-                </>
+                <span className="text-brand">{settings.siteName}</span>
               )}
             </span>
             <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/40">
-              {tx('Pure food, honest price', 'খাঁটি খাবার, সৎ দাম')}
+              {tx(
+                settings.siteTagline ?? 'Pure food, honest price',
+                settings.siteTagline_bn ?? 'খাঁটি খাবার, সৎ দাম'
+              )}
             </span>
           </Link>
           <p className="mt-4 max-w-xs text-[13px] leading-6 text-white/55">
@@ -233,14 +233,16 @@ const Footer = () => {
           </div>
           <h4 className="mb-2 mt-5 text-sm font-bold">{t('footer.paymentMethods')}</h4>
           <div className="flex flex-wrap gap-1.5">
-            {['bKash', 'Nagad', 'Visa', 'Mastercard', 'COD'].map((method) => (
-              <span
-                key={method}
-                className="rounded border border-white/15 bg-white px-2 py-1 text-[10px] font-bold text-ink"
-              >
-                {method}
-              </span>
-            ))}
+            {Object.entries(settings.paymentMethods || {})
+              .filter(([, method]) => method?.enabled)
+              .map(([key, method]) => (
+                <span
+                  key={key}
+                  className="rounded border border-white/15 bg-white px-2 py-1 text-[10px] font-bold text-ink"
+                >
+                  {method.name || key}
+                </span>
+              ))}
           </div>
         </div>
       </div>

@@ -57,9 +57,12 @@ const Register = () => {
         <div className="w-full max-w-md">
           <div className="card overflow-hidden">
             <div className="border-b border-gray-100 bg-gradient-to-r from-brand-light to-white px-6 py-6 text-center">
-              <Link to="/" className="text-xl font-extrabold">
-                <span className="text-brand">Ghorer</span>
-                <span className="text-ink">Bazar</span>
+              <Link to="/" className="inline-block">
+                {settings.siteLogo ? (
+                  <img src={settings.siteLogo} alt={settings.siteName} className="mx-auto h-10" />
+                ) : (
+                  <span className="text-xl font-extrabold text-brand">{settings.siteName}</span>
+                )}
               </Link>
               <h1 className="mt-3 text-lg font-bold text-ink sm:text-xl">{t('auth.register')}</h1>
               <p className="mt-1 text-xs text-ink-muted sm:text-sm">
