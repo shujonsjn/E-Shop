@@ -296,7 +296,6 @@ const Navbar = () => {
               type="button"
               onClick={openCart}
               className="relative flex items-center gap-2 rounded-md px-1.5 py-1 text-ink-muted transition hover:text-brand sm:px-2"
-              aria-label="Open cart"
             >
               <span className="relative">
                 <ShoppingCart size={21} />

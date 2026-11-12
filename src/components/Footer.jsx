@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Facebook,
@@ -110,10 +110,10 @@ const Footer = () => {
                 <span className="text-brand">{settings.siteName}</span>
               )}
             </span>
-            <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/40">
+            <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/60">
               {tx(
                 settings.siteTagline ?? 'Pure food, honest price',
-                settings.siteTagline_bn ?? 'খাঁটি খাবার, সৎ দাম'
+                settings.siteTagline_bn ?? 'à¦–à¦¾à¦à¦Ÿà¦¿ à¦–à¦¾à¦¬à¦¾à¦°, à¦¸à§Ž à¦¦à¦¾à¦®'
               )}
             </span>
           </Link>
@@ -190,7 +190,7 @@ const Footer = () => {
               </li>
             ))}
             <li>
-              <Link to="/offer-zone" className="text-[13px] font-semibold text-brand">
+              <Link to="/offer-zone" className="text-[13px] font-semibold text-brand-onDark">
                 {t('nav.offerZone')}
               </Link>
             </li>
@@ -212,16 +212,16 @@ const Footer = () => {
 
         <div>
           <h4 className="mb-3 text-sm font-bold">{t('footer.downloadApp')}</h4>
-          <p className="mb-3 text-[12px] text-white/50">{t('footer.appNote').replace('GhorerBazar', settings.siteName)}</p>
+          <p className="mb-3 text-[12px] text-white/60">{t('footer.appNote').replace('GhorerBazar', settings.siteName)}</p>
           <div className="space-y-2">
             <a
               href="#"
               onClick={(e) => e.preventDefault()}
               className="flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 transition hover:border-brand"
             >
-              <span className="grid h-7 w-7 place-items-center rounded bg-white text-ink">▶</span>
+              <span className="grid h-7 w-7 place-items-center rounded bg-white text-ink">â–¶</span>
               <span className="leading-tight">
-                <span className="block text-[9px] text-white/50">GET IT ON</span>
+                <span className="block text-[9px] text-white/60">GET IT ON</span>
                 <span className="block text-xs font-bold">Google Play</span>
               </span>
             </a>
@@ -230,9 +230,9 @@ const Footer = () => {
               onClick={(e) => e.preventDefault()}
               className="flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 transition hover:border-brand"
             >
-              <span className="grid h-7 w-7 place-items-center rounded bg-white text-ink">●</span>
+              <span className="grid h-7 w-7 place-items-center rounded bg-white text-ink">â—</span>
               <span className="leading-tight">
-                <span className="block text-[9px] text-white/50">Download on the</span>
+                <span className="block text-[9px] text-white/60">Download on the</span>
                 <span className="block text-xs font-bold">App Store</span>
               </span>
             </a>
@@ -254,15 +254,15 @@ const Footer = () => {
       </div>
 
       <div className="border-t border-white/10">
-        <div className="container-gb flex flex-col items-center justify-between gap-2 py-4 text-[11px] text-white/40 sm:flex-row">
+        <div className="container-gb flex flex-col items-center justify-between gap-2 py-4 text-[11px] text-white/60 sm:flex-row">
           <p>
-            {(settings.siteContent?.footerCopyright || `© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`)
+            {(settings.siteContent?.footerCopyright || `Â© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`)
               .replace(/GhorerBazar/g, settings.siteName)}
           </p>
           <p>
             {tx(
-              'Secure checkout · Cash on delivery available',
-              'নিরাপদ চেকআউট · ক্যাশ অন ডেলিভারি সুবিধা'
+              'Secure checkout Â· Cash on delivery available',
+              'à¦¨à¦¿à¦°à¦¾à¦ªà¦¦ à¦šà§‡à¦•à¦†à¦‰à¦Ÿ Â· à¦•à§à¦¯à¦¾à¦¶ à¦…à¦¨ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¸à§à¦¬à¦¿à¦§à¦¾'
             )}
           </p>
         </div>

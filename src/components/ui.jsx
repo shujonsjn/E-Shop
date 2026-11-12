@@ -62,7 +62,7 @@ export const Price = ({ price, oldPrice = 0, size = 'md', className = '' }) => {
       <span className={`font-bold text-brand ${sizes[size] || sizes.md}`}>{formatTaka(price)}</span>
       {oldPrice > price && (
         <>
-          <span className="text-xs text-gray-400 line-through sm:text-sm">{formatTaka(oldPrice)}</span>
+          <span className="text-xs text-gray-500 line-through sm:text-sm">{formatTaka(oldPrice)}</span>
           <span className="text-[11px] font-semibold text-success">Save {off}%</span>
         </>
       )}

@@ -9,6 +9,8 @@ export default {
           // both meet WCAG AA (4.5:1) instead of failing at 2.5:1.
           DEFAULT: '#C0560A',
           dark: '#9E4508',
+          // Original orange stays readable on dark (ink) backgrounds.
+          onDark: '#F48721',
           light: '#FFF3E7',
           soft: '#FEF7F0',
         },
