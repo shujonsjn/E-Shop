@@ -121,22 +121,28 @@ const Footer = () => {
             {(settings.siteContent?.footerAbout || t('footer.aboutText')).replace(/GhorerBazar/g, settings.siteName)}
           </p>
           <ul className="mt-4 space-y-2 text-[13px] text-white/60">
-            <li className="flex items-start gap-2">
-              <MapPin size={14} className="mt-0.5 shrink-0 text-brand" />
-              {settings.siteAddress}
-            </li>
-            <li>
-              <a href={`tel:${settings.sitePhone}`} className="flex items-center gap-2 hover:text-brand">
-                <Phone size={14} className="shrink-0 text-brand" />
-                {settings.sitePhone}
-              </a>
-            </li>
-            <li>
-              <a href={`mailto:${settings.siteEmail}`} className="flex items-center gap-2 hover:text-brand">
-                <Mail size={14} className="shrink-0 text-brand" />
-                {settings.siteEmail}
-              </a>
-            </li>
+            {settings.siteAddress && (
+              <li className="flex items-start gap-2">
+                <MapPin size={14} className="mt-0.5 shrink-0 text-brand" />
+                {settings.siteAddress}
+              </li>
+            )}
+            {settings.sitePhone && (
+              <li>
+                <a href={`tel:${settings.sitePhone}`} className="flex items-center gap-2 hover:text-brand">
+                  <Phone size={14} className="shrink-0 text-brand" />
+                  {settings.sitePhone}
+                </a>
+              </li>
+            )}
+            {settings.siteEmail && (
+              <li>
+                <a href={`mailto:${settings.siteEmail}`} className="flex items-center gap-2 hover:text-brand">
+                  <Mail size={14} className="shrink-0 text-brand" />
+                  {settings.siteEmail}
+                </a>
+              </li>
+            )}
           </ul>
           <div className="mt-4 flex items-center gap-2">
             {settings.facebook && (

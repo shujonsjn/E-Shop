@@ -31,7 +31,7 @@ const defaultSettings = {
   siteTagline_bn: 'খাঁটি খাবার, সৎ দাম',
   siteDescription: '',
   siteLogo: '',
-  siteEmail: 'info@ghorerbazar.com',
+  siteEmail: '',
   sitePhone: '+8809642922922',
   siteAddress: 'Dhaka, Bangladesh',
   whatsappNumber: '+8801321208940',

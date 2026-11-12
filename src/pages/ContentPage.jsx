@@ -43,9 +43,9 @@ const ContentPage = () => {
     return value
       .replace(/GhorerBazar/g, settings.siteName || 'GhorerBazar')
       .replace(/Ghorer Bazar/g, settings.siteName || 'GhorerBazar')
-      .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || 'hello@ghorerbazar.demo')
+      .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || '')
   }
-  const contactEmail = settings.siteEmail || 'hello@ghorerbazar.demo'
+  const contactEmail = settings.siteEmail || ''
   const pagesList = pagesData
 
   if (!page) {
@@ -151,26 +151,32 @@ const ContentPage = () => {
           <div className="card p-4">
             <h2 className="text-[13px] font-bold text-ink">{t('track.needHelp')}</h2>
             <ul className="mt-2 space-y-2 text-[12px] text-ink-muted">
-              <li>
-                <a href={`tel:${settings?.callOrderNumber || settings?.sitePhone || '+8809642922922'}`} className="flex items-center gap-2 hover:text-brand">
-                  <Phone size={13} className="text-brand" /> {settings?.callOrderNumber || settings?.sitePhone || '+8809642922922'}
-                </a>
-              </li>
-              <li>
-                <a
-                  href={`https://api.whatsapp.com/send/?phone=${String(settings?.whatsappNumber || settings?.callOrderNumber || '').replace(/[^0-9]/g, '')}&text=${encodeURIComponent('Hello ' + (settings?.siteName || ''))}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex items-center gap-2 hover:text-brand"
-                >
-                  <MessageCircle size={13} className="text-brand" /> {settings?.whatsappNumber || settings?.callOrderNumber || '+8801321208940'}
-                </a>
-              </li>
-              <li>
-                <a href={`mailto:${contactEmail}`} className="flex items-center gap-2 hover:text-brand">
-                  <Mail size={13} className="text-brand" /> {contactEmail}
-                </a>
-              </li>
+              {(settings?.callOrderNumber || settings?.sitePhone) && (
+                <li>
+                  <a href={`tel:${settings?.callOrderNumber || settings?.sitePhone}`} className="flex items-center gap-2 hover:text-brand">
+                    <Phone size={13} className="text-brand" /> {settings?.callOrderNumber || settings?.sitePhone}
+                  </a>
+                </li>
+              )}
+              {(settings?.whatsappNumber || settings?.callOrderNumber || settings?.sitePhone) && (
+                <li>
+                  <a
+                    href={`https://api.whatsapp.com/send/?phone=${String(settings?.whatsappNumber || settings?.callOrderNumber || settings?.sitePhone || '').replace(/[^0-9]/g, '')}&text=${encodeURIComponent('Hello ' + (settings?.siteName || ''))}`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="flex items-center gap-2 hover:text-brand"
+                  >
+                    <MessageCircle size={13} className="text-brand" /> {settings?.whatsappNumber || settings?.callOrderNumber || settings?.sitePhone || ''}
+                  </a>
+                </li>
+              )}
+              {contactEmail && (
+                <li>
+                  <a href={`mailto:${contactEmail}`} className="flex items-center gap-2 hover:text-brand">
+                    <Mail size={13} className="text-brand" /> {contactEmail}
+                  </a>
+                </li>
+              )}
             </ul>
             <Link to="/page/contact-us" className="btn-outline mt-3 w-full py-2 text-[11px]">
               {t('track.contact')}
