@@ -5,8 +5,10 @@ export default {
     extend: {
       colors: {
         brand: {
-          DEFAULT: '#F48721',
-          dark: '#D9700F',
+          // Darkened from #F48721 so white-on-brand and brand-on-white text
+          // both meet WCAG AA (4.5:1) instead of failing at 2.5:1.
+          DEFAULT: '#C0560A',
+          dark: '#9E4508',
           light: '#FFF3E7',
           soft: '#FEF7F0',
         },
@@ -16,7 +18,7 @@ export default {
           muted: '#666666',
         },
         cream: '#FBF9F5',
-        success: '#1E9E5A',
+        success: '#18864B',
       },
       fontFamily: {
         sans: ['"Open Sans"', 'system-ui', '-apple-system', 'Segoe UI', 'sans-serif'],

@@ -4,7 +4,7 @@ import { Plus, Edit2, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const AdminDelivery = () => {
-  const { settings, addDeliveryCharge, updateDeliveryCharge, deleteDeliveryCharge, addDeliverySlot, updateDeliverySlot, deleteDeliverySlot } = useSettings()
+  const { settings, updateSettings, addDeliveryCharge, updateDeliveryCharge, deleteDeliveryCharge, addDeliverySlot, updateDeliverySlot, deleteDeliverySlot } = useSettings()
   const [showChargeModal, setShowChargeModal] = useState(false)
   const [showSlotModal, setShowSlotModal] = useState(false)
   const [editingCharge, setEditingCharge] = useState(null)
@@ -44,6 +44,29 @@ const AdminDelivery = () => {
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Delivery & Logistics</h1>
 
+      <div className="bg-white rounded-lg shadow p-6 mb-6">
+        <h2 className="text-xl font-bold text-gray-900 mb-1">Free Delivery</h2>
+        <p className="text-sm text-gray-500 mb-4">
+          এই পরিমাণ বা তার বেশি অর্ডারে ডেলিভারি ফ্রি হবে। ০ দিলে অফারটি বন্ধ থাকবে। হোম পেজ ও কার্টে এই
+          অফারটি স্বয়ংক্রিয়ভাবে দেখানো হবে।
+        </p>
+        <div className="flex flex-wrap items-end gap-4">
+          <div>
+            <label className="block text-sm font-medium mb-1">Minimum order amount (৳)</label>
+            <input
+              type="number"
+              min="0"
+              value={settings.freeDeliveryThreshold ?? 0}
+              onChange={(e) => updateSettings({ freeDeliveryThreshold: Math.max(0, Number(e.target.value) || 0) })}
+              className="w-48 px-3 py-2 border rounded"
+            />
+          </div>
+          <p className="text-xs text-gray-500 pb-2">
+            চেকআউটে এই অঙ্কের নিচে থাকলে ডেলিভারি চার্জ যোগ হবে।
+          </p>
+        </div>
+      </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Delivery Charges */}
         <div className="bg-white rounded-lg shadow">
@@ -54,6 +77,10 @@ const AdminDelivery = () => {
             </button>
           </div>
           <div className="p-6">
+            <p className="mb-4 text-xs text-gray-500">
+              "Inside Dhaka" ও "Outside Dhaka" নামের রো দুটি চেকআউটে ঢাকা/ঢাকার বাইরের চার্জ হিসেবে
+              ব্যবহৃত হয়।
+            </p>
             <div className="space-y-3">
               {settings.deliveryCharges.map((charge) => (
                 <div key={charge.id} className="flex items-center justify-between p-3 border rounded">

@@ -74,6 +74,8 @@ const defaultSettings = {
     { id: 1, area: 'Inside Dhaka', charge: 60 },
     { id: 2, area: 'Outside Dhaka', charge: 120 },
   ],
+  // Orders at or above this amount ship free. 0 disables the offer.
+  freeDeliveryThreshold: 1000,
   deliverySlots: [
     { id: 1, label: 'সকাল ১০টা - ১২টা', enabled: true },
     { id: 2, label: 'দুপুর ১২টা - ২টা', enabled: true },
@@ -196,6 +198,26 @@ export const SettingsProvider = ({ children }) => {
       setMeta('meta[property="og:title"]', settings.siteName)
       setMeta('meta[property="og:description"]', description)
       setMeta('meta[property="og:site_name"]', settings.siteName)
+
+      // Canonical / og:url follow the current page so shared links and search
+      // engines point at the real address instead of a stale demo one.
+      const pageUrl = `${window.location.origin}${window.location.pathname}`
+      const setLink = (rel, href) => {
+        let el = document.head.querySelector(`link[rel="${rel}"]`)
+        if (!el) {
+          el = document.createElement('link')
+          el.setAttribute('rel', rel)
+          document.head.appendChild(el)
+        }
+        el.setAttribute('href', href)
+      }
+      setLink('canonical', pageUrl)
+      setMeta('meta[property="og:url"]', pageUrl)
+      const ogImage =
+        settings.siteLogo && /^https?:/i.test(settings.siteLogo)
+          ? settings.siteLogo
+          : `${window.location.origin}/images/hero/hero-1.jpg`
+      setMeta('meta[property="og:image"]', ogImage)
     }
     // The first run only reflects data that was just loaded from the cloud;
     // saving it again would race the pre-render pull.

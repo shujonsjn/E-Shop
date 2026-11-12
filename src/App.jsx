@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
@@ -21,25 +21,29 @@ import BrandDetail from './pages/BrandDetail'
 import ContentPage from './pages/ContentPage'
 import NotFound from './pages/NotFound'
 
-// Admin
-import AdminLayout from './admin/layout/AdminLayout'
-import AdminDashboard from './admin/pages/AdminDashboard'
-import AdminProducts from './admin/pages/AdminProducts'
-import AdminProductForm from './admin/pages/AdminProductForm'
-import AdminCategories from './admin/pages/AdminCategories'
-import AdminOrders from './admin/pages/AdminOrders'
-import AdminUsers from './admin/pages/AdminUsers'
-import AdminStaff from './admin/pages/AdminStaff'
-import AdminReviews from './admin/pages/AdminReviews'
-import AdminDelivery from './admin/pages/AdminDelivery'
-import AdminMarketing from './admin/pages/AdminMarketing'
-import AdminPayments from './admin/pages/AdminPayments'
-import AdminAccounts from './admin/pages/AdminAccounts'
-import AdminReports from './admin/pages/AdminReports'
-import AdminSiteContent from './admin/pages/AdminSiteContent'
-import AdminHomeLayout from './admin/pages/AdminHomeLayout'
-import AdminPages from './admin/pages/AdminPages'
-import AdminBrands from './admin/pages/AdminBrands'
+// Admin is split into its own chunks so shoppers never download the panel.
+const AdminLayout = lazy(() => import('./admin/layout/AdminLayout'))
+const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'))
+const AdminProducts = lazy(() => import('./admin/pages/AdminProducts'))
+const AdminProductForm = lazy(() => import('./admin/pages/AdminProductForm'))
+const AdminCategories = lazy(() => import('./admin/pages/AdminCategories'))
+const AdminOrders = lazy(() => import('./admin/pages/AdminOrders'))
+const AdminUsers = lazy(() => import('./admin/pages/AdminUsers'))
+const AdminStaff = lazy(() => import('./admin/pages/AdminStaff'))
+const AdminReviews = lazy(() => import('./admin/pages/AdminReviews'))
+const AdminDelivery = lazy(() => import('./admin/pages/AdminDelivery'))
+const AdminMarketing = lazy(() => import('./admin/pages/AdminMarketing'))
+const AdminPayments = lazy(() => import('./admin/pages/AdminPayments'))
+const AdminAccounts = lazy(() => import('./admin/pages/AdminAccounts'))
+const AdminReports = lazy(() => import('./admin/pages/AdminReports'))
+const AdminSiteContent = lazy(() => import('./admin/pages/AdminSiteContent'))
+const AdminHomeLayout = lazy(() => import('./admin/pages/AdminHomeLayout'))
+const AdminPages = lazy(() => import('./admin/pages/AdminPages'))
+const AdminBrands = lazy(() => import('./admin/pages/AdminBrands'))
+
+const RouteFallback = () => (
+  <div className="container-gb py-12 text-center text-sm text-ink-muted">Loading…</div>
+)
 
 const ScrollToTop = () => {
   const { pathname } = useLocation()
@@ -58,7 +62,8 @@ function App() {
       <ScrollToTop />
       <Navbar />
       <main className="flex-grow pb-14 lg:pb-0">
-        <Routes>
+        <Suspense fallback={<RouteFallback />}>
+          <Routes>
           <Route path="/" element={<Home />} />
 
           {/* Shop */}
@@ -118,7 +123,8 @@ function App() {
           </Route>
 
           <Route path="*" element={<NotFound />} />
-        </Routes>
+          </Routes>
+        </Suspense>
       </main>
       {!isAdmin && <Footer />}
       <MobileBottomNav />

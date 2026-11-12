@@ -5,6 +5,7 @@ import ProductCard from '../components/ProductCard'
 import { Breadcrumbs, EmptyState, QtyStepper, SectionHeading, formatTaka } from '../components/ui'
 import { useCart } from '../context/CartContext'
 import { useProducts } from '../context/ProductsContext'
+import { useSettings } from '../context/SettingsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 
 const Cart = () => {
@@ -20,6 +21,7 @@ const Cart = () => {
     freeDelivery,
   } = useCart()
   const { products } = useProducts()
+  const { settings } = useSettings()
   const { t, tx } = useLanguage()
   const [code, setCode] = useState('')
   const [message, setMessage] = useState('')
@@ -31,8 +33,10 @@ const Cart = () => {
     if (result.ok) setCode('')
   }
 
-  const deliveryEstimate = freeDelivery ? 0 : null
   const total = subtotal - discount
+  const freeDeliveryThreshold = Number(settings.freeDeliveryThreshold || 0)
+  const freeDeliveryEarned =
+    freeDelivery || (freeDeliveryThreshold > 0 && subtotal - discount >= freeDeliveryThreshold)
   const suggestions = products.filter((p) => p.oldPrice > p.price).slice(0, 5)
 
   if (cartItems.length === 0) {
@@ -206,6 +210,16 @@ const Cart = () => {
             </form>
 
             <div className="mt-4 space-y-2 border-t border-gray-100 pt-3 text-[13px]">
+              {freeDeliveryThreshold > 0 && (
+                <p className={`rounded-md px-2.5 py-2 text-[11px] font-medium ${freeDeliveryEarned ? 'bg-green-50 text-success' : 'bg-cream text-ink-muted'}`}>
+                  {freeDeliveryEarned
+                    ? tx('You have unlocked free delivery', 'আপনি ফ্রি ডেলিভারি পেয়েছেন')
+                    : tx(
+                        `Add ${formatTaka(freeDeliveryThreshold - (subtotal - discount))} more for free delivery`,
+                        `আর ${formatTaka(freeDeliveryThreshold - (subtotal - discount))} যোগ করলে ফ্রি ডেলিভারি`
+                      )}
+                </p>
+              )}
               <div className="flex justify-between text-ink-muted">
                 <span>{t('cart.subtotal')}</span>
                 <span className="font-semibold text-ink">{formatTaka(subtotal)}</span>
@@ -219,7 +233,7 @@ const Cart = () => {
               <div className="flex justify-between text-ink-muted">
                 <span>{t('cart.deliveryCharge')}</span>
                 <span className="text-[11px]">
-                  {deliveryEstimate === 0 ? (
+                  {freeDeliveryEarned ? (
                     <span className="font-semibold text-success">{t('cart.freeDelivery')}</span>
                   ) : (
                     tx('Calculated at checkout', 'চেকআউটে নির্ধারিত হবে')

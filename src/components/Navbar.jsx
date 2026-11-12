@@ -42,7 +42,19 @@ const Navbar = () => {
     const loadCats = () => {
       // getMergedCategories() already returns exactly the saved+synced list.
       try {
-        setCategories(getMergedCategories())
+        const list = getMergedCategories()
+        // A sub-category with the same name as its parent only duplicates the
+        // menu entry, so drop those.
+        setCategories(
+          list.map((category) => ({
+            ...category,
+            children: (category.children || []).filter(
+              (child) =>
+                (child.name || '').trim().toLowerCase() !==
+                (category.name || '').trim().toLowerCase()
+            ),
+          }))
+        )
       } catch {
         setCategories([])
       }
@@ -152,11 +164,11 @@ const Navbar = () => {
             <button
               type="button"
               onClick={toggle}
-              className="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-0.5 font-semibold transition hover:bg-brand"
-              aria-label="Change language"
+              className="inline-flex items-center gap-1 rounded bg-white/10 px-2 py-1 font-semibold transition hover:bg-brand"
             >
               <Globe2 size={12} />
               {lang === 'en' ? 'বাংলা' : 'English'}
+              <span className="sr-only">{tx('Change language', 'ভাষা পরিবর্তন')}</span>
             </button>
           </div>
         </div>
@@ -174,7 +186,7 @@ const Navbar = () => {
             <Menu size={22} />
           </button>
 
-          <Link to="/" className="flex shrink-0 flex-col leading-none" aria-label={`${settings.siteName} home`}>
+          <Link to="/" className="flex shrink-0 flex-col leading-none">
             <span className="text-xl font-extrabold tracking-tight sm:text-2xl">
               {settings.siteLogo ? (
                 <img src={settings.siteLogo} alt={settings.siteName} className="h-10" />

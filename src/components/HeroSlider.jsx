@@ -36,6 +36,7 @@ const HeroSlider = () => {
               slideIndex === index ? 'z-10 opacity-100' : 'pointer-events-none opacity-0'
             }`}
             aria-hidden={slideIndex !== index}
+            tabIndex={slideIndex === index ? 0 : -1}
           >
             <img
               src={slide.image}
@@ -78,17 +79,22 @@ const HeroSlider = () => {
         <ChevronRight size={18} />
       </button>
 
-      <div className="absolute bottom-2.5 left-1/2 z-20 flex -translate-x-1/2 items-center gap-1.5">
+      <div className="absolute bottom-1.5 left-1/2 z-20 flex -translate-x-1/2 items-center">
         {heroSlides.map((slide, slideIndex) => (
           <button
             key={slide.id}
             type="button"
             onClick={() => setIndex(slideIndex)}
-            className={`h-1.5 rounded-full transition-all ${
-              slideIndex === index ? 'w-6 bg-brand' : 'w-1.5 bg-white/80 hover:bg-white'
-            }`}
+            className="grid h-6 w-6 place-items-center"
             aria-label={`Go to slide ${slideIndex + 1}`}
-          />
+            aria-current={slideIndex === index}
+          >
+            <span
+              className={`block h-1.5 rounded-full transition-all ${
+                slideIndex === index ? 'w-6 bg-brand' : 'w-1.5 bg-white/80 hover:bg-white'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>

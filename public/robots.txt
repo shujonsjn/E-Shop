@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+
+# Private / transactional areas
+Disallow: /admin
+Disallow: /cart
+Disallow: /checkout
+Disallow: /account
+Disallow: /my
+Disallow: /order-success
+Disallow: /track
+
+Sitemap: https://e-shop-peach-rho-49.vercel.app/sitemap.xml

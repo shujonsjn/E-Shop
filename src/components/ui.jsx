@@ -24,7 +24,7 @@ export const Badge = ({ children, tone = 'brand', className = '' }) => (
 export const RatingStars = ({ value = 0, size = 14, showValue = false, count = null }) => {
   const rounded = Math.round((Number(value) || 0) * 2) / 2
   return (
-    <span className="inline-flex items-center gap-1" aria-label={`Rated ${value} out of 5`}>
+    <span className="inline-flex items-center gap-1" role="img" aria-label={`Rated ${value} out of 5`}>
       <span className="inline-flex">
         {[1, 2, 3, 4, 5].map((i) => {
           const filled = rounded >= i

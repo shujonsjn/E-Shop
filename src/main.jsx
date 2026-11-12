@@ -11,6 +11,7 @@ import { ProductsProvider } from './context/ProductsContext.jsx'
 import { LanguageProvider } from './i18n/LanguageContext.jsx'
 import { SettingsProvider } from './context/SettingsContext.jsx'
 import RemoteSync from './components/RemoteSync.jsx'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import { pullStore } from './services/store'
 import { Toaster } from 'react-hot-toast'
 
@@ -31,49 +32,64 @@ if (localStorage.getItem('gb_boot_version') !== BOOT_VERSION) {
 const renderApp = () =>
   ReactDOM.createRoot(document.getElementById('root')).render(
     <React.StrictMode>
-      <BrowserRouter>
-        <LanguageProvider>
-          <AuthProvider>
-            <ProductsProvider>
-              <SettingsProvider>
-                <CartProvider>
-                  <WishlistProvider>
-                    <ReviewProvider>
-                      <RemoteSync />
-                      <App />
-                      <Toaster
-                        position="top-center"
-                        toastOptions={{
-                          style: {
-                            fontSize: '13px',
-                            borderRadius: '8px',
-                            background: '#222831',
-                            color: '#fff',
-                          },
-                        }}
-                      />
-                    </ReviewProvider>
-                  </WishlistProvider>
-                </CartProvider>
-              </SettingsProvider>
-            </ProductsProvider>
-          </AuthProvider>
-        </LanguageProvider>
-      </BrowserRouter>
+      <ErrorBoundary>
+        <BrowserRouter>
+          <LanguageProvider>
+            <AuthProvider>
+              <ProductsProvider>
+                <SettingsProvider>
+                  <CartProvider>
+                    <WishlistProvider>
+                      <ReviewProvider>
+                        <RemoteSync />
+                        <App />
+                        <Toaster
+                          position="top-center"
+                          toastOptions={{
+                            style: {
+                              fontSize: '13px',
+                              borderRadius: '8px',
+                              background: '#222831',
+                              color: '#fff',
+                            },
+                          }}
+                        />
+                      </ReviewProvider>
+                    </WishlistProvider>
+                  </CartProvider>
+                </SettingsProvider>
+              </ProductsProvider>
+            </AuthProvider>
+          </LanguageProvider>
+        </BrowserRouter>
+      </ErrorBoundary>
     </React.StrictMode>,
   )
 
-// Load the shared data before the first render. If React started first, a
-// delete/edit made in the first second could race the cloud pull and push the
-// old cached list back. A slow network just falls back to the local cache; the
-// pull still notifies the app if it finishes later.
+// Returning visitors render straight from the cached store, so a slow or down
+// Supabase never blocks the first paint. The fresh copy arrives through the
+// `gb:remote` event that RemoteSync listens to. A first-ever visit has no cache
+// to show, so it waits for the pull (with a safety timeout) to avoid flashing
+// bundled defaults.
+let rendered = false
+const start = () => {
+  if (rendered) return
+  rendered = true
+  renderApp()
+}
+
+const hasCache = Boolean(localStorage.getItem('gb_settings'))
 const bootPull = pullStore().catch(() => [])
 bootPull.then((keys) => {
-  if (!Array.isArray(keys) || keys.length === 0) return
-  window.dispatchEvent(new CustomEvent('gb:remote', { detail: keys }))
-  if (keys.some((key) => key === 'categories' || key === 'brands' || key === 'pages')) {
-    window.dispatchEvent(new Event('storage'))
+  if (Array.isArray(keys) && keys.length > 0) {
+    window.dispatchEvent(new CustomEvent('gb:remote', { detail: keys }))
+    if (keys.some((key) => key === 'categories' || key === 'brands' || key === 'pages')) {
+      window.dispatchEvent(new Event('storage'))
+    }
   }
+  start()
 })
+if (hasCache) start()
 const timeout = new Promise((resolve) => setTimeout(resolve, 6000))
-Promise.race([bootPull, timeout]).finally(renderApp)
+Promise.race([bootPull, timeout]).finally(start)
+

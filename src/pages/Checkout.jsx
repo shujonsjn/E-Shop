@@ -57,7 +57,23 @@ const Checkout = () => {
 
   const availableDistricts = formData.division ? districts[formData.division] || [] : []
   const availableUpazilas = formData.district ? upazilas[formData.district] || [] : []
-  const deliveryCharge = freeDelivery ? 0 : formData.district === 'Dhaka' ? 60 : 120
+
+  // Rates come from Admin -> Delivery. "Inside Dhaka" / "Outside Dhaka" rows are
+  // matched by name so the admin can rename them freely.
+  const chargeRows = settings.deliveryCharges || []
+  const insideCharge = Number(
+    (chargeRows.find((row) => /inside|dhaka city|ঢাকা/i.test(row.area || '')) || {}).charge ?? 0
+  )
+  const outsideCharge = Number(
+    (chargeRows.find((row) => /outside|sub-?city|ঢাকার বাইরে/i.test(row.area || '')) || {}).charge ?? 0
+  )
+  const baseCharge = !formData.district ? 0 : formData.district === 'Dhaka' ? insideCharge : outsideCharge
+
+  // Free delivery: coupon shipping discount, or an order above the configured
+  // threshold (the same promise the top bar advertises).
+  const threshold = Number(settings.freeDeliveryThreshold || 0)
+  const qualifiesForFree = threshold > 0 && subtotal - discount >= threshold
+  const deliveryCharge = freeDelivery || qualifiesForFree ? 0 : baseCharge
   const total = subtotal - discount + deliveryCharge
 
   const handleChange = (e) => {
@@ -577,9 +593,21 @@ const Checkout = () => {
                   </span>
                 </span>
                 <span className="font-semibold text-ink">
-                  {deliveryCharge === 0 ? t('checkout.free') : formatTaka(deliveryCharge)}
+                  {!formData.district && !qualifiesForFree && !freeDelivery
+                    ? '—'
+                    : deliveryCharge === 0
+                      ? t('checkout.free')
+                      : formatTaka(deliveryCharge)}
                 </span>
               </div>
+              {qualifiesForFree && !freeDelivery && (
+                <p className="text-[10.5px] text-success">
+                  {tx(
+                    `Free delivery applied on orders over ${formatTaka(threshold)}`,
+                    `${formatTaka(threshold)} এর বেশি অর্ডারে ফ্রি ডেলিভারি প্রযোজ্য`
+                  )}
+                </p>
+              )}
               <div className="flex items-baseline justify-between border-t border-gray-100 pt-2.5">
                 <span className="text-sm font-bold text-ink">{t('cart.total')}</span>
                 <span className="text-lg font-extrabold text-brand">{formatTaka(total)}</span>

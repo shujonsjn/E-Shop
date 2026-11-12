@@ -1,6 +1,5 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
-import { coupons as defaultCoupons } from '../data/catalog'
 import { useSettings } from './SettingsContext'
 
 const CartContext = createContext()
@@ -118,7 +117,7 @@ export const CartProvider = ({ children }) => {
 
   const applyCoupon = (code) => {
     const normalized = String(code || '').trim().toUpperCase()
-    const allCoupons = [...(settings?.coupons || []), ...defaultCoupons]
+    const allCoupons = settings?.coupons || []
     const found = allCoupons.find((c) => String(c.code || '').toUpperCase() === normalized)
     if (!found) return { ok: false, message: 'Invalid coupon code' }
     if (found.expiryDate) {

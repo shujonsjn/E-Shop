@@ -296,7 +296,7 @@ const Home = () => {
                 >
                   <img
                     src={banner.image}
-                    alt={banner.alt}
+                    alt={banner.alt || tx('Promotion banner', 'প্রমোশন ব্যানার')}
                     className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.02]"
                     loading="lazy"
                   />

@@ -146,17 +146,17 @@ const Footer = () => {
           </ul>
           <div className="mt-4 flex items-center gap-2">
             {settings.facebook && (
-              <a href={settings.facebook} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
+              <a href={settings.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
                 <Facebook size={15} />
               </a>
             )}
             {settings.instagram && (
-              <a href={settings.instagram} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
+              <a href={settings.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
                 <Instagram size={15} />
               </a>
             )}
             {settings.youtube && (
-              <a href={settings.youtube} target="_blank" rel="noreferrer" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
+              <a href={settings.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
                 <Youtube size={15} />
               </a>
             )}
