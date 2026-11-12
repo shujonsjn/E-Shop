@@ -41,8 +41,8 @@ const ContentPage = () => {
     if (Array.isArray(value)) return value.map(brandText)
     if (typeof value !== 'string') return value
     return value
-      .replace(/GhorerBazar/g, settings.siteName || 'GhorerBazar')
-      .replace(/Ghorer Bazar/g, settings.siteName || 'GhorerBazar')
+      .replace(/GhorerBazar/g, settings.siteName || '')
+      .replace(/Ghorer Bazar/g, settings.siteName || '')
       .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || '')
   }
   const contactEmail = settings.siteEmail || ''

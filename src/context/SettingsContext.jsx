@@ -26,7 +26,7 @@ const defaultHomeLayout = [
 
 const defaultSettings = {
   // Site info
-  siteName: 'GhorerBazar',
+  siteName: 'Gift Shop',
   siteTagline: 'Pure food, honest price',
   siteTagline_bn: 'খাঁটি খাবার, সৎ দাম',
   siteDescription: '',
@@ -128,6 +128,11 @@ const mergeSavedSettings = (parsed) => {
   merged.siteContent = JSON.parse(JSON.stringify({ ...defaultSettings.siteContent, ...(parsed.siteContent || {}) }))
   merged.paymentMethods = { ...defaultSettings.paymentMethods, ...(parsed.paymentMethods || {}) }
   merged.pageBanners = { ...defaultSettings.pageBanners, ...(parsed.pageBanners || {}) }
+  // Leftover demo contact data from the bundled template must never surface on
+  // a store that has its own identity.
+  if (typeof merged.siteEmail === 'string' && /@ghorerbazar\.(com|demo)$/i.test(merged.siteEmail.trim())) {
+    merged.siteEmail = ''
+  }
   Object.keys(defaultSettings.paymentMethods).forEach((key) => {
     merged.paymentMethods[key] = {
       ...defaultSettings.paymentMethods[key],
