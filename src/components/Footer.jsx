@@ -55,7 +55,7 @@ const Footer = () => {
     ['/page/about-us', t('footer.aboutUs')],
     ['/page/contact-us', t('footer.contactUs')],
     ['/page/company-information', t('footer.companyInfo')],
-    ['/page/ghorer-bazar-stories', t('footer.stories')],
+    ['/page/our-story', t('footer.stories')],
     ['/page/terms-and-conditions', t('footer.terms')],
     ['/page/privacy-policy', t('footer.privacy')],
     ['/page/careers', t('footer.careers')],

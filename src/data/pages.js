@@ -129,10 +129,10 @@ export const pages = {
       },
     ],
   },
-  'ghorer-bazar-stories': {
-    slug: 'ghorer-bazar-stories',
-    title: 'Ghorer Bazar Stories',
-    title_bn: 'ঘরের বাজারের গল্প',
+  'our-story': {
+    slug: 'our-story',
+    title: 'Our Story',
+    title_bn: 'আমাদের গল্প',
     subtitle: 'People, producers and small moments behind the products you buy.',
     subtitle_bn: 'আপনার কেনা পণ্যের পেছনের মানুষ, উৎপাদক ও ছোট ছোট গল্প।',
     sections: [
@@ -694,4 +694,7 @@ export const pages = {
   },
 }
 
-export const getPage = (slug) => pages[slug] || null
+export const getPage = (slug) => {
+  if (slug === 'ghorer-bazar-stories') return pages['our-story'] || null
+  return pages[slug] || null
+}
