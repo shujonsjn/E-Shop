@@ -23,8 +23,14 @@ const editCounters = new Map()
 const bumpEdit = (name) => editCounters.set(name, (editCounters.get(name) || 0) + 1)
 
 // Site content, catalog and pages may only be written by a signed-in admin
-// (enforced by Supabase RLS). Orders/reviews/users stay writable by guests.
+// (enforced by Supabase RLS).
 export const ADMIN_KEYS = new Set(['settings', 'products', 'categories', 'brands', 'pages'])
+
+// Orders, customers and reviews have dedicated tables now (see
+// supabase/security-v2.sql). They must never be copied into the shared
+// `store` table again — that was the hole that let any visitor rewrite every
+// order and read plaintext passwords.
+export const LOCAL_ONLY = new Set(['orders', 'users', 'reviews'])
 let adminSignedIn = false
 
 /** Called by AuthContext whenever the Supabase admin session changes. */
@@ -45,7 +51,10 @@ export const writeLocal = (name, value) => {
   try {
     localStorage.setItem(LOCAL_KEYS[name], JSON.stringify(value))
     return true
-  } catch {
+  } catch (error) {
+    // Usually the 5 MB quota: settings/products still save to the cloud below,
+    // and Admin -> Site Content can move base64 images out to free space.
+    console.warn(`[store] could not cache "${name}" locally: ${error.message}`)
     return false
   }
 }
@@ -123,26 +132,29 @@ const pushRow = (name, value) => {
 
 /** Writes locally right away and mirrors to Supabase when configured. */
 export const saveStore = (name, value) => {
-  const ok = writeLocal(name, value)
-  if (!ok) return false
+  // A full localStorage must not block the cloud save: the admin's change is
+  // still valid, it just cannot be cached on this device.
+  const storedLocally = writeLocal(name, value)
   bumpEdit(name)
-  if (!isSupabaseConfigured) return true
+  // Device-local collections (orders/users/reviews) never leave the browser.
+  if (LOCAL_ONLY.has(name)) return storedLocally
+  if (!isSupabaseConfigured) return storedLocally
   // Until the first pull finishes, only cache locally; otherwise bundled
   // defaults would overwrite the shared data before it has been fetched.
-  if (!remoteReady) return true
+  if (!remoteReady) return storedLocally
   // Never try to write admin-only rows without an authenticated admin; RLS
   // would reject the request and the storefront would log errors on every load.
-  if (ADMIN_KEYS.has(name) && !adminSignedIn) return true
+  if (ADMIN_KEYS.has(name) && !adminSignedIn) return storedLocally
   let json = ''
   try {
     json = stableStringify(value)
   } catch {
-    return true
+    return storedLocally
   }
-  if (lastSynced.get(name) === json) return true
+  if (lastSynced.get(name) === json) return storedLocally
   lastSynced.set(name, json)
   pushRow(name, value)
-  return true
+  return storedLocally
 }
 
 /** Pulls remote rows into localStorage. Returns the list of keys that changed. */
@@ -173,6 +185,8 @@ export const pullStore = async () => {
 
   data.forEach((row) => {
     if (!(row.key in LOCAL_KEYS)) return
+    // Orders/users/reviews are owned by their own tables now.
+    if (LOCAL_ONLY.has(row.key)) return
     // The user changed this row after the pull started: their version wins.
     if (editedDuringPull(row.key)) {
       dirtyKeys.push(row.key)
@@ -216,6 +230,7 @@ export const subscribeStore = (onChange) => {
       .on('postgres_changes', { event: '*', schema: 'public', table: 'store' }, (payload) => {
         const row = payload.new
         if (!row || !(row.key in LOCAL_KEYS)) return
+        if (LOCAL_ONLY.has(row.key)) return
         remember(row.key, row.value)
         if (writeLocal(row.key, row.value)) onChange?.(row.key)
       })

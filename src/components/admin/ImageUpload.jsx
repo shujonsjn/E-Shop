@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import { Upload, Link as LinkIcon, X } from 'lucide-react'
+import { uploadDataUrl } from '../../services/media'
 
 const readAsDataUrl = (file) =>
   new Promise((resolve, reject) => {
@@ -106,6 +107,15 @@ const ImageUpload = ({
   const options = { width, height, fit }
   const sizeLabel = width && height ? `${width} × ${height} px` : 'auto'
 
+  // Keep images in Supabase Storage instead of embedding base64 in settings /
+  // products. Falls back to the data URL (offline, or before the media bucket
+  // exists) so an upload is never lost.
+  const persistImage = async (dataUrl) => {
+    if (!dataUrl?.startsWith('data:')) return dataUrl
+    const url = await uploadDataUrl(dataUrl, 'uploads')
+    return url || dataUrl
+  }
+
   const handleFileChange = async (e) => {
     const files = Array.from(e.target.files || [])
     if (files.length === 0) return
@@ -118,7 +128,7 @@ const ImageUpload = ({
             alert('Image size must be less than 5 MB')
             continue
           }
-          onAddMultiple(await optimizeImage(file, options))
+          onAddMultiple(await persistImage(await optimizeImage(file, options)))
         }
         e.target.value = null
         return
@@ -130,7 +140,7 @@ const ImageUpload = ({
         e.target.value = null
         return
       }
-      const dataUrl = await optimizeImage(file, options)
+      const dataUrl = await persistImage(await optimizeImage(file, options))
       if (onChange) onChange(dataUrl)
       e.target.value = null
     } finally {
@@ -144,10 +154,11 @@ const ImageUpload = ({
     setBusy(true)
     try {
       const finalUrl = multiple ? url : await optimizeUrl(url, options)
+      const persisted = multiple ? finalUrl : await persistImage(finalUrl)
       if (multiple && onAddMultiple) {
-        onAddMultiple(finalUrl)
+        onAddMultiple(persisted)
       } else if (onChange) {
-        onChange(finalUrl)
+        onChange(persisted)
       }
       setUrlInput('')
     } finally {

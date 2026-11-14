@@ -98,6 +98,14 @@ export const ProductsProvider = ({ children }) => {
     return restored
   }
 
+  // Bulk replace used by the "move images to storage" migration.
+  const replaceProducts = (next) => {
+    const list = Array.isArray(next) ? next : []
+    setProducts(list)
+    saveStore('products', list)
+    return list
+  }
+
   const getProductById = (id) => products.find((p) => String(p.id) === String(id))
 
   const getProductBySlug = (slug) => products.find((p) => p.slug === slug)
@@ -145,6 +153,7 @@ export const ProductsProvider = ({ children }) => {
         updateProduct,
         deleteProduct,
         importCatalog,
+        replaceProducts,
         getProductById,
         getProductBySlug,
         getProduct,

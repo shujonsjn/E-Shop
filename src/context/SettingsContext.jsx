@@ -106,8 +106,6 @@ const defaultSettings = {
   coupons: [],
   
   // Marketing
-  flashSales: [],
-  comboOffers: [],
   notifications: [],
   
   // Expenses
@@ -318,46 +316,6 @@ export const SettingsProvider = ({ children }) => {
     }))
   }
 
-  // Flash sales
-  const addFlashSale = (sale) => {
-    setSettings((prev) => ({
-      ...prev,
-      flashSales: [...prev.flashSales, { ...sale, id: Date.now() }],
-    }))
-  }
-  const updateFlashSale = (id, updates) => {
-    setSettings((prev) => ({
-      ...prev,
-      flashSales: prev.flashSales.map((s) => (s.id === id ? { ...s, ...updates } : s)),
-    }))
-  }
-  const deleteFlashSale = (id) => {
-    setSettings((prev) => ({
-      ...prev,
-      flashSales: prev.flashSales.filter((s) => s.id !== id),
-    }))
-  }
-
-  // Combo offers
-  const addComboOffer = (offer) => {
-    setSettings((prev) => ({
-      ...prev,
-      comboOffers: [...prev.comboOffers, { ...offer, id: Date.now() }],
-    }))
-  }
-  const updateComboOffer = (id, updates) => {
-    setSettings((prev) => ({
-      ...prev,
-      comboOffers: prev.comboOffers.map((o) => (o.id === id ? { ...o, ...updates } : o)),
-    }))
-  }
-  const deleteComboOffer = (id) => {
-    setSettings((prev) => ({
-      ...prev,
-      comboOffers: prev.comboOffers.filter((o) => o.id !== id),
-    }))
-  }
-
   // Notifications
   const addNotification = (notif) => {
     setSettings((prev) => ({
@@ -524,12 +482,6 @@ export const SettingsProvider = ({ children }) => {
     addCoupon,
     updateCoupon,
     deleteCoupon,
-    addFlashSale,
-    updateFlashSale,
-    deleteFlashSale,
-    addComboOffer,
-    updateComboOffer,
-    deleteComboOffer,
     addNotification,
     deleteNotification,
     addExpense,

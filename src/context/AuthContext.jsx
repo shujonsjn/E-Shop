@@ -2,6 +2,14 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { saveStore, setAdminSignedIn } from '../services/store'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
+import {
+  cancelOrderRemote,
+  decrementStockRemote,
+  fetchOrders,
+  insertOrder,
+  pushOrderUpdate,
+  trackOrderRemote,
+} from '../services/commerce'
 
 const AuthContext = createContext()
 
@@ -155,6 +163,46 @@ export const AuthProvider = ({ children }) => {
     return () => window.removeEventListener('gb:remote', reload)
   }, [])
 
+  // The admin panel needs every customer's order, not just the ones placed in
+  // this browser. RLS only returns them for an authenticated admin session.
+  useEffect(() => {
+    if (!supabase || user?.role !== 'admin') return undefined
+    let alive = true
+
+    const load = async () => {
+      const cloud = await fetchOrders()
+      if (!alive || !cloud) return
+      setOrders((prev) => {
+        const cloudIds = new Set(cloud.map((order) => String(order.id)))
+        const localOnly = prev.filter((order) => !cloudIds.has(String(order.id)))
+        return [...cloud, ...localOnly].sort(
+          (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
+        )
+      })
+    }
+
+    load()
+
+    let channel
+    try {
+      channel = supabase
+        .channel('admin-orders')
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'orders' }, () => load())
+        .subscribe()
+    } catch {
+      channel = null
+    }
+
+    return () => {
+      alive = false
+      try {
+        if (channel) supabase.removeChannel(channel)
+      } catch {
+        /* ignore */
+      }
+    }
+  }, [user?.role])
+
   const register = (name, email, password, phone = '') => {
     const normalizedEmail = String(email).trim().toLowerCase()
     const existingUser = users.find((u) => u.email.toLowerCase() === normalizedEmail)
@@ -269,35 +317,39 @@ export const AuthProvider = ({ children }) => {
       ],
     }
     setOrders([newOrder, ...orders])
+    // The customer keeps a local copy (works offline, no account needed); the
+    // cloud copy is what the admin panel and /track read.
+    insertOrder(newOrder)
+      .then((result) => {
+        if (result.ok) decrementStockRemote(newOrder.items)
+      })
+      .catch(() => {})
     toast.success('Order placed successfully')
     return newOrder
   }
 
   const updateOrderStatus = (orderId, newStatus) => {
-    setOrders(
-      orders.map((order) => {
-        if (String(order.id) === String(orderId)) {
-          const statusNotes = {
-            Pending: 'Order received',
-            Confirmed: 'Order confirmed',
-            Packed: 'Packed',
-            Shipped: 'Shipped',
-            'Out for Delivery': 'Out for delivery',
-            Delivered: 'Delivered',
-            Cancelled: 'Order cancelled',
-          }
-          return {
-            ...order,
-            status: newStatus,
-            statusHistory: [
-              ...(order.statusHistory || []),
-              { status: newStatus, date: new Date().toISOString(), note: statusNotes[newStatus] },
-            ],
-          }
-        }
-        return order
-      })
-    )
+    const current = orders.find((order) => String(order.id) === String(orderId))
+    if (!current) return
+    const statusNotes = {
+      Pending: 'Order received',
+      Confirmed: 'Order confirmed',
+      Packed: 'Packed',
+      Shipped: 'Shipped',
+      'Out for Delivery': 'Out for delivery',
+      Delivered: 'Delivered',
+      Cancelled: 'Order cancelled',
+    }
+    const updated = {
+      ...current,
+      status: newStatus,
+      statusHistory: [
+        ...(current.statusHistory || []),
+        { status: newStatus, date: new Date().toISOString(), note: statusNotes[newStatus] },
+      ],
+    }
+    setOrders(orders.map((order) => (String(order.id) === String(orderId) ? updated : order)))
+    pushOrderUpdate(updated).catch(() => {})
     toast.success('Order status updated')
   }
 
@@ -308,22 +360,61 @@ export const AuthProvider = ({ children }) => {
       toast.error('This order can no longer be cancelled')
       return false
     }
-    setOrders(
-      orders.map((o) =>
-        String(o.id) === String(orderId)
-          ? {
-              ...o,
-              status: 'Cancelled',
-              statusHistory: [
-                ...(o.statusHistory || []),
-                { status: 'Cancelled', date: new Date().toISOString(), note: 'Order cancelled' },
-              ],
-            }
-          : o
-      )
-    )
+    const cancelled = {
+      ...order,
+      status: 'Cancelled',
+      statusHistory: [
+        ...(order.statusHistory || []),
+        { status: 'Cancelled', date: new Date().toISOString(), note: 'Order cancelled' },
+      ],
+    }
+    setOrders(orders.map((o) => (String(o.id) === String(orderId) ? cancelled : o)))
+    // A signed-in admin updates the row directly; customers use the id + phone
+    // RPC so the cloud copy (and the admin panel) changes too.
+    if (user?.role === 'admin') {
+      pushOrderUpdate(cancelled).catch(() => {})
+    } else if (cancelled.shippingAddress?.phone) {
+      cancelOrderRemote(cancelled.id, cancelled.shippingAddress.phone).catch(() => {})
+    }
     toast.success('Order cancelled')
     return true
+  }
+
+  // Guest cancellation for orders that only exist in the cloud (placed on
+  // another device). Requires the phone number used at checkout.
+  const cancelOrderByPhone = async (orderId, phone) => {
+    const result = await cancelOrderRemote(orderId, phone)
+    if (result === 'cancelled') {
+      setOrders((prev) =>
+        prev.map((o) =>
+          String(o.id) === String(orderId) ? { ...o, status: 'Cancelled' } : o
+        )
+      )
+      toast.success('Order cancelled')
+      return true
+    }
+    if (result === 'locked') toast.error('This order can no longer be cancelled')
+    return false
+  }
+
+  // Pulls the latest status for orders saved on this device (customers have no
+  // Supabase login, so the id + phone RPC is the only way to read them back).
+  const refreshOrders = async () => {
+    const candidates = orders.filter((order) => order?.shippingAddress?.phone)
+    if (candidates.length === 0) return
+    const results = await Promise.all(
+      candidates.map((order) => trackOrderRemote(order.id, order.shippingAddress.phone))
+    )
+    const updates = new Map()
+    results.forEach(({ order }) => {
+      if (order) updates.set(String(order.id), order)
+    })
+    if (updates.size === 0) return
+    setOrders((prev) =>
+      prev.map((order) =>
+        updates.has(String(order.id)) ? { ...order, ...updates.get(String(order.id)) } : order
+      )
+    )
   }
 
   const getUserOrders = () => {
@@ -347,6 +438,8 @@ export const AuthProvider = ({ children }) => {
         placeOrder,
         updateOrderStatus,
         cancelOrder,
+        cancelOrderByPhone,
+        refreshOrders,
         getUserOrders,
         getOrderById,
       }}

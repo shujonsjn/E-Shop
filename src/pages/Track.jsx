@@ -15,62 +15,132 @@ import toast from 'react-hot-toast'
 import { Breadcrumbs, StatusBadge, formatTaka } from '../components/ui'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../i18n/LanguageContext'
+import { trackOrderRemote } from '../services/commerce'
 
 const STEPS = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered']
 
 const Track = () => {
   const { orderId: routeOrderId } = useParams()
-  const { getOrderById, cancelOrder, user } = useAuth()
+  const { getOrderById, cancelOrder, cancelOrderByPhone, user } = useAuth()
   const { t, tx } = useLanguage()
 
   const [input, setInput] = useState(routeOrderId || '')
   const [phone, setPhone] = useState('')
   const [order, setOrder] = useState(null)
   const [searched, setSearched] = useState(false)
+  const [searching, setSearching] = useState(false)
+  // True when the order was found in the cloud with id + phone, i.e. it was
+  // placed on another device and the visitor proved ownership.
+  const [verifiedByPhone, setVerifiedByPhone] = useState(false)
 
   useEffect(() => {
-    if (routeOrderId) {
-      const found = getOrderById(routeOrderId)
-      setOrder(found || null)
+    if (!routeOrderId) return
+    const found = getOrderById(routeOrderId)
+    if (found) {
+      setOrder(found)
       setSearched(true)
+      // The local copy holds the order, but only the cloud knows the latest
+      // status the admin set. Refresh it silently when we can.
+      const storedPhone = found.shippingAddress?.phone || ''
+      if (storedPhone) {
+        trackOrderRemote(found.id, storedPhone).then(({ order: remote }) => {
+          if (remote) {
+            setOrder(remote)
+            setVerifiedByPhone(true)
+          }
+        })
+      }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [routeOrderId])
 
-  const handleSearch = (e) => {
+  const handleSearch = async (e) => {
     e.preventDefault()
     const key = input.trim().replace(/^#/, '')
     if (!key) {
       toast.error(tx('Enter your order ID', 'আপনার অর্ডার আইডি দিন'))
       return
     }
-    const found = getOrderById(key)
-    if (found && phone.trim()) {
-      const storedPhone = found.shippingAddress?.phone || ''
-      if (!storedPhone.includes(phone.trim())) {
+    const typedPhone = phone.trim()
+    const local = getOrderById(key)
+
+    if (local) {
+      const storedPhone = String(local.shippingAddress?.phone || '')
+      if (typedPhone && !storedPhone.includes(typedPhone)) {
         setOrder(null)
+        setVerifiedByPhone(false)
         setSearched(true)
         return
       }
+      // Prefer the cloud copy so the timeline reflects the admin's latest
+      // status, not whatever was cached at checkout time.
+      const phoneForLookup = typedPhone || storedPhone
+      if (phoneForLookup) {
+        setSearching(true)
+        const { order: remote } = await trackOrderRemote(local.id, phoneForLookup)
+        setSearching(false)
+        if (remote) {
+          setOrder(remote)
+          setVerifiedByPhone(true)
+          setSearched(true)
+          return
+        }
+      }
+      setOrder(local)
+      setVerifiedByPhone(false)
+      setSearched(true)
+      return
     }
-    setOrder(found || null)
+
+    // Not in this browser: look it up in the cloud, but only with the phone
+    // number used at checkout so orders cannot be enumerated.
+    if (!typedPhone) {
+      toast.error(
+        tx(
+          'Enter the phone number you used at checkout',
+          'অর্ডারের সময় যে ফোন নম্বর দিয়েছিলেন সেটি দিন'
+        )
+      )
+      return
+    }
+
+    setSearching(true)
+    const { order: remote } = await trackOrderRemote(key, typedPhone)
+    setSearching(false)
+    setOrder(remote)
+    setVerifiedByPhone(Boolean(remote))
     setSearched(true)
   }
 
   const canCancel =
     order &&
-    user &&
-    String(order.userId) === String(user.id) &&
-    !['Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'].includes(order.status)
+    !['Shipped', 'Out for Delivery', 'Delivered', 'Cancelled'].includes(order.status) &&
+    (verifiedByPhone || (user && String(order.userId) === String(user.id)))
 
-  const handleCancel = () => {
+  const handleCancel = async () => {
     if (!order) return
-    if (window.confirm(tx('Cancel this order?', 'এই অর্ডারটি বাতিল করবেন?'))) {
-      const ok = cancelOrder(order.id)
-      if (ok) {
+    if (!window.confirm(tx('Cancel this order?', 'এই অর্ডারটি বাতিল করবেন?'))) return
+
+    // Admin cancellations go through the authenticated update.
+    if (user?.role === 'admin') {
+      if (cancelOrder(order.id)) setOrder((prev) => ({ ...prev, status: 'Cancelled' }))
+      return
+    }
+
+    // Everyone else cancels through the id + phone RPC so the cloud row (and
+    // therefore the admin panel) actually changes.
+    const phoneUsed = order.shippingAddress?.phone || ''
+    if (phoneUsed) {
+      const remoteOk = await cancelOrderByPhone(order.id, phoneUsed)
+      if (remoteOk) {
+        cancelOrder(order.id)
         setOrder((prev) => ({ ...prev, status: 'Cancelled' }))
+        return
       }
     }
+
+    // Offline / pre-migration fallback: keep the local copy consistent.
+    if (cancelOrder(order.id)) setOrder((prev) => ({ ...prev, status: 'Cancelled' }))
   }
 
   const history = order?.statusHistory || []
@@ -122,9 +192,9 @@ const Track = () => {
                 type="tel"
               />
             </div>
-            <button type="submit" className="btn-primary self-end py-2.5">
+            <button type="submit" className="btn-primary self-end py-2.5" disabled={searching}>
               <Search size={16} />
-              {t('track.trackOrder')}
+              {searching ? tx('Searching…', 'খোঁজা হচ্ছে…') : t('track.trackOrder')}
             </button>
           </form>
         </div>
@@ -134,10 +204,10 @@ const Track = () => {
             <XCircle size={44} className="mx-auto text-red-300" />
             <h2 className="mt-3 text-lg font-bold text-ink">{t('track.orderNotFound')}</h2>
             <p className="mt-1.5 text-sm text-ink-muted">{t('track.orderNotFoundSub')}</p>
-            <p className="mt-3 text-[11px] text-gray-400">
+            <p className="mt-3 text-[11px] text-gray-500">
               {tx(
-                'Tip: use the same browser and phone number you used at checkout to find your order.',
-                'টিপস: যে ব্রাউজার ও ফোন নম্বর দিয়ে অর্ডার করেছেন, সেটি ব্যবহার করে অর্ডার খুঁজুন।'
+                'Tip: use the same browser and phone number you used at checkout. Ordered on another device? Enter the phone number too.',
+                'টিপস: যে ব্রাউজার ও ফোন নম্বর দিয়ে অর্ডার করেছেন, সেটি ব্যবহার করুন। অন্য ডিভাইস থেকে অর্ডার করলে ফোন নম্বরও দিন।'
               )}
             </p>
             <Link to="/shop" className="btn-outline mt-4">
@@ -307,7 +377,14 @@ const Track = () => {
               <ul className="divide-y divide-gray-100 px-4">
                 {(order.items || []).map((item) => (
                   <li key={item.id} className="flex items-center gap-3 py-2.5">
-                    <img src={item.image} alt="" className="h-12 w-12 shrink-0 rounded object-contain" />
+                    <img
+                      src={item.image || '/images/hero/hero-1.jpg'}
+                      alt=""
+                      className="h-12 w-12 shrink-0 rounded object-contain"
+                      onError={(event) => {
+                        event.currentTarget.src = '/images/hero/hero-1.jpg'
+                      }}
+                    />
                     <div className="min-w-0 flex-1">
                       <Link
                         to={`/products/${item.slug}`}

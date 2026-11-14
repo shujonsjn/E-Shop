@@ -95,13 +95,13 @@ const AdminOrders = () => {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-2">Customer Information</h3>
                   <div className="bg-gray-50 p-3 rounded space-y-1 text-sm">
-                    <p><span className="font-medium">Name:</span> {selectedOrder.shippingAddress.fullName}</p>
-                    <p><span className="font-medium">Mobile:</span> {selectedOrder.shippingAddress.phone}</p>
-                    {selectedOrder.shippingAddress.division && <p><span className="font-medium">Division:</span> {selectedOrder.shippingAddress.division}</p>}
-                    {selectedOrder.shippingAddress.district && <p><span className="font-medium">District:</span> {selectedOrder.shippingAddress.district}</p>}
-                    {selectedOrder.shippingAddress.upazila && <p><span className="font-medium">Thana/Upazila:</span> {selectedOrder.shippingAddress.upazila}</p>}
-                    {!selectedOrder.shippingAddress.division && selectedOrder.shippingAddress.city && <p><span className="font-medium">City:</span> {selectedOrder.shippingAddress.city}</p>}
-                    <p><span className="font-medium">Address:</span> {selectedOrder.shippingAddress.address}</p>
+                    <p><span className="font-medium">Name:</span> {selectedOrder.shippingAddress?.fullName || selectedOrder.userName || '—'}</p>
+                    <p><span className="font-medium">Mobile:</span> {selectedOrder.shippingAddress?.phone || selectedOrder.phone || '—'}</p>
+                    {selectedOrder.shippingAddress?.division && <p><span className="font-medium">Division:</span> {selectedOrder.shippingAddress.division}</p>}
+                    {selectedOrder.shippingAddress?.district && <p><span className="font-medium">District:</span> {selectedOrder.shippingAddress.district}</p>}
+                    {selectedOrder.shippingAddress?.upazila && <p><span className="font-medium">Thana/Upazila:</span> {selectedOrder.shippingAddress.upazila}</p>}
+                    {!selectedOrder.shippingAddress?.division && selectedOrder.shippingAddress?.city && <p><span className="font-medium">City:</span> {selectedOrder.shippingAddress.city}</p>}
+                    <p><span className="font-medium">Address:</span> {selectedOrder.shippingAddress?.address || '—'}</p>
                   </div>
                 </div>
                 <div>
@@ -109,7 +109,14 @@ const AdminOrders = () => {
                   <div className="space-y-2">
                     {selectedOrder.items.map((item) => (
                       <div key={`${item.id}-${item.size}`} className="flex gap-3 bg-gray-50 p-3 rounded">
-                        <img src={item.image} alt={item.name} className="w-12 h-12 object-cover rounded" />
+                        <img
+                          src={item.image || '/images/hero/hero-1.jpg'}
+                          alt={item.name}
+                          className="w-12 h-12 object-cover rounded"
+                          onError={(event) => {
+                            event.currentTarget.src = '/images/hero/hero-1.jpg'
+                          }}
+                        />
                         <div className="flex-1">
                           <p className="text-gray-900 font-medium">{item.name}</p>
                           <p className="text-sm text-gray-500">Size: {item.size} | Qty: {item.quantity}</p>

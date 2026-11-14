@@ -56,18 +56,13 @@ create policy "store_admin_write" on public.store
   using (public.is_admin())
   with check (public.is_admin());
 
--- Guests must still be able to place orders, register and post reviews.
--- Those actions live in the "orders", "users" and "reviews" rows only.
+-- Orders, customer accounts and reviews used to be rows of this table with
+-- wide-open guest write policies. That let anyone holding the public anon key
+-- rewrite every order and read plaintext passwords, so those policies are gone.
+-- Run supabase/security-v2.sql to create the dedicated, RLS-protected
+-- public.orders / public.reviews tables and the guest tracking RPCs.
 drop policy if exists "store_public_insert" on public.store;
-create policy "store_public_insert" on public.store
-  for insert
-  with check (key in ('orders', 'users', 'reviews'));
-
 drop policy if exists "store_public_update" on public.store;
-create policy "store_public_update" on public.store
-  for update
-  using (key in ('orders', 'users', 'reviews'))
-  with check (key in ('orders', 'users', 'reviews'));
 
 -- Realtime so every open browser/tab refreshes as soon as admin saves.
 do $$

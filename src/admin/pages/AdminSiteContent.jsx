@@ -1,15 +1,50 @@
 import { useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
-import { Plus, Edit2, Trash2, Save } from 'lucide-react'
+import { useProducts } from '../../context/ProductsContext'
+import { Plus, Edit2, Trash2, Save, CloudUpload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
+import { migrateDataUrls } from '../../services/media'
 
 const AdminSiteContent = () => {
   const { settings, updateSettings, updateSiteContent, updateHeroSlide, addHeroSlide, deleteHeroSlide, updateSideBanner, updatePromoBanner } = useSettings()
+  const { products, replaceProducts } = useProducts()
   const [activeTab, setActiveTab] = useState('general')
   const [showHeroModal, setShowHeroModal] = useState(false)
   const [editingHero, setEditingHero] = useState(null)
   const [heroForm, setHeroForm] = useState({ image: '', href: '', alt: '' })
+  const [migrating, setMigrating] = useState(false)
+
+  // Moves every base64 image currently stored in settings/products into the
+  // public `media` bucket and swaps them for their URL. This is what keeps the
+  // shared store rows small and localStorage under the browser quota.
+  const migrateImages = async () => {
+    if (!window.confirm('সব base64 ছবি Supabase Storage-এ সরিয়ে নেওয়া হবে। চালিয়ে যাবেন?')) {
+      return
+    }
+    setMigrating(true)
+    const loading = toast.loading('ছবিগুলো আপলোড হচ্ছে…')
+    try {
+      const settingsResult = await migrateDataUrls(settings, 'settings')
+      const productsResult = await migrateDataUrls(products, 'products')
+      if (settingsResult.uploaded > 0) updateSettings(settingsResult.value)
+      if (productsResult.uploaded > 0) replaceProducts(productsResult.value)
+      const total = settingsResult.uploaded + productsResult.uploaded
+      const failed = settingsResult.failed + productsResult.failed
+      if (total === 0) {
+        toast.error('কোনো base64 ছবি পাওয়া যায়নি', { id: loading })
+      } else {
+        toast.success(
+          `${total}টি ছবি Storage-এ সরানো হয়েছে${failed ? ` · ${failed}টি ব্যর্থ` : ''}`,
+          { id: loading, duration: 8000 }
+        )
+      }
+    } catch {
+      toast.error('ছবি সরানো যায়নি, আবার চেষ্টা করুন', { id: loading })
+    } finally {
+      setMigrating(false)
+    }
+  }
 
   const handleHeroSubmit = (e) => {
     e.preventDefault()
@@ -55,6 +90,30 @@ const AdminSiteContent = () => {
           <span>• Category Icon — <b>400 × 400</b> (fit inside)</span>
           <span>• Product Image — <b>800 × 800</b></span>
           <span>• Brand Logo — <b>320 × 100</b> (fit inside)</span>
+        </div>
+      </div>
+
+      <div className="mb-6 rounded-lg border border-amber-200 bg-amber-50 p-4">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <p className="flex items-center gap-2 text-sm font-semibold text-amber-900">
+              <CloudUpload size={16} /> Image storage cleanup
+            </p>
+            <p className="mt-1 max-w-2xl text-xs text-amber-800">
+              পুরোনো ছবিগুলো base64 হিসেবে সেটিংস ও প্রোডাক্টের ভেতরে আছে, তাই সাইট ও
+              localStorage ভারী হচ্ছে। একবার চাপলে সব ছবি Supabase Storage-এ চলে যাবে এবং
+              হালকা URL দিয়ে বদলে যাবে। নতুন আপলোডও এখন সরাসরি Storage-এ যাবে।
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={migrateImages}
+            disabled={migrating}
+            className="inline-flex items-center gap-2 rounded-md bg-amber-600 px-4 py-2 text-sm font-semibold text-white hover:bg-amber-700 disabled:opacity-60"
+          >
+            <CloudUpload size={16} />
+            {migrating ? 'Moving…' : 'Move images to Storage'}
+          </button>
         </div>
       </div>
 

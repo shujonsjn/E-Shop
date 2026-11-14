@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { MapPin, Package, ShoppingBag, XCircle } from 'lucide-react'
 import { Breadcrumbs, EmptyState, StatusBadge, formatTaka } from '../components/ui'
@@ -6,9 +7,15 @@ import { useLanguage } from '../i18n/LanguageContext'
 import toast from 'react-hot-toast'
 
 const MyOrders = () => {
-  const { user, getUserOrders, cancelOrder } = useAuth()
+  const { user, getUserOrders, cancelOrder, refreshOrders } = useAuth()
   const navigate = useNavigate()
   const { t, tx } = useLanguage()
+
+  useEffect(() => {
+    if (user) refreshOrders()
+    // Status refresh only needs to happen when the page opens.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   if (!user) {
     return (

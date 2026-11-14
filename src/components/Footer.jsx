@@ -113,7 +113,7 @@ const Footer = () => {
             <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/60">
               {tx(
                 settings.siteTagline ?? 'Pure food, honest price',
-                settings.siteTagline_bn ?? 'à¦–à¦¾à¦à¦Ÿà¦¿ à¦–à¦¾à¦¬à¦¾à¦°, à¦¸à§Ž à¦¦à¦¾à¦®'
+                settings.siteTagline_bn ?? 'খাঁটি খাবার, সেরা দাম'
               )}
             </span>
           </Link>
@@ -256,13 +256,13 @@ const Footer = () => {
       <div className="border-t border-white/10">
         <div className="container-gb flex flex-col items-center justify-between gap-2 py-4 text-[11px] text-white/60 sm:flex-row">
           <p>
-            {(settings.siteContent?.footerCopyright || `Â© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`)
+            {(settings.siteContent?.footerCopyright || `© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`)
               .replace(/GhorerBazar/g, settings.siteName)}
           </p>
           <p>
             {tx(
-              'Secure checkout Â· Cash on delivery available',
-              'à¦¨à¦¿à¦°à¦¾à¦ªà¦¦ à¦šà§‡à¦•à¦†à¦‰à¦Ÿ Â· à¦•à§à¦¯à¦¾à¦¶ à¦…à¦¨ à¦¡à§‡à¦²à¦¿à¦­à¦¾à¦°à¦¿ à¦¸à§à¦¬à¦¿à¦§à¦¾'
+              'Secure checkout · Cash on delivery available',
+              'নিরাপদ চেকআউট · ক্যাশ অন ডেলিভারি সুবিধা'
             )}
           </p>
         </div>
