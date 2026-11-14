@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+﻿import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   ChevronDown,
@@ -197,7 +197,7 @@ const Navbar = () => {
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-muted sm:block">
               {tx(
                 settings.siteTagline ?? 'Pure food, honest price',
-                settings.siteTagline_bn ?? 'খাঁটি খাবার, সৎ দাম'
+                settings.siteTagline_bn ?? 'খাঁটি খাবার, সেরা দাম'
               )}
             </span>
           </Link>
@@ -214,7 +214,7 @@ const Navbar = () => {
                 onFocus={() => setShowSuggest(true)}
                 onBlur={handleBlur}
                 placeholder={t('common.searchPlaceholder')}
-                className="h-full w-full bg-transparent px-3.5 text-sm text-ink outline-none placeholder:text-gray-400"
+                className="h-full w-full bg-transparent px-3.5 text-sm text-ink outline-none placeholder:text-gray-500"
                 aria-label="Search products"
               />
               <button
@@ -297,6 +297,7 @@ const Navbar = () => {
               onClick={openCart}
               className="relative flex items-center gap-2 rounded-md px-1.5 py-1 text-ink-muted transition hover:text-brand sm:px-2"
             >
+              <span className="sr-only lg:hidden">{t('nav.cart')}</span>
               <span className="relative">
                 <ShoppingCart size={21} />
                 {getCartCount() > 0 && (
@@ -306,7 +307,7 @@ const Navbar = () => {
                 )}
               </span>
               <span className="hidden text-left leading-tight lg:block">
-                <span className="block text-[9px] uppercase tracking-wide text-gray-400">
+                <span className="block text-[9px] uppercase tracking-wide text-gray-500">
                   {t('nav.cart')}
                 </span>
                 <span className="block text-xs font-bold text-ink">{formatTaka(subtotal)}</span>
@@ -323,7 +324,7 @@ const Navbar = () => {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('common.searchPlaceholder')}
-              className="h-full w-full bg-transparent px-3 text-xs text-ink outline-none placeholder:text-gray-400"
+              className="h-full w-full bg-transparent px-3 text-xs text-ink outline-none placeholder:text-gray-500"
               aria-label="Search products"
             />
             <button type="submit" className="h-full bg-brand px-3 text-white" aria-label="Search">
@@ -555,7 +556,7 @@ const Navbar = () => {
                 </Link>
               </div>
 
-              <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-400">
+              <p className="mb-2 text-[11px] font-bold uppercase tracking-wider text-gray-500">
                 {t('nav.categories')}
               </p>
               <ul className="divide-y divide-gray-100 border-y border-gray-100">
@@ -658,7 +659,7 @@ const Navbar = () => {
           <div className="flex-1 overflow-y-auto px-4 py-4">
             {query.trim() ? (
               <>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
                   {t('common.searchProducts')}
                 </p>
                 {suggestions.length === 0 ? (
@@ -695,7 +696,7 @@ const Navbar = () => {
               </>
             ) : (
               <>
-                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-400">
+                <p className="mb-2 text-xs font-bold uppercase tracking-wider text-gray-500">
                   {t('common.popularSearches')}
                 </p>
                 <div className="flex flex-wrap gap-2">

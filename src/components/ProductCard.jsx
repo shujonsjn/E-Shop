@@ -81,7 +81,7 @@ const ProductCard = ({ product, compact = false }) => {
         <div className="mt-2 flex flex-wrap items-baseline gap-x-2">
           <span className="text-base font-bold text-brand sm:text-lg">{formatTaka(product.price)}</span>
           {product.oldPrice > product.price && (
-            <span className="text-[11px] text-gray-400 line-through sm:text-xs">
+            <span className="text-[11px] text-gray-500 line-through sm:text-xs">
               {formatTaka(product.oldPrice)}
             </span>
           )}

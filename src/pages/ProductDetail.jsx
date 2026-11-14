@@ -246,7 +246,7 @@ const ProductDetail = () => {
                 <span className="text-2xl font-extrabold text-brand sm:text-3xl">{formatTaka(product.price)}</span>
                 {product.oldPrice > product.price && (
                   <>
-                    <span className="text-sm text-gray-400 line-through sm:text-base">
+                    <span className="text-sm text-gray-500 line-through sm:text-base">
                       {formatTaka(product.oldPrice)}
                     </span>
                     <span className="chip bg-green-50 text-success">
@@ -540,7 +540,7 @@ const ProductDetail = () => {
           <div className="min-w-0">
             <p className="text-base font-extrabold leading-tight text-brand">{formatTaka(product.price)}</p>
             {product.oldPrice > product.price && (
-              <p className="text-[10px] leading-tight text-gray-400 line-through">{formatTaka(product.oldPrice)}</p>
+              <p className="text-[10px] leading-tight text-gray-500 line-through">{formatTaka(product.oldPrice)}</p>
             )}
           </div>
           <button
