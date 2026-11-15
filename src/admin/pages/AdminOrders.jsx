@@ -8,6 +8,26 @@ const AdminOrders = () => {
 
   const statusOptions = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled']
 
+  // Orders can arrive from older devices, from the cloud or from a migration
+  // with missing optional fields. Never let one partial row blank the page.
+  const paymentLabel = (order) => {
+    const method = order?.paymentMethod
+    if (!method) return '—'
+    return method === 'cod' ? 'COD' : String(method).toUpperCase()
+  }
+
+  const paymentLabelLong = (order) => {
+    const method = order?.paymentMethod
+    if (!method) return '—'
+    return method === 'cod' ? 'Cash on Delivery' : String(method).toUpperCase()
+  }
+
+  const formatDate = (value) => {
+    if (!value) return '—'
+    const date = new Date(value)
+    return Number.isNaN(date.getTime()) ? '—' : date.toLocaleDateString('en-GB')
+  }
+
   const getStatusColor = (status) => {
     const colors = {
       'Pending': 'bg-yellow-100 text-yellow-800',
@@ -47,12 +67,14 @@ const AdminOrders = () => {
                 <td className="px-6 py-4 text-gray-900">#{order.id}</td>
                 <td className="px-6 py-4">
                   <div>
-                    <p className="text-gray-900">{order.userName}</p>
-                    <p className="text-sm text-gray-500">{order.userEmail}</p>
+                    <p className="text-gray-900">{order.userName || order.shippingAddress?.fullName || 'Guest'}</p>
+                    <p className="text-sm text-gray-500">
+                      {order.userEmail || order.shippingAddress?.phone || order.phone || ''}
+                    </p>
                   </div>
                 </td>
-                <td className="px-6 py-4 text-gray-900">৳{order.total}</td>
-                <td className="px-6 py-4 text-gray-600">{order.paymentMethod === 'cod' ? 'COD' : order.paymentMethod.toUpperCase()}</td>
+                <td className="px-6 py-4 text-gray-900">৳{order.total ?? 0}</td>
+                <td className="px-6 py-4 text-gray-600">{paymentLabel(order)}</td>
                 <td className="px-6 py-4">
                   <select
                     value={order.status}
@@ -66,7 +88,7 @@ const AdminOrders = () => {
                     ))}
                   </select>
                 </td>
-                <td className="px-6 py-4 text-gray-600">{new Date(order.createdAt).toLocaleDateString('en-GB')}</td>
+                <td className="px-6 py-4 text-gray-600">{formatDate(order.createdAt)}</td>
                 <td className="px-6 py-4">
                   <button onClick={() => setSelectedOrder(order)} className="text-blue-600 hover:text-blue-800">
                     <Eye size={18} />
@@ -107,11 +129,11 @@ const AdminOrders = () => {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-2">Products</h3>
                   <div className="space-y-2">
-                    {selectedOrder.items.map((item) => (
-                      <div key={`${item.id}-${item.size}`} className="flex gap-3 bg-gray-50 p-3 rounded">
+                    {(selectedOrder.items || []).map((item, index) => (
+                      <div key={`${item.id ?? index}-${item.size || ''}`} className="flex gap-3 bg-gray-50 p-3 rounded">
                         <img
                           src={item.image || '/images/hero/hero-1.jpg'}
-                          alt={item.name}
+                          alt={item.name || 'Product'}
                           className="w-12 h-12 object-cover rounded"
                           onError={(event) => {
                             event.currentTarget.src = '/images/hero/hero-1.jpg'
@@ -119,9 +141,13 @@ const AdminOrders = () => {
                         />
                         <div className="flex-1">
                           <p className="text-gray-900 font-medium">{item.name}</p>
-                          <p className="text-sm text-gray-500">Size: {item.size} | Qty: {item.quantity}</p>
+                          <p className="text-sm text-gray-500">
+                            {item.size ? `Size: ${item.size} | ` : ''}Qty: {item.quantity || 1}
+                          </p>
                         </div>
-                        <span className="text-gray-900">৳{item.price * item.quantity}</span>
+                        <span className="text-gray-900">
+                          ৳{(item.price || 0) * (item.quantity || 1)}
+                        </span>
                       </div>
                     ))}
                   </div>
@@ -129,10 +155,10 @@ const AdminOrders = () => {
                 <div>
                   <h3 className="font-semibold text-gray-900 mb-2">Payment Information</h3>
                   <div className="bg-gray-50 p-3 rounded space-y-1 text-sm">
-                    <p><span className="font-medium">Payment Method:</span> {selectedOrder.paymentMethod === 'cod' ? 'Cash on Delivery' : selectedOrder.paymentMethod.toUpperCase()}</p>
-                    <p><span className="font-medium">Subtotal:</span> ৳{selectedOrder.subtotal}</p>
-                    <p><span className="font-medium">Delivery Charge:</span> ৳{selectedOrder.deliveryCharge}</p>
-                    <p className="font-bold"><span className="font-medium">Total:</span> ৳{selectedOrder.total}</p>
+                    <p><span className="font-medium">Payment Method:</span> {paymentLabelLong(selectedOrder)}</p>
+                    <p><span className="font-medium">Subtotal:</span> ৳{selectedOrder.subtotal ?? 0}</p>
+                    <p><span className="font-medium">Delivery Charge:</span> ৳{selectedOrder.deliveryCharge ?? 0}</p>
+                    <p className="font-bold"><span className="font-medium">Total:</span> ৳{selectedOrder.total ?? 0}</p>
                     {selectedOrder.paymentMethod !== 'cod' && selectedOrder.paymentDetails && (
                       <>
                         <p><span className="font-medium">Sender Number:</span> {selectedOrder.paymentDetails.senderNumber}</p>
