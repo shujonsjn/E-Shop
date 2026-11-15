@@ -105,7 +105,16 @@ const Footer = () => {
           <Link to="/" className="inline-flex flex-col leading-none">
             <span className="text-2xl font-extrabold tracking-tight">
               {settings.siteLogo ? (
-                <img src={settings.siteLogo} alt={settings.siteName} className="h-10" />
+                // The uploaded logo usually has a white background. On the dark
+                // footer a bare <img> looks like a stray white rectangle, so it
+                // sits in a small rounded white card instead.
+                <span className="inline-flex items-center rounded-xl bg-white px-3 py-2 shadow-sm ring-1 ring-white/20">
+                  <img
+                    src={settings.siteLogo}
+                    alt={settings.siteName}
+                    className="h-8 w-auto max-w-[180px] object-contain"
+                  />
+                </span>
               ) : (
                 <span className="text-brand">{settings.siteName}</span>
               )}

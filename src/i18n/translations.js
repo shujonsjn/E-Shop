@@ -295,7 +295,7 @@ export const translations = {
     'account.needLogin': 'Please sign in to view your account.',
 
     // Footer
-    'footer.aboutText': 'GhorerBazar brings safe, authentic and carefully sourced food to every home in Bangladesh — from raw honey and ghee to dates, spices and pantry staples.',
+    'footer.aboutText': 'Gift Shop brings carefully selected gifts, showpieces and home décor to every home in Bangladesh — from elegant showpieces and watches to bags, shoes and thoughtful presents.',
     'footer.information': 'Information',
     'footer.shopBy': 'Shop By',
     'footer.support': 'Support',
@@ -649,7 +649,7 @@ export const translations = {
     'account.orderDetails': 'অর্ডারের বিবরণ',
     'account.needLogin': 'অ্যাকাউন্ট দেখতে সাইন ইন করুন।',
 
-    'footer.aboutText': 'ঘরের বাজার বাংলাদেশের প্রতিটি ঘরে নিরাপদ, খাঁটি ও যত্নে সংগ্রহ করা খাবার পৌঁছে দেয় — মধু, ঘি, খেজুর, মসলা থেকে রান্নাঘরের নিত্যপণ্য পর্যন্ত।',
+    'footer.aboutText': 'গিফট শপ বাংলাদেশের প্রতিটি ঘরে যত্নে বাছাই করা উপহার, শোপিস ও হোম ডেকোর পৌঁছে দেয় — শোপিস, ঘড়ি থেকে ব্যাগ, জুতা ও স্মরণীয় উপহার পর্যন্ত।',
     'footer.information': 'তথ্য',
     'footer.shopBy': 'কিনুন',
     'footer.support': 'সাপোর্ট',
