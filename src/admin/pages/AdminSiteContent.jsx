@@ -377,8 +377,13 @@ const AdminSiteContent = () => {
           <h2 className="text-xl font-bold mb-4">Footer Content</h2>
           <div className="space-y-4 mb-4">
             <div>
-              <label className="block text-sm font-medium mb-1">Footer About Text</label>
+              <label className="block text-sm font-medium mb-1">Footer About Text (English)</label>
               <textarea value={settings.siteContent?.footerAbout || ''} onChange={(e) => updateSiteContent({ footerAbout: e.target.value })} className="w-full px-3 py-2 border rounded" rows={4} />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Footer About Text (বাংলা)</label>
+              <textarea value={settings.siteContent?.footerAbout_bn || ''} onChange={(e) => updateSiteContent({ footerAbout_bn: e.target.value })} className="w-full px-3 py-2 border rounded" rows={4} placeholder="বাংলায় দেখাতে চাইলে এখানে লিখুন" />
+              <p className="mt-1 text-xs text-gray-500">খালি রাখলে ইংরেজি লেখাটাই বাংলা মোডে দেখাবে।</p>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Copyright Text</label>

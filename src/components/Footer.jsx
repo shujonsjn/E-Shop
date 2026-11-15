@@ -127,7 +127,12 @@ const Footer = () => {
             </span>
           </Link>
           <p className="mt-4 max-w-xs text-[13px] leading-6 text-white/55">
-            {(settings.siteContent?.footerAbout || t('footer.aboutText')).replace(/GhorerBazar/g, settings.siteName)}
+            {tx(
+              settings.siteContent?.footerAbout || t('footer.aboutText'),
+              settings.siteContent?.footerAbout_bn ||
+                settings.siteContent?.footerAbout ||
+                t('footer.aboutText')
+            ).replace(/GhorerBazar/g, settings.siteName)}
           </p>
           <ul className="mt-4 space-y-2 text-[13px] text-white/60">
             {settings.siteAddress && (
