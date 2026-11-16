@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { saveStore } from '../services/store'
+import { isRealSocialUrl } from '../utils/media'
 
 const SettingsContext = createContext()
 
@@ -12,13 +13,9 @@ const defaultHomeLayout = [
   { id: 'trust', type: 'trust', enabled: true, order: 1 },
   { id: 'categories', type: 'categories', enabled: true, order: 2, title: 'Featured Categories', subtitle: 'Shop by your favorite category', href: '/shop', linkLabel: 'View All Categories' },
   { id: 'flash', type: 'flash', enabled: true, order: 3 },
-  { id: 'top', type: 'productRow', enabled: true, order: 4, title: 'Top Selling Products', subtitle: 'Most popular items this week', href: '/shop?sort=best', linkLabel: 'View All', filter: 'topSelling', limit: 4 },
+  { id: 'top', type: 'productRow', enabled: true, order: 4, title: 'Top Selling Products', subtitle: 'Most popular items this week', titleBn: 'সর্বাধিক বিক্রিত পণ্য', subtitleBn: 'এই সপ্তাহের সবচেয়ে জনপ্রিয় পণ্য', href: '/shop?sort=best', linkLabel: 'View All', filter: 'topSelling', limit: 4 },
   { id: 'brands', type: 'brands', enabled: true, order: 5 },
-  { id: 'row_honey', type: 'productRow', enabled: true, order: 6, title: 'All Natural Honey', titleBn: 'খাঁটি প্রাকৃতিক মধু', subtitle: 'Raw, unfiltered and collected from trusted beekeepers', subtitleBn: 'খাঁটি, আনফিল্টারড — বিশ্বস্ত মৌচাষীদের কাছ থেকে', href: '/collections/honey', linkLabel: 'View All', filter: 'category', category: 'honey', limit: 5 },
-  { id: 'row_dates', type: 'productRow', enabled: true, order: 7, title: 'Premium Dates', titleBn: 'প্রিমিয়াম খেজুর', subtitle: 'Soft, plump dates for iftar, snacking and gifting', subtitleBn: 'ইফতার, নাস্তা ও উপহারের জন্য নরম-মোলায়েম খেজুর', href: '/collections/dates', linkLabel: 'View All', filter: 'category', category: 'dates', limit: 5 },
-  { id: 'row_cooking', type: 'productRow', enabled: true, order: 8, title: 'Cooking Essentials', titleBn: 'রান্নার প্রয়োজনীয়', subtitle: 'Ghee, cooking oil and everyday pantry staples', subtitleBn: 'ঘি, রান্নার তেল ও প্রতিদিনের নিত্যপণ্য', href: '/collections/oil-ghee', linkLabel: 'View All', filter: 'category', category: 'oil-ghee', limit: 5 },
-  { id: 'row_organic', type: 'productRow', enabled: true, order: 9, title: 'Organic Certified', titleBn: 'অর্গানিক সার্টিফাইড', subtitle: 'Grown and processed without synthetic chemicals', subtitleBn: 'কৃত্রিম রাসায়নিক ছাড়া উৎপাদিত ও প্রসেসড', href: '/shop?flag=organic', linkLabel: 'View All', filter: 'organic', limit: 5 },
-  { id: 'row_featured', type: 'productRow', enabled: true, order: 10, title: 'Just For You', titleBn: 'শুধু আপনার জন্য', subtitle: 'Handpicked products just for you', subtitleBn: 'আপনার জন্য বাছাই করা পণ্যসমূহ', href: '/shop', linkLabel: 'View All', filter: 'featured', limit: 5 },
+  { id: 'row_new', type: 'productRow', enabled: true, order: 6, title: 'New Arrivals', titleBn: 'নতুন সংগ্রহ', subtitle: 'Fresh picks added to the collection', subtitleBn: 'সংগ্রহে নতুন যোগ হওয়া পণ্য', href: '/shop', linkLabel: 'View All', filter: 'featured', limit: 5 },
   { id: 'promo', type: 'promo', enabled: true, order: 11 },
   { id: 'testimonials', type: 'testimonials', enabled: true, order: 12 },
   { id: 'cta', type: 'cta', enabled: true, order: 13 },
@@ -27,28 +24,30 @@ const defaultHomeLayout = [
 const defaultSettings = {
   // Site info
   siteName: 'Gift Shop',
-  siteTagline: 'Pure food, honest price',
-  siteTagline_bn: 'খাঁটি খাবার, সৎ দাম',
+  siteTagline: 'Your Ultimate Choice for Perfect Gifts',
+  siteTagline_bn: 'নিখুঁত উপহার ও আকর্ষণীয় শোপিসের জন্য আপনার সেরা পছন্দ',
   siteDescription: '',
   siteLogo: '',
   siteEmail: '',
-  sitePhone: '+8809642922922',
+  sitePhone: '+8801708429595',
   siteAddress: 'Dhaka, Bangladesh',
-  whatsappNumber: '+8801321208940',
-  callOrderNumber: '+8809642922922',
-  facebook: 'https://facebook.com/',
-  instagram: 'https://instagram.com/',
-  youtube: 'https://youtube.com/',
-  topBarText: 'Free Delivery on Orders Above ৳1000',
+  whatsappNumber: '+8801708429595',
+  callOrderNumber: '+8801708429595',
+  facebook: '',
+  instagram: '',
+  youtube: '',
+  // Leave empty to show the free-delivery line generated from the setting below.
+  topBarText: '',
+  topBarText_bn: '',
   
   // Home Layout
   homeLayout: defaultHomeLayout,
 
   // Page top banners (shown on Shop/Category, Offer Zone and Brands pages)
   pageBanners: {
-    shop: '/images/banner/promo-2.jpg',
-    offer: '/images/banner/promo-1.jpg',
-    brands: '/images/banner/promo-1.jpg',
+    shop: '',
+    offer: '',
+    brands: '',
   },
   
   // Site Content
@@ -56,14 +55,15 @@ const defaultSettings = {
     heroSlides: defaultHeroSlides,
     sideBanners: defaultSideBanners,
     promoBanners: defaultPromoBanners,
-    footerAbout: 'GhorerBazar is your trusted online grocery store in Bangladesh. We deliver fresh, pure and quality products right to your doorstep.',
-    footerCopyright: '© 2026 GhorerBazar. All rights reserved.',
+    footerAbout: 'Gift Shop is your trusted online gift & showpiece store in Bangladesh. We deliver carefully selected gifts, showpieces and home décor to your doorstep.',
+    footerAbout_bn: 'গিফট শপ বাংলাদেশের বিশ্বস্ত অনলাইন গিফট ও শোপিস স্টোর। আমরা যত্নে বাছাই করা উপহার, শোপিস ও হোম ডেকোর আপনার দরজায় পৌঁছে দিই।',
+    footerCopyright: `© ${new Date().getFullYear()} Gift Shop. All rights reserved.`,
     homeSectionTitle: 'Our Products',
     newsletterText: 'Subscribe to get updates on offers and new products',
-    ctaTitle: 'Stock up your kitchen today',
-    ctaTitleBn: 'আজই রান্নাঘরের মজুত বাড়ান',
-    ctaSubtitle: 'Free delivery on orders over ৳2,000 · Cash on delivery available',
-    ctaSubtitleBn: '৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে',
+    ctaTitle: 'Find the perfect gift today',
+    ctaTitleBn: 'আজই নিখুঁত উপহার খুঁজে নিন',
+    ctaSubtitle: 'Free delivery on orders above ৳1,000 · Cash on delivery available',
+    ctaSubtitleBn: '৳১,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে',
     ctaButton: 'Shop Now',
     ctaButtonBn: 'এখনই কিনুন',
     ctaHref: '/shop',
@@ -132,6 +132,26 @@ const mergeSavedSettings = (parsed) => {
   // a store that has its own identity.
   if (typeof merged.siteEmail === 'string' && /@ghorerbazar\.(com|demo)$/i.test(merged.siteEmail.trim())) {
     merged.siteEmail = ''
+  }
+  // Placeholder social links (https://facebook.com/ and friends) look live but
+  // dump visitors on the network home page, so treat them as unset.
+  ;['facebook', 'instagram', 'youtube'].forEach((key) => {
+    if (!isRealSocialUrl(merged[key])) merged[key] = ''
+  })
+  // Earlier versions saved a half-baked copyright such as
+  // "c 2026 . All rights Giftshop.com" and grocery copy in the footer.
+  if (
+    typeof merged.siteContent.footerCopyright === 'string' &&
+    /^\s*c\s*\d{4}/i.test(merged.siteContent.footerCopyright)
+  ) {
+    merged.siteContent.footerCopyright = `© ${new Date().getFullYear()} ${merged.siteName}. All rights reserved.`
+  }
+  if (
+    typeof merged.siteContent.footerAbout === 'string' &&
+    (/grocery/i.test(merged.siteContent.footerAbout) ||
+      /ghorer\s?bazar/i.test(merged.siteContent.footerAbout))
+  ) {
+    merged.siteContent.footerAbout = defaultSettings.siteContent.footerAbout
   }
   Object.keys(defaultSettings.paymentMethods).forEach((key) => {
     merged.paymentMethods[key] = {

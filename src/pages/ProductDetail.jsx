@@ -229,9 +229,11 @@ const ProductDetail = () => {
               <span className={`text-xs font-semibold ${inStock ? 'text-success' : 'text-red-500'}`}>
                 {inStock ? t('common.inStock') : t('common.outOfStock')}
               </span>
-              <span className="text-xs text-ink-muted">
-                {product.sold}+ {t('product.peopleBought')}
-              </span>
+              {reviews.length > 0 && (
+                <span className="text-xs text-ink-muted">
+                  {tx(`${reviews.length} reviews`, `${reviews.length}টি রিভিউ`)}
+                </span>
+              )}
             </div>
 
             <div className="mt-2 text-xs text-ink-muted">
@@ -294,7 +296,7 @@ const ProductDetail = () => {
                 <MessageCircle size={15} />
                 {t('product.orderOnWhatsApp')}
               </a>
-              <a href={`tel:${settings?.callOrderNumber || settings?.sitePhone || '+8809642922922'}`} className="btn-dark py-2.5 text-xs">
+              <a href={`tel:${settings?.callOrderNumber || settings?.sitePhone || ''}`} className="btn-dark py-2.5 text-xs">
                 <Phone size={15} />
                 {t('product.callForOrder')}
               </a>

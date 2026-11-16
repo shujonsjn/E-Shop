@@ -11,25 +11,14 @@ import {
 } from 'lucide-react'
 import HeroSlider from '../components/HeroSlider'
 import ProductCard from '../components/ProductCard'
-import { RatingStars, SectionHeading } from '../components/ui'
-import { testimonials } from '../data/catalog'
+import { RatingStars, SectionHeading, formatTaka } from '../components/ui'
 import { useProducts } from '../context/ProductsContext'
+import { useReview } from '../context/ReviewContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
 import { getMergedCategories } from '../utils/mergeCategories'
 import { getMergedBrands } from '../utils/mergeBrands'
-
-const getRemaining = () => {
-  const now = new Date()
-  const end = new Date(now)
-  end.setHours(23, 59, 59, 999)
-  const diff = Math.max(0, end.getTime() - now.getTime())
-  return {
-    hours: Math.floor(diff / 3600000),
-    minutes: Math.floor((diff % 3600000) / 60000),
-    seconds: Math.floor((diff % 60000) / 1000),
-  }
-}
+import { isDemoAsset } from '../utils/media'
 
 const ProductRow = ({ title, subtitle, items, href, linkLabel }) => {
   if (!items.length) return null
@@ -47,13 +36,17 @@ const ProductRow = ({ title, subtitle, items, href, linkLabel }) => {
 
 const Home = () => {
   const { products } = useProducts()
+  const { reviews } = useReview()
   const { t, tx } = useLanguage()
   const { settings } = useSettings()
   const [categories, setCategories] = useState([])
   const [brandsList, setBrandsList] = useState([])
-  const sideBanners = settings.siteContent?.sideBanners || []
-  const promoBanners = settings.siteContent?.promoBanners || []
-  const [time, setTime] = useState(getRemaining)
+  const sideBanners = (settings.siteContent?.sideBanners || []).filter(
+    (banner) => banner?.image && !isDemoAsset(banner.image)
+  )
+  const promoBanners = (settings.siteContent?.promoBanners || []).filter(
+    (banner) => banner?.image && !isDemoAsset(banner.image)
+  )
   const homeLayout = [...(settings.homeLayout || [])]
     .map((item, idx) => ({ order: idx, enabled: true, ...item }))
     .sort((a, b) => (a.order || 0) - (b.order || 0))
@@ -74,37 +67,38 @@ const Home = () => {
     }
   }, [])
 
-  useEffect(() => {
-    const timer = setInterval(() => setTime(getRemaining()), 1000)
-    return () => clearInterval(timer)
-  }, [])
-
   const flashProducts = products.filter((p) => p.oldPrice > p.price).slice(0, 4)
   const topProducts = products.filter((p) => p.topSelling).slice(0, 4)
   const featured = products.filter((p) => p.featured).slice(0, 5)
-  const honeyItems = products.filter((p) => p.category === 'honey').slice(0, 5)
-  const dateItems = products.filter((p) => p.category === 'dates').slice(0, 5)
-  const cookingItems = products.filter((p) => p.category === 'oil-ghee').slice(0, 5)
-  const organicItems = products
-    .filter(
-      (p) =>
-        p.badges?.includes('Organic') ||
-        p.category === 'functional-food' ||
-        ['almonds-1kg', 'cashew-nuts-1kg', 'mixed-nuts-500g'].includes(p.slug)
-    )
-    .slice(0, 5)
+  const organicItems = products.filter((p) => p.badges?.includes('Organic')).slice(0, 5)
+
+  // Real customer reviews replace the bundled demo testimonials. Only reviews
+  // that actually describe the purchase are shown.
+  const testimonials = [...reviews]
+    .filter((review) => typeof review.comment === 'string' && review.comment.trim().length > 15)
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+    .slice(0, 8)
+
+  const freeDeliveryThreshold = Number(settings.freeDeliveryThreshold || 0)
+  const savedCtaAmount = Number(
+    String(settings.siteContent?.ctaSubtitle || '').replace(/[^\d০-৯]/g, '').replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d))
+  )
+  const ctaSubtitle =
+    freeDeliveryThreshold > 0 && (!savedCtaAmount || savedCtaAmount !== freeDeliveryThreshold)
+      ? tx(
+          `Free delivery on orders above ${formatTaka(freeDeliveryThreshold)} · Cash on delivery available`,
+          `${formatTaka(freeDeliveryThreshold)} টাকার বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে`
+        )
+      : tx(
+          settings.siteContent?.ctaSubtitle || 'Cash on delivery available',
+          settings.siteContent?.ctaSubtitleBn || 'ক্যাশ অন ডেলিভারি আছে'
+        )
 
   const trustItems = [
     { icon: ShieldCheck, title: t('home.trustAuthentic'), text: t('home.trustAuthenticSub') },
     { icon: Truck, title: t('home.trustDelivery'), text: t('home.trustDeliverySub') },
     { icon: RotateCcw, title: t('home.trustReturn'), text: t('home.trustReturnSub') },
     { icon: Headphones, title: t('home.trustSupport'), text: t('home.trustSupportSub') },
-  ]
-
-  const countdown = [
-    { label: t('home.hours'), value: time.hours },
-    { label: t('home.minutes'), value: time.minutes },
-    { label: t('home.seconds'), value: time.seconds },
   ]
 
   const getProductRowItems = (section) => {
@@ -217,17 +211,6 @@ const Home = () => {
                     <p className="text-[11px] text-ink-muted sm:text-xs">{t('home.flashSaleSub')}</p>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] font-semibold text-ink-muted">{t('home.endsIn')}</span>
-                  {countdown.map(({ label, value }) => (
-                    <span key={label} className="text-center">
-                      <span className="grid h-7 min-w-8 place-items-center rounded bg-ink px-1.5 text-xs font-bold text-white">
-                        {String(value).padStart(2, '0')}
-                      </span>
-                      <span className="mt-0.5 block text-[9px] text-ink-muted">{label}</span>
-                    </span>
-                  ))}
-                </div>
               </div>
               <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4">
                 {flashProducts.map((product) => (
@@ -263,6 +246,7 @@ const Home = () => {
         )
       }
       case 'brands':
+        if (!brandsList.length) return null
         return (
           <section key={section.id} className="container-gb mt-10">
             <SectionHeading title={t('home.ourBrands')} subtitle={t('home.ourBrandsSub')} href="/brands" />
@@ -285,6 +269,7 @@ const Home = () => {
           </section>
         )
       case 'promo':
+        if (!promoBanners.length) return null
         return (
           <section key={section.id} className="container-gb mt-10">
             <div className="grid gap-3 md:grid-cols-2">
@@ -306,6 +291,7 @@ const Home = () => {
           </section>
         )
       case 'testimonials':
+        if (!testimonials.length) return null
         return (
           <section key={section.id} className="container-gb mt-10">
             <SectionHeading
@@ -313,28 +299,29 @@ const Home = () => {
               subtitle={t('home.testimonialsSub')}
             />
             <div className="no-scrollbar -mx-1 flex snap-x gap-3 overflow-x-auto px-1 pb-2">
-              {testimonials.map((item) => (
+              {testimonials.map((review) => (
                 <article
-                  key={item.id}
+                  key={review.id}
                   className="w-[260px] shrink-0 snap-start rounded-lg border border-gray-100 bg-white p-4 shadow-card sm:w-[300px]"
                 >
                   <div className="flex items-center justify-between">
-                    <RatingStars value={item.rating} size={14} />
+                    <RatingStars value={review.rating} size={14} />
                     <Quote size={20} className="text-brand/20" />
                   </div>
                   <p className="mt-3 min-h-[76px] text-[13px] leading-6 text-ink-muted">
-                    “{tx(item.text, item.text_bn)}”
+                    “{review.comment}”
                   </p>
                   <div className="mt-3 flex items-center gap-2.5 border-t border-gray-100 pt-3">
-                    <img
-                      src={item.avatar}
-                      alt={tx(item.name, item.name_bn)}
-                      className="h-9 w-9 rounded-full object-cover"
-                      loading="lazy"
-                    />
+                    <span className="grid h-9 w-9 place-items-center rounded-full bg-brand-light text-xs font-bold text-brand">
+                      {(review.userName || '?').charAt(0).toUpperCase()}
+                    </span>
                     <div>
-                      <p className="text-[13px] font-bold text-ink">{tx(item.name, item.name_bn)}</p>
-                      <p className="text-[11px] text-ink-muted">{tx(item.location, item.location_bn)}</p>
+                      <p className="text-[13px] font-bold text-ink">
+                        {review.userName || tx('Customer', 'ক্রেতা')}
+                      </p>
+                      <p className="text-[11px] text-ink-muted">
+                        {tx('Verified buyer', 'যাচাইকৃত ক্রেতা')}
+                      </p>
                     </div>
                   </div>
                 </article>
@@ -349,18 +336,11 @@ const Home = () => {
               <div>
                 <h3 className="text-lg font-bold text-white sm:text-xl">
                   {tx(
-                    settings.siteContent?.ctaTitle ?? 'Stock up your kitchen today',
-                    settings.siteContent?.ctaTitleBn ?? 'আজই রান্নাঘরের মজুত বাড়ান'
+                    settings.siteContent?.ctaTitle || 'Find the perfect gift today',
+                    settings.siteContent?.ctaTitleBn || 'আজই নিখুঁত উপহার খুঁজে নিন'
                   )}
                 </h3>
-                <p className="mt-1 text-xs text-white/60 sm:text-sm">
-                  {tx(
-                    settings.siteContent?.ctaSubtitle ??
-                      'Free delivery on orders over ৳2,000 · Cash on delivery available',
-                    settings.siteContent?.ctaSubtitleBn ??
-                      '৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে'
-                  )}
-                </p>
+                <p className="mt-1 text-xs text-white/60 sm:text-sm">{ctaSubtitle}</p>
               </div>
               <Link to={settings.siteContent?.ctaHref || '/shop'} className="btn-primary shrink-0">
                 {tx(

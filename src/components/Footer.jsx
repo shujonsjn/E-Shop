@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   Facebook,
@@ -13,6 +13,7 @@ import toast from 'react-hot-toast'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
 import { getMergedCategories } from '../utils/mergeCategories'
+import { isRealSocialUrl } from '../utils/media'
 
 const Footer = () => {
   const { t, tx } = useLanguage()
@@ -159,17 +160,17 @@ const Footer = () => {
             )}
           </ul>
           <div className="mt-4 flex items-center gap-2">
-            {settings.facebook && (
+            {isRealSocialUrl(settings.facebook) && (
               <a href={settings.facebook} target="_blank" rel="noreferrer" aria-label="Facebook" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
                 <Facebook size={15} />
               </a>
             )}
-            {settings.instagram && (
+            {isRealSocialUrl(settings.instagram) && (
               <a href={settings.instagram} target="_blank" rel="noreferrer" aria-label="Instagram" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
                 <Instagram size={15} />
               </a>
             )}
-            {settings.youtube && (
+            {isRealSocialUrl(settings.youtube) && (
               <a href={settings.youtube} target="_blank" rel="noreferrer" aria-label="YouTube" className="grid h-8 w-8 place-items-center rounded-full bg-white/10 text-white/70 transition hover:bg-brand hover:text-white">
                 <Youtube size={15} />
               </a>
@@ -225,33 +226,7 @@ const Footer = () => {
         </div>
 
         <div>
-          <h4 className="mb-3 text-sm font-bold">{t('footer.downloadApp')}</h4>
-          <p className="mb-3 text-[12px] text-white/60">{t('footer.appNote').replace('GhorerBazar', settings.siteName)}</p>
-          <div className="space-y-2">
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 transition hover:border-brand"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded bg-white text-ink">â–¶</span>
-              <span className="leading-tight">
-                <span className="block text-[9px] text-white/60">GET IT ON</span>
-                <span className="block text-xs font-bold">Google Play</span>
-              </span>
-            </a>
-            <a
-              href="#"
-              onClick={(e) => e.preventDefault()}
-              className="flex items-center gap-2 rounded-md border border-white/15 bg-white/5 px-3 py-2 transition hover:border-brand"
-            >
-              <span className="grid h-7 w-7 place-items-center rounded bg-white text-ink">â—</span>
-              <span className="leading-tight">
-                <span className="block text-[9px] text-white/60">Download on the</span>
-                <span className="block text-xs font-bold">App Store</span>
-              </span>
-            </a>
-          </div>
-          <h4 className="mb-2 mt-5 text-sm font-bold">{t('footer.paymentMethods')}</h4>
+          <h4 className="mb-2 text-sm font-bold">{t('footer.paymentMethods')}</h4>
           <div className="flex flex-wrap gap-1.5">
             {Object.entries(settings.paymentMethods || {})
               .filter(([, method]) => method?.enabled)

@@ -14,6 +14,7 @@ import {
 import toast from 'react-hot-toast'
 import { Breadcrumbs, StatusBadge, formatTaka } from '../components/ui'
 import { useAuth } from '../context/AuthContext'
+import { useSettings } from '../context/SettingsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { trackOrderRemote } from '../services/commerce'
 
@@ -22,6 +23,7 @@ const STEPS = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 
 const Track = () => {
   const { orderId: routeOrderId } = useParams()
   const { getOrderById, cancelOrder, cancelOrderByPhone, user } = useAuth()
+  const { settings } = useSettings()
   const { t, tx } = useLanguage()
 
   const [input, setInput] = useState(routeOrderId || '')
@@ -408,8 +410,11 @@ const Track = () => {
             <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-gray-100 bg-white px-4 py-3">
               <p className="text-[12px] text-ink-muted">
                 {t('track.needHelp')}{' '}
-                <a href="tel:+8809642922922" className="font-semibold text-brand hover:underline">
-                  {t('track.contact')}
+                <a
+                  href={`tel:${settings.callOrderNumber || settings.sitePhone || ''}`}
+                  className="font-semibold text-brand hover:underline"
+                >
+                  {settings.callOrderNumber || settings.sitePhone || t('track.contact')}
                 </a>
               </p>
               <div className="flex flex-wrap gap-2">

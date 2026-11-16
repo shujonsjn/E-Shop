@@ -139,7 +139,7 @@ const AdminSiteContent = () => {
                 type="text"
                 value={settings.siteTagline ?? ''}
                 onChange={(e) => updateSettings({ siteTagline: e.target.value })}
-                placeholder="Pure food, honest price"
+                placeholder="Your Ultimate Choice for Perfect Gifts"
                 className="w-full px-3 py-2 border rounded"
               />
               <p className="mt-1 text-xs text-gray-500">Logo-র নিচে দেখানো হয় (ডেস্কটপে)। খালি রাখলে দেখাবে না।</p>
@@ -150,7 +150,7 @@ const AdminSiteContent = () => {
                 type="text"
                 value={settings.siteTagline_bn ?? ''}
                 onChange={(e) => updateSettings({ siteTagline_bn: e.target.value })}
-                placeholder="খাঁটি খাবার, সৎ দাম"
+                placeholder="নিখুঁত উপহার ও আকর্ষণীয় শোপিসের জন্য আপনার সেরা পছন্দ"
                 className="w-full px-3 py-2 border rounded"
               />
             </div>
@@ -193,8 +193,30 @@ const AdminSiteContent = () => {
               <input type="text" value={settings.siteAddress} onChange={(e) => updateSettings({ siteAddress: e.target.value })} className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Top Bar Text</label>
-              <input type="text" value={settings.topBarText} onChange={(e) => updateSettings({ topBarText: e.target.value })} className="w-full px-3 py-2 border rounded" />
+              <label className="block text-sm font-medium mb-1">Top Bar Text (English)</label>
+              <input
+                type="text"
+                value={settings.topBarText ?? ''}
+                onChange={(e) => updateSettings({ topBarText: e.target.value })}
+                placeholder="Free delivery on orders above ৳1,000"
+                className="w-full px-3 py-2 border rounded"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                খালি রাখলে ডেলিভারি সেটিং থেকে ফ্রি ডেলিভারির লেখা নিজে থেকেই তৈরি হবে।
+              </p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Top Bar Text (বাংলা)</label>
+              <input
+                type="text"
+                value={settings.topBarText_bn ?? ''}
+                onChange={(e) => updateSettings({ topBarText_bn: e.target.value })}
+                placeholder="৳১,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি"
+                className="w-full px-3 py-2 border rounded"
+              />
+              <p className="mt-1 text-xs text-gray-500">
+                বাংলা মোডে এটি দেখাবে। খালি রাখলে ইংরেজি লেখাটাই ব্যবহার হবে।
+              </p>
             </div>
           </div>
           <h3 className="text-lg font-bold mb-3 mt-6">Social Links</h3>
@@ -214,24 +236,24 @@ const AdminSiteContent = () => {
           </div>
           <h3 className="text-lg font-bold mb-3 mt-6">Home CTA Banner</h3>
           <p className="text-sm text-gray-500 mb-3">
-            হোম পেজের নিচের কালো ব্যানার ("Stock up your kitchen today")। খালি রাখলে ডিফল্ট লেখা দেখাবে।
+            হোম পেজের নিচের কালো ব্যানার ("Find the perfect gift today")। খালি রাখলে ডিফল্ট লেখা দেখাবে।
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
               <label className="block text-sm font-medium mb-1">CTA Title (English)</label>
-              <input type="text" value={settings.siteContent?.ctaTitle ?? ''} onChange={(e) => updateSiteContent({ ctaTitle: e.target.value })} placeholder="Stock up your kitchen today" className="w-full px-3 py-2 border rounded" />
+              <input type="text" value={settings.siteContent?.ctaTitle ?? ''} onChange={(e) => updateSiteContent({ ctaTitle: e.target.value })} placeholder="Find the perfect gift today" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">CTA Title (বাংলা)</label>
-              <input type="text" value={settings.siteContent?.ctaTitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaTitleBn: e.target.value })} placeholder="আজই রান্নাঘরের মজুত বাড়ান" className="w-full px-3 py-2 border rounded" />
+              <input type="text" value={settings.siteContent?.ctaTitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaTitleBn: e.target.value })} placeholder="আজই নিখুঁত উপহার খুঁজে নিন" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">CTA Subtitle (English)</label>
-              <input type="text" value={settings.siteContent?.ctaSubtitle ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitle: e.target.value })} placeholder="Free delivery on orders over ৳2,000 · Cash on delivery available" className="w-full px-3 py-2 border rounded" />
+              <input type="text" value={settings.siteContent?.ctaSubtitle ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitle: e.target.value })} placeholder="Free delivery on orders above ৳1,000 · Cash on delivery available" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">CTA Subtitle (বাংলা)</label>
-              <input type="text" value={settings.siteContent?.ctaSubtitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitleBn: e.target.value })} placeholder="৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি" className="w-full px-3 py-2 border rounded" />
+              <input type="text" value={settings.siteContent?.ctaSubtitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitleBn: e.target.value })} placeholder="৳১,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Button Text (English)</label>
@@ -255,16 +277,6 @@ const AdminSiteContent = () => {
           <div className="flex justify-between mb-4">
             <h2 className="text-xl font-bold">Hero Slider</h2>
             <div className="flex gap-2">
-              <button onClick={() => {
-                const demo = [
-                  { id: Date.now() + 1, image: '/images/hero/hero-1.jpg', href: '/collections/honey', alt: 'Pure honey collection' },
-                  { id: Date.now() + 2, image: '/images/hero/hero-2.jpg', href: '/collections/dates', alt: 'Premium dates collection' },
-                  { id: Date.now() + 3, image: '/images/hero/hero-3.jpg', href: '/collections/oil-ghee', alt: 'Cooking essentials' },
-                ]
-                const current = Array.isArray(settings.siteContent?.heroSlides) ? settings.siteContent.heroSlides : []
-                updateSettings({ siteContent: { ...(settings.siteContent || {}), heroSlides: [...current, ...demo] } })
-                toast.success('Demo slides added')
-              }} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Add Demo Slides</button>
               <button onClick={() => { setEditingHero(null); setHeroForm({ image: '', href: '', alt: '' }); setShowHeroModal(true) }} className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"><Plus size={20} /> Add Slide</button>
             </div>
           </div>
@@ -387,7 +399,7 @@ const AdminSiteContent = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Copyright Text</label>
-              <input type="text" value={settings.siteContent?.footerCopyright || ''} onChange={(e) => updateSiteContent({ footerCopyright: e.target.value })} className="w-full px-3 py-2 border rounded" />
+              <input type="text" value={settings.siteContent?.footerCopyright || ''} onChange={(e) => updateSiteContent({ footerCopyright: e.target.value })} placeholder="© 2026 Gift Shop. All rights reserved." className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Newsletter Text</label>

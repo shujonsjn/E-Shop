@@ -1,4 +1,4 @@
-﻿import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation, useNavigate } from 'react-router-dom'
 import {
   ChevronDown,
@@ -27,6 +27,16 @@ import CartDrawer from './CartDrawer'
 
 const HIDE_ON = ['/login', '/register', '/admin']
 
+// Reads "৳2,000" or "২০০০" back into a number so the top bar can be checked
+// against the live free-delivery setting.
+const readAmount = (value) => {
+  if (typeof value !== 'string') return null
+  const digits = value.replace(/[^\d০-৯]/g, '')
+  if (!digits) return null
+  const amount = Number(digits.replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d)))
+  return Number.isFinite(amount) ? amount : null
+}
+
 const Navbar = () => {
   const { user } = useAuth()
   const { getCartCount, openCart, subtotal } = useCart()
@@ -37,6 +47,29 @@ const Navbar = () => {
   const [categories, setCategories] = useState([])
   const navigate = useNavigate()
   const location = useLocation()
+
+  // The announcement strips ships with the free-delivery offer. If the saved
+  // text still quotes an old amount (e.g. ৳2,000 while the setting says ৳1,000)
+  // the live value wins, so customers are never shown a wrong threshold.
+  const freeDeliveryThreshold = Number(settings.freeDeliveryThreshold || 0)
+  const autoTopBar =
+    freeDeliveryThreshold > 0
+      ? tx(
+          `Free delivery on orders above ${formatTaka(freeDeliveryThreshold)}`,
+          `${formatTaka(freeDeliveryThreshold)} টাকার বেশি অর্ডারে ফ্রি ডেলিভারি`
+        )
+      : t('topbar.delivery')
+  const customTopBar = (
+    (lang === 'bn' ? settings.topBarText_bn : '') ||
+    settings.topBarText ||
+    ''
+  ).trim()
+  const savedAmount = readAmount(customTopBar)
+  const topBarText =
+    !customTopBar ||
+    (freeDeliveryThreshold > 0 && savedAmount !== null && savedAmount !== freeDeliveryThreshold)
+      ? autoTopBar
+      : customTopBar
 
   useEffect(() => {
     const loadCats = () => {
@@ -136,7 +169,7 @@ const Navbar = () => {
             <span className="hidden text-white/25 sm:inline">|</span>
             <span className="hidden items-center gap-1.5 text-white/75 sm:inline-flex">
               <Truck size={13} />
-              {settings.topBarText || t('topbar.delivery')}
+              {topBarText}
             </span>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3.5">

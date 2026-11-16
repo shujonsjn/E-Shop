@@ -1,8 +1,7 @@
 import { Link, useParams } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { ChevronRight, FileQuestion, Mail, MessageCircle, Phone } from 'lucide-react'
-import { Breadcrumbs, EmptyState, PageBanner } from '../components/ui'
-import { bannerImage } from '../data/catalog'
+import { Breadcrumbs, EmptyState, PageBanner, formatTaka } from '../components/ui'
 import { getPage, pages as defaultPages } from '../data/pages'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
@@ -37,13 +36,31 @@ const ContentPage = () => {
   }, [slug])
 
   const page = pagesData[slug] || getPage(slug)
+  const contactPhone = settings.callOrderNumber || settings.sitePhone || ''
+  const deliveryCharges = Array.isArray(settings.deliveryCharges) ? settings.deliveryCharges : []
+  const chargeInside = deliveryCharges.find((row) => /inside/i.test(row.area || ''))?.charge
+  const chargeOutside = deliveryCharges.find((row) => /outside/i.test(row.area || ''))?.charge
+  const freeAt = Number(settings.freeDeliveryThreshold || 0)
   const brandText = (value) => {
-    if (Array.isArray(value)) return value.map(brandText)
+    if (Array.isArray(value)) {
+      return value
+        .map(brandText)
+        .filter((line) => typeof line !== 'string' || !line.includes('__noemail__'))
+    }
     if (typeof value !== 'string') return value
     return value
       .replace(/GhorerBazar/g, settings.siteName || '')
       .replace(/Ghorer Bazar/g, settings.siteName || '')
-      .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || '')
+      .replace(/hello@ghorerbazar\.demo/g, settings.siteEmail || '__noemail__')
+      // Contact details always follow the live settings, so editing the phone,
+      // address or email in the admin panel updates every policy page.
+      .replace(/\{\{phone\}\}/g, contactPhone)
+      .replace(/\{\{address\}\}/g, settings.siteAddress || '')
+      .replace(/\{\{site\}\}/g, settings.siteName || '')
+      .replace(/\{\{email\}\}/g, settings.siteEmail || '__noemail__')
+      .replace(/\{\{chargeInside\}\}/g, chargeInside != null ? formatTaka(chargeInside) : '')
+      .replace(/\{\{chargeOutside\}\}/g, chargeOutside != null ? formatTaka(chargeOutside) : '')
+      .replace(/\{\{freeAt\}\}/g, freeAt > 0 ? formatTaka(freeAt) : '')
   }
   const contactEmail = settings.siteEmail || ''
   const pagesList = pagesData
@@ -79,7 +96,7 @@ const ContentPage = () => {
     <div className="container-gb py-3">
       <Breadcrumbs items={[{ label: t('common.home'), to: '/' }, { label: title }]} />
 
-      <PageBanner title={title} subtitle={subtitle} image={settings.pageBanners?.content || settings.pageBanners?.shop || bannerImage('nr4nq1788005117-1000x400.png')} />
+      <PageBanner title={title} subtitle={subtitle} image={settings.pageBanners?.content || settings.pageBanners?.shop || ''} />
 
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_260px]">
         <article className="card p-5 sm:p-7">
@@ -88,7 +105,9 @@ const ContentPage = () => {
               const heading = brandText(isBn && section.heading_bn ? section.heading_bn : section.heading)
               const body = brandText(isBn && section.body_bn ? section.body_bn : section.body)
               const bullets = brandText(isBn && section.bullets_bn ? section.bullets_bn : section.bullets)
-              const paragraphs = Array.isArray(body) ? body : body ? [body] : []
+              const paragraphs = (Array.isArray(body) ? body : body ? [body] : []).filter(
+                (paragraph) => typeof paragraph !== 'string' || !paragraph.includes('__noemail__')
+              )
               const list = Array.isArray(bullets) ? bullets : []
 
               return (

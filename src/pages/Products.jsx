@@ -3,7 +3,6 @@ import { Link, useLocation, useParams, useSearchParams } from 'react-router-dom'
 import { ChevronDown, Filter, Search, SlidersHorizontal, X } from 'lucide-react'
 import ProductCard from '../components/ProductCard'
 import { Breadcrumbs, EmptyState, PageBanner } from '../components/ui'
-import { bannerImage } from '../data/catalog'
 import { getMergedBrands } from '../utils/mergeBrands'
 import { getMergedCategories } from '../utils/mergeCategories'
 import { useProducts } from '../context/ProductsContext'
@@ -304,8 +303,8 @@ const Products = () => {
             subtitle={subtitle}
             image={
               isOffer
-                ? settings.pageBanners?.offer || bannerImage('KQlqd1788006502-4000x1039.jpeg')
-                : settings.pageBanners?.shop || bannerImage('nr4nq1788005117-1000x400.png')
+                ? settings.pageBanners?.offer || ''
+                : settings.pageBanners?.shop || ''
             }
           />
         </div>

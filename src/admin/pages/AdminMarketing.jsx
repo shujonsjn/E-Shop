@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
 import { Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'

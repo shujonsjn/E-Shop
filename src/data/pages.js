@@ -1,298 +1,355 @@
 // Bilingual content for the static / content pages.
 // One `ContentPage` template renders any entry below.
+//
+// Brand and contact details are written as tokens so they always follow the
+// admin settings:
+//   {{site}}          → site name
+//   {{phone}}         → call-for-order number
+//   {{email}}         → contact email (line is hidden when empty)
+//   {{address}}       → shop address
+//   {{chargeInside}}  → delivery charge inside Dhaka
+//   {{chargeOutside}} → delivery charge outside Dhaka
+//   {{freeAt}}        → free-delivery threshold
 
 export const pages = {
   'about-us': {
     slug: 'about-us',
     title: 'About Us',
     title_bn: 'আমাদের সম্পর্কে',
-    subtitle: 'Good food, honest sourcing, delivered to every home in Bangladesh.',
-    subtitle_bn: 'ভালো খাবার, সৎ সোর্সিং — বাংলাদেশের প্রতিটি ঘরে পৌঁছে দেওয়া আমাদের লক্ষ্য।',
+    subtitle: 'Thoughtful gifts and showpieces, delivered to every home in Bangladesh.',
+    subtitle_bn: 'যত্নে বাছাই করা উপহার ও শোপিস — বাংলাদেশের প্রতিটি ঘরে পৌঁছে দেওয়াই আমাদের লক্ষ্য।',
     sections: [
       {
         heading: 'Our story',
         heading_bn: 'আমাদের গল্প',
         body: [
-          'GhorerBazar started with a simple observation: families were paying more for food that was often adulterated, overpacked or simply not fresh. We wanted to make safe, authentic pantry staples easy to find and easy to trust.',
-          'Today we work directly with beekeepers, farmers, small producers and verified importers. Every product is checked before it reaches our warehouse, and every order is packed by hand.',
+          '{{site}} started with a simple idea: finding a beautiful, well-made gift in Bangladesh should not take a whole day of searching. We wanted one trusted place where a showpiece, a watch or a pair of shoes could be chosen with confidence.',
+          'Today we hand-pick every item in our collection. We check the finish, the packaging and the price before a product reaches our shelves, and we pack each order ourselves so it arrives exactly as you saw it online.',
         ],
         body_bn: [
-          'ঘরের বাজার শুরু হয়েছিল একটি সহজ উপলব্ধি থেকে: পরিবারগুলো বেশি দাম দিয়েও প্রায়ই ভেজাল, অতিরিক্ত প্যাকেটজাত বা টাটকা নয় এমন খাবার কিনছিল। আমরা নিরাপদ ও খাঁটি নিত্যপণ্য সহজে পাওয়া এবং বিশ্বাস করার মতো করে তুলতে চেয়েছি।',
-          'আজ আমরা সরাসরি মৌচাষী, কৃষক, ক্ষুদ্র উৎপাদক ও যাচাইকৃত আমদানিকারকের সাথে কাজ করি। প্রতিটি পণ্য গুদামে আসার আগে যাচাই করা হয়, আর প্রতিটি অর্ডার হাতে প্যাক করা হয়।',
+          '{{site}} যাত্রা শুরু করেছিল একটি সহজ ভাবনা থেকে: বাংলাদেশে সুন্দর ও মানসম্মত উপহার খুঁজতে গিয়ে যেন পুরো দিন নষ্ট না হয়। আমরা চেয়েছি একটি বিশ্বস্ত জায়গা, যেখানে শোপিস, ঘড়ি বা জুতা নিশ্চিন্তে বেছে নেওয়া যায়।',
+          'আজ আমাদের সংগ্রহে থাকা প্রতিটি পণ্য আমরা নিজেরা বাছাই করি। পণ্য আমাদের কাছে আসার আগে ফিনিশিং, প্যাকেজিং ও দাম যাচাই করা হয়, আর প্রতিটি অর্ডার আমরা নিজ হাতে প্যাক করি — যেন আপনি ঠিক সেটাই পান যা অনলাইনে দেখেছেন।',
         ],
       },
       {
         heading: 'What we stand for',
         heading_bn: 'আমাদের মূল্যবোধ',
         bullets: [
-          'Authenticity first — no shortcuts, no fillers, no misleading labels.',
-          'Fair prices for customers and fair pay for our producers.',
-          'Honest communication about stock, delivery and returns.',
-          'Care for the environment through minimal, recyclable packaging.',
+          'Honest product photos and descriptions — what you see is what arrives.',
+          'Fair prices, with discounts shown clearly instead of inflated “before” prices.',
+          'Careful packaging so fragile showpieces reach you safely.',
+          'Quick replies on phone and WhatsApp when something is not right.',
         ],
         bullets_bn: [
-          'সবার আগে খাঁটিতা — কোনো শর্টকাট, ভেজাল বা বিভ্রান্তিকর লেবেল নয়।',
-          'ক্রেতার জন্য ন্যায্য দাম, উৎপাদকদের জন্য ন্যায্য পারিশ্রমিক।',
-          'স্টক, ডেলিভারি ও রিটার্ন নিয়ে সৎ যোগাযোগ।',
-          'সর্বনিম্ন ও রিসাইকেলযোগ্য প্যাকেজিংয়ে পরিবেশের যত্ন।',
+          'সৎ ছবি ও বিবরণ — আপনি যা দেখছেন, ঠিক সেটাই পৌঁছাবে।',
+          'ন্যায্য দাম; বাড়তি “আগের দাম” দেখিয়ে বিভ্রান্তি নয়।',
+          'ভঙ্গুর শোপিসের জন্য যত্নসহ প্যাকেজিং, যেন নিরাপদে পৌঁছায়।',
+          'কিছু ভুল হলে ফোন ও হোয়াটসঅ্যাপে দ্রুত উত্তর।',
         ],
       },
       {
-        heading: 'Visit us',
-        heading_bn: 'আমাদের দেখুন',
+        heading: 'Visit or call us',
+        heading_bn: 'আমাদের দেখুন বা কল করুন',
         body: [
-          'Our office and fulfilment centre are in Rampura, Dhaka. Online orders are delivered nationwide, and our support team is available every day from 9am to 9pm.',
+          'Address: {{address}}',
+          'Phone: {{phone}} — every day, 9am to 9pm.',
+          'Email: {{email}}',
         ],
         body_bn: [
-          'আমাদের অফিস ও ফুলফিলমেন্ট সেন্টার ঢাকার রামপুরায়। সারাদেশে অনলাইন অর্ডার ডেলিভারি হয়, আর আমাদের সাপোর্ট টিম প্রতিদিন সকাল ৯টা থেকে রাত ৯টা পর্যন্ত পাওয়া যায়।',
+          'ঠিকানা: {{address}}',
+          'ফোন: {{phone}} — প্রতিদিন সকাল ৯টা থেকে রাত ৯টা।',
+          'ইমেইল: {{email}}',
         ],
       },
     ],
   },
+
   'contact-us': {
     slug: 'contact-us',
     title: 'Contact Us',
     title_bn: 'যোগাযোগ',
-    subtitle: 'Questions about an order, a product or a partnership? We are here to help.',
-    subtitle_bn: 'অর্ডার, পণ্য বা পার্টনারশিপ নিয়ে প্রশ্ন আছে? আমরা সাহায্য করতে প্রস্তুত।',
+    subtitle: 'A question about an order, a product or a bulk gift order? We are here to help.',
+    subtitle_bn: 'অর্ডার, পণ্য বা বাল্ক গিফট অর্ডার নিয়ে প্রশ্ন আছে? আমরা সাহায্য করতে প্রস্তুত।',
     sections: [
       {
         heading: 'Talk to our team',
         heading_bn: 'আমাদের টিমের সাথে কথা বলুন',
-        bullets: [
-          'Hotline: +880 9642 922922 (9am – 9pm, every day)',
-          'WhatsApp: +880 1321 208940',
-          'Email: hello@ghorerbazar.demo',
-          'Office: Rampura, Dhaka, Bangladesh',
+        body: [
+          'Phone / WhatsApp: {{phone}}',
+          'Email: {{email}}',
+          'Address: {{address}}',
+          'Support hours: every day, 9am to 9pm.',
         ],
-        bullets_bn: [
-          'হটলাইন: +৮৮০ ৯৬৪২ ৯২২৯২২ (প্রতিদিন সকাল ৯টা – রাত ৯টা)',
-          'হোয়াটসঅ্যাপ: +৮৮০ ১৩২১ ২০৮৯৪০',
-          'ইমেইল: hello@ghorerbazar.demo',
-          'অফিস: রামপুরা, ঢাকা, বাংলাদেশ',
+        body_bn: [
+          'ফোন / হোয়াটসঅ্যাপ: {{phone}}',
+          'ইমেইল: {{email}}',
+          'ঠিকানা: {{address}}',
+          'সাপোর্ট সময়: প্রতিদিন সকাল ৯টা থেকে রাত ৯টা।',
         ],
       },
       {
-        heading: 'Order support',
-        heading_bn: 'অর্ডার সাপোর্ট',
+        heading: 'Already placed an order?',
+        heading_bn: 'অর্ডার করা হয়ে গেছে?',
         body: [
-          'Please keep your order ID ready when you contact us. For delivery updates, the fastest option is the Track Order page — it shows the latest status without waiting for a call.',
+          'Keep your order ID ready and use the Track Order page to see the latest status. If you need to change the address or cancel, call us before the order is handed to the courier.',
         ],
         body_bn: [
-          'যোগাযোগ করার সময় অর্ডার আইডি হাতে রাখুন। ডেলিভারি আপডেটের দ্রুততম উপায় হলো ট্র্যাক অর্ডার পেজ — কলের অপেক্ষা ছাড়াই সর্বশেষ স্ট্যাটাস দেখতে পাবেন।',
+          'অর্ডার আইডি হাতে রাখুন এবং Track Order পেজে সর্বশেষ অবস্থা দেখুন। ঠিকানা বদলাতে বা অর্ডার বাতিল করতে চাইলে কুরিয়ারে দেওয়ার আগেই আমাদের কল করুন।',
         ],
       },
       {
-        heading: 'Business & partnerships',
-        heading_bn: 'ব্যবসা ও পার্টনারশিপ',
+        heading: 'Corporate and bulk gifting',
+        heading_bn: 'কর্পোরেট ও বাল্ক গিফট',
         body: [
-          'For wholesale, corporate gifting or producer partnerships, email us with a short introduction and the quantities you have in mind. We reply within two business days.',
+          'Planning gifts for an office, a wedding or an event? Tell us the quantity, budget and delivery date and we will prepare a quote with gift wrapping options.',
         ],
         body_bn: [
-          'পাইকারি, কর্পোরেট গিফট বা উৎপাদক পার্টনারশিপের জন্য সংক্ষিপ্ত পরিচিতি ও সম্ভাব্য পরিমাণ লিখে ইমেইল করুন। দুই কর্মদিবসের মধ্যে উত্তর দেওয়া হয়।',
+          'অফিস, বিয়ে বা কোনো অনুষ্ঠানের জন্য উপহার পরিকল্পনা করছেন? পরিমাণ, বাজেট ও ডেলিভারির তারিখ জানালে গিফট র্যাপিংসহ একটি কোটেশন তৈরি করে দেব।',
         ],
       },
     ],
   },
+
   'company-information': {
     slug: 'company-information',
     title: 'Company Information',
     title_bn: 'কোম্পানির তথ্য',
-    subtitle: 'Who we are, how to reach us, and how this demo store is operated.',
-    subtitle_bn: 'আমরা কারা, কীভাবে যোগাযোগ করবেন এবং এই ডেমো স্টোর কীভাবে পরিচালিত হয়।',
+    subtitle: 'Who we are, how to reach us, and how this store is run.',
+    subtitle_bn: 'আমরা কারা, কীভাবে যোগাযোগ করবেন এবং এই স্টোর কীভাবে পরিচালিত হয়।',
     sections: [
       {
-        heading: 'Store details',
-        heading_bn: 'স্টোরের তথ্য',
+        heading: 'Business details',
+        heading_bn: 'ব্যবসার তথ্য',
         bullets: [
-          'Brand: GhorerBazar (demo storefront)',
-          'Registered address: Rampura, Dhaka, Bangladesh',
-          'Support hours: 9am – 9pm, seven days a week',
-          'Order channels: website, phone and WhatsApp',
+          'Brand: {{site}}',
+          'Business type: online gift and lifestyle retail',
+          'Address: {{address}}',
+          'Customer care: {{phone}}',
+          'Email: {{email}}',
         ],
         bullets_bn: [
-          'ব্র্যান্ড: ঘরের বাজার (ডেমো স্টোরফ্রন্ট)',
-          'নিবন্ধিত ঠিকানা: রামপুরা, ঢাকা, বাংলাদেশ',
-          'সাপোর্ট সময়: সপ্তাহে সাত দিন, সকাল ৯টা – রাত ৯টা',
-          'অর্ডার চ্যানেল: ওয়েবসাইট, ফোন ও হোয়াটসঅ্যাপ',
+          'ব্র্যান্ড: {{site}}',
+          'ব্যবসার ধরন: অনলাইন গিফট ও লাইফস্টাইল খুচরা বিক্রয়',
+          'ঠিকানা: {{address}}',
+          'কাস্টমার কেয়ার: {{phone}}',
+          'ইমেইল: {{email}}',
         ],
       },
       {
-        heading: 'About this demo',
-        heading_bn: 'এই ডেমো সম্পর্কে',
+        heading: 'How orders are handled',
+        heading_bn: 'অর্ডার কীভাবে পরিচালিত হয়',
         body: [
-          'This is a frontend demonstration built for learning and portfolio purposes. Accounts, orders and reviews are stored only in your browser using localStorage — nothing is sent to a server. Payments are simulated and no real transaction takes place.',
+          'Orders placed on this website are confirmed by phone or WhatsApp before dispatch. Delivery is handled by our courier partners across Bangladesh, and payment is collected by cash on delivery or mobile banking.',
         ],
         body_bn: [
-          'এটি শেখা ও পোর্টফোলিওর উদ্দেশ্যে তৈরি একটি ফ্রন্টএন্ড ডেমো। অ্যাকাউন্ট, অর্ডার ও রিভিউ শুধু আপনার ব্রাউজারে localStorage-এ সংরক্ষিত হয় — কোনো সার্ভারে পাঠানো হয় না। পেমেন্ট সিমুলেটেড, কোনো প্রকৃত লেনদেন হয় না।',
+          'এই ওয়েবসাইটে দেওয়া অর্ডার ডেলিভারির আগে ফোন বা হোয়াটসঅ্যাপে নিশ্চিত করা হয়। সারাদেশে আমাদের কুরিয়ার পার্টনার ডেলিভারি দেয়, আর পেমেন্ট ক্যাশ অন ডেলিভারি বা মোবাইল ব্যাংকিংয়ে নেওয়া হয়।',
         ],
+      },
+      {
+        heading: 'Questions about this page',
+        heading_bn: 'এই পেজ নিয়ে প্রশ্ন',
+        body: ['Write to {{email}} or call {{phone}} and we will respond within one working day.'],
+        body_bn: ['{{email}} ঠিকানায় লিখুন অথবা {{phone}} নম্বরে কল করুন — এক কর্মদিবসের মধ্যে উত্তর দেব।'],
       },
     ],
   },
+
   'our-story': {
     slug: 'our-story',
     title: 'Our Story',
-    title_bn: 'আমাদের গল্প',
-    subtitle: 'People, producers and small moments behind the products you buy.',
-    subtitle_bn: 'আপনার কেনা পণ্যের পেছনের মানুষ, উৎপাদক ও ছোট ছোট গল্প।',
+    title_bn: 'আমাদের কথা',
+    subtitle: 'How a small gift corner grew into an online collection.',
+    subtitle_bn: 'কীভাবে একটি ছোট গিফট কর্নার থেকে অনলাইন সংগ্রহ তৈরি হলো।',
     sections: [
       {
-        heading: 'The honey collectors of Sundarban',
-        heading_bn: 'সুন্দরবনের মৌয়ালরা',
+        heading: 'The first shelf',
+        heading_bn: 'প্রথম তাক',
         body: [
-          'Every season, groups of honey collectors spend weeks inside the mangrove forest, moving with the tides and harvesting only from mature combs. Their knowledge is passed down through generations — and it is the reason Sundarban honey tastes unlike anything else.',
-          'We buy directly from these collector groups, pay before the season closes, and never dilute or heat the honey. What reaches your jar is exactly what left the forest.',
+          'Our first collection was tiny — a few showpieces, some watches and a handful of bags chosen one by one from local suppliers. Customers kept asking for the same thing: something that looks special without an impossible price tag.',
+          'That feedback shaped everything after it. We stopped chasing quantity and started checking quality: joints, stitching, finish, packaging and whether the product looks the same in daylight as it does on a phone screen.',
         ],
         body_bn: [
-          'প্রতি মৌসুমে মৌয়ালদের দল জোয়ারের সাথে চলাচল করে সপ্তাহের পর সপ্তাহ ম্যানগ্রোভ বনে কাটায় এবং শুধু পাকা মৌচাক থেকে মধু সংগ্রহ করে। তাদের জ্ঞান বংশপরম্পরায় চলে আসছে — এজন্যই সুন্দরবনের মধুর স্বাদ এত আলাদা।',
-          'আমরা সরাসরি এই মৌয়াল দলগুলোর কাছ থেকে কিনি, মৌসুম শেষ হওয়ার আগেই মূল্য পরিশোধ করি এবং মধু কখনো মেশাই না বা গরম করি না। আপনার জারে যা পৌঁছায়, তা ঠিক বন থেকেই এসেছে।',
+          'আমাদের প্রথম সংগ্রহ ছিল খুব ছোট — কয়েকটি শোপিস, কিছু ঘড়ি আর স্থানীয় সরবরাহকারীর কাছ থেকে বেছে নেওয়া কয়েকটি ব্যাগ। ক্রেতারা বারবার একই কথা বলতেন: এমন কিছু চাই যা বিশেষ দেখায়, কিন্তু দাম অসম্ভব নয়।',
+          'সেই মতামতই পরের সব সিদ্ধান্ত গড়ে দিয়েছে। আমরা পরিমাণের পেছনে না দৌড়ে মান যাচাই শুরু করি: জোড়া, সেলাই, ফিনিশিং, প্যাকেজিং এবং দিনের আলোয় পণ্যটি মোবাইলের স্ক্রিনে দেখার মতোই লাগে কি না।',
         ],
       },
       {
-        heading: 'A spice grinder in Old Dhaka',
-        heading_bn: 'পুরান ঢাকার এক মসলা কারিগর',
+        heading: 'How we choose products',
+        heading_bn: 'পণ্য কীভাবে বাছাই করি',
+        bullets: [
+          'We order samples and inspect them before listing.',
+          'Fragile items are tested with our own packing method.',
+          'Prices are compared with the local market so the discount is real.',
+          'Products that get repeated complaints are removed from the store.',
+        ],
+        bullets_bn: [
+          'লিস্ট করার আগে নমুনা এনে যাচাই করি।',
+          'ভঙ্গুর পণ্য আমাদের নিজস্ব প্যাকিং পদ্ধতিতে পরীক্ষা করি।',
+          'স্থানীয় বাজারের সাথে দাম মিলিয়ে দেখি, যেন ছাড়টি সত্যি হয়।',
+          'বারবার অভিযোগ আসা পণ্য স্টোর থেকে সরিয়ে দিই।',
+        ],
+      },
+      {
+        heading: 'Where we are going',
+        heading_bn: 'আমাদের পরবর্তী লক্ষ্য',
         body: [
-          'One of our spice partners has been roasting and grinding in Old Dhaka for over thirty years. He still tests every batch by hand, smelling and pinching the powder before it is sealed. Small batches take longer, but the aroma is worth it.',
+          'We are building a collection that covers everyday gifting — birthdays, weddings, anniversaries and office gifts — with faster delivery and clearer product information every month.',
         ],
         body_bn: [
-          'আমাদের এক মসলা পার্টনার ত্রিশ বছরেরও বেশি সময় ধরে পুরান ঢাকায় ভুনা ও গুঁড়া করেন। এখনো প্রতিটি ব্যাচ হাতে পরীক্ষা করেন — প্যাক করার আগে গন্ধ শুঁকে ও ছুঁয়ে দেখেন। ছোট ব্যাচে সময় বেশি লাগে, কিন্তু ঘ্রাণটাই এর প্রমাণ।',
+          'আমরা এমন একটি সংগ্রহ গড়ছি যা দৈনন্দিন উপহারের সব দিক কভার করে — জন্মদিন, বিয়ে, বিবাহবার্ষিকী ও অফিস গিফট — সাথে প্রতি মাসে দ্রুত ডেলিভারি ও আরও পরিষ্কার পণ্য তথ্য।',
         ],
       },
     ],
   },
+
   'terms-and-conditions': {
     slug: 'terms-and-conditions',
     title: 'Terms & Conditions',
     title_bn: 'শর্তাবলি',
     subtitle: 'The rules that apply when you browse or order from this store.',
-    subtitle_bn: 'এই স্টোর ব্রাউজ বা অর্ডার করার সময় প্রযোজ্য নিয়মাবলি।',
+    subtitle_bn: 'এই স্টোর ব্রাউজ বা অর্ডার করার সময় যে নিয়মগুলো প্রযোজ্য।',
     sections: [
       {
-        heading: 'Using this store',
-        heading_bn: 'স্টোর ব্যবহার',
+        heading: 'Using this website',
+        heading_bn: 'এই ওয়েবসাইট ব্যবহার',
         body: [
-          'By accessing this website you agree to use it lawfully and not to misuse the ordering, review or account features. This is a demo store: orders are simulated and no payment is collected.',
+          'By browsing or ordering from {{site}} you agree to use the site lawfully and to provide accurate contact and delivery information. You are responsible for keeping your account details private on shared devices.',
         ],
         body_bn: [
-          'এই ওয়েবসাইট ব্যবহার করে আপনি এটি বৈধভাবে ব্যবহার করতে এবং অর্ডার, রিভিউ বা অ্যাকাউন্ট সুবিধার অপব্যবহার না করতে সম্মত হচ্ছেন। এটি একটি ডেমো স্টোর: অর্ডার সিমুলেটেড এবং কোনো পেমেন্ট নেওয়া হয় না।',
+          '{{site}} ব্রাউজ বা অর্ডার করার মাধ্যমে আপনি সাইটটি আইনসম্মতভাবে ব্যবহার করতে এবং সঠিক যোগাযোগ ও ডেলিভারি তথ্য দিতে সম্মত হচ্ছেন। শেয়ার করা ডিভাইসে আপনার অ্যাকাউন্ট তথ্য গোপন রাখার দায়িত্ব আপনার।',
         ],
       },
       {
-        heading: 'Products and pricing',
-        heading_bn: 'পণ্য ও দাম',
-        body: [
-          'We try to keep product descriptions, images and prices accurate. Minor differences in packaging, colour or weight may occur. Prices can change without notice, and an order is only confirmed once it appears in your account.',
-        ],
-        body_bn: [
-          'পণ্যের বিবরণ, ছবি ও দাম সঠিক রাখার চেষ্টা করা হয়। প্যাকেজিং, রং বা ওজনে সামান্য পার্থক্য হতে পারে। দাম আগাম নোটিশ ছাড়াই পরিবর্তন হতে পারে, এবং অর্ডার কেবল আপনার অ্যাকাউন্টে দেখা গেলেই নিশ্চিত считается।',
-        ],
-      },
-      {
-        heading: 'Accounts and content',
-        heading_bn: 'অ্যাকাউন্ট ও কনটেন্ট',
+        heading: 'Orders and pricing',
+        heading_bn: 'অর্ডার ও দাম',
         bullets: [
-          'You are responsible for the accuracy of the details you provide.',
-          'Reviews must be genuine and must not contain abusive or unlawful content.',
-          'All site content, branding and layout may not be copied without permission.',
+          'All prices are in Bangladeshi Taka and include applicable taxes.',
+          'An order is confirmed only after we verify it by phone or WhatsApp.',
+          'If a product is out of stock after ordering, we will offer an alternative or a full refund.',
+          'Obvious pricing mistakes may be corrected before dispatch, with your approval.',
         ],
         bullets_bn: [
-          'আপনার দেওয়া তথ্যের সঠিকতার দায়িত্ব আপনার।',
-          'রিভিউ সত্যিকারের হতে হবে এবং কটু বা অবৈধ কনটেন্ট থাকতে পারবে না।',
-          'অনুমতি ছাড়া সাইটের কনটেন্ট, ব্র্যান্ডিং ও লেআউট কপি করা যাবে না।',
+          'সব দাম বাংলাদেশি টাকায় এবং প্রযোজ্য ট্যাক্সসহ।',
+          'ফোন বা হোয়াটসঅ্যাপে যাচাই করার পরেই অর্ডার নিশ্চিত হয়।',
+          'অর্ডারের পর পণ্য স্টকে না থাকলে বিকল্প বা সম্পূর্ণ রিফান্ড দেওয়া হবে।',
+          'স্পষ্ট দামের ভুল ডেলিভারির আগে আপনার সম্মতিতে সংশোধন করা হতে পারে।',
         ],
+      },
+      {
+        heading: 'Delivery, returns and cancellation',
+        heading_bn: 'ডেলিভারি, রিটার্ন ও বাতিল',
+        body: [
+          'Delivery charges and timelines are described on the Shipping page. Returns, exchanges and cancellations follow our Happy Return, Exchange and Cancellation policies, which form part of these terms.',
+        ],
+        body_bn: [
+          'ডেলিভারি চার্জ ও সময় Shipping পেজে দেওয়া আছে। রিটার্ন, এক্সচেঞ্জ ও বাতিল আমাদের Happy Return, Exchange ও Cancellation নীতি অনুযায়ী হবে, যা এই শর্তাবলির অংশ।',
+        ],
+      },
+      {
+        heading: 'Contact',
+        heading_bn: 'যোগাযোগ',
+        body: ['For any question about these terms, call {{phone}} or email {{email}}.'],
+        body_bn: ['এই শর্তাবলি নিয়ে কোনো প্রশ্ন থাকলে {{phone}} নম্বরে কল করুন অথবা {{email}} ঠিকানায় ইমেইল করুন।'],
       },
     ],
   },
+
   'privacy-policy': {
     slug: 'privacy-policy',
     title: 'Privacy Policy',
     title_bn: 'প্রাইভেসি পলিসি',
-    subtitle: 'What data this demo stores, where it lives, and how you stay in control.',
-    subtitle_bn: 'এই ডেমো কী ডেটা সংরক্ষণ করে, কোথায় থাকে এবং নিয়ন্ত্রণ কীভাবে আপনার হাতে থাকে।',
+    subtitle: 'What information we collect, why we need it, and how you stay in control.',
+    subtitle_bn: 'আমরা কী তথ্য নিই, কেন প্রয়োজন এবং কীভাবে আপনি নিয়ন্ত্রণে থাকবেন।',
     sections: [
       {
-        heading: 'What we store',
-        heading_bn: 'আমরা কী সংরক্ষণ করি',
-        body: [
-          'Account details, cart contents, wishlist items, orders and reviews are saved in your browser localStorage. No data is transmitted to an external server, and no analytics or tracking scripts are used.',
+        heading: 'Information we collect',
+        heading_bn: 'আমরা যে তথ্য সংগ্রহ করি',
+        bullets: [
+          'Order details: name, phone number, delivery address and the items you ordered.',
+          'Account details: name, phone and email, kept in this browser on your device.',
+          'Optional reviews: the name and comment you choose to publish.',
+          'Basic technical data needed to keep the site working and secure.',
         ],
-        body_bn: [
-          'অ্যাকাউন্টের তথ্য, কার্ট, উইশলিস্ট, অর্ডার ও রিভিউ আপনার ব্রাউজারের localStorage-এ সংরক্ষিত হয়। কোনো বাহ্যিক সার্ভারে ডেটা পাঠানো হয় না এবং কোনো অ্যানালিটিক্স বা ট্র্যাকিং স্ক্রিপ্ট ব্যবহার করা হয় না।',
-        ],
-      },
-      {
-        heading: 'Clearing your data',
-        heading_bn: 'ডেটা মুছে ফেলা',
-        body: [
-          'You can remove everything by clearing this site’s data in your browser settings. Logging out ends the active session; you can sign in again with your own account.',
-        ],
-        body_bn: [
-          'ব্রাউজার সেটিংসে এই সাইটের ডেটা মুছে ফেললে সবকিছু মুছে যাবে। লগ আউট করলে শুধু চলমান সেশন শেষ হয়; নিজের অ্যাকাউন্ট দিয়ে আবার সাইন ইন করতে পারবেন।',
+        bullets_bn: [
+          'অর্ডারের তথ্য: নাম, ফোন নম্বর, ডেলিভারি ঠিকানা ও অর্ডার করা পণ্য।',
+          'অ্যাকাউন্টের তথ্য: নাম, ফোন ও ইমেইল — আপনার ডিভাইসের ব্রাউজারে সংরক্ষিত।',
+          'ঐচ্ছিক রিভিউ: যে নাম ও মন্তব্য আপনি প্রকাশ করতে চান।',
+          'সাইট সচল ও নিরাপদ রাখতে প্রয়োজনীয় সাধারণ টেকনিক্যাল তথ্য।',
         ],
       },
       {
-        heading: 'Third-party images',
-        heading_bn: 'তৃতীয় পক্ষের ছবি',
+        heading: 'How we use it',
+        heading_bn: 'কীভাবে ব্যবহার করি',
         body: [
-          'Demo product and banner images are loaded from a public CDN for presentation only. Replace them with licensed assets before any public deployment.',
+          'Your phone number and address are used to confirm, pack and deliver your order, and to contact you if there is a problem. We do not sell your personal information to third parties.',
         ],
         body_bn: [
-          'ডেমো পণ্য ও ব্যানার ছবি শুধু উপস্থাপনার জন্য একটি পাবলিক CDN থেকে লোড হয়। পাবলিক ডিপ্লয়ের আগে লাইসেন্সযুক্ত অ্যাসেট দিয়ে প্রতিস্থাপন করুন।',
+          'আপনার ফোন নম্বর ও ঠিকানা অর্ডার নিশ্চিত করা, প্যাক করা ও ডেলিভারি দেওয়ার জন্য এবং কোনো সমস্যা হলে যোগাযোগের জন্য ব্যবহার করা হয়। আমরা আপনার ব্যক্তিগত তথ্য তৃতীয় পক্ষের কাছে বিক্রি করি না।',
+        ],
+      },
+      {
+        heading: 'Where your data lives',
+        heading_bn: 'আপনার তথ্য কোথায় থাকে',
+        body: [
+          'Orders are stored in our secured cloud database so the shop can process them. Your customer account stays in this browser unless you sign in on another device. Reviews are stored with the order system so they can appear on product pages.',
+        ],
+        body_bn: [
+          'অর্ডার প্রসেস করার জন্য আমাদের সুরক্ষিত ক্লাউড ডেটাবেসে সংরক্ষিত হয়। আপনার কাস্টমার অ্যাকাউন্ট এই ব্রাউজারেই থাকে, যদি না আপনি অন্য ডিভাইসে সাইন ইন করেন। রিভিউ অর্ডার সিস্টেমের সাথে সংরক্ষিত হয়, যাতে প্রোডাক্ট পেজে দেখা যায়।',
+        ],
+      },
+      {
+        heading: 'Your choices',
+        heading_bn: 'আপনার অধিকার',
+        body: [
+          'You can ask us to correct or delete your order information by calling {{phone}} or emailing {{email}}. Clearing your browser data removes the account stored on this device.',
+        ],
+        body_bn: [
+          '{{phone}} নম্বরে কল করে বা {{email}} ঠিকানায় ইমেইল করে আপনার অর্ডার তথ্য সংশোধন বা মুছে ফেলার অনুরোধ করতে পারেন। ব্রাউজার ডেটা মুছে দিলে এই ডিভাইসে থাকা অ্যাকাউন্টটি মুছে যাবে।',
         ],
       },
     ],
   },
-  careers: {
+
+  'careers': {
     slug: 'careers',
     title: 'Careers',
     title_bn: 'ক্যারিয়ার',
-    subtitle: 'Help us make good food the easy choice for every family.',
-    subtitle_bn: 'প্রতিটি পরিবারের জন্য ভালো খাবার সহজ পছন্দ করতে আমাদের সাথে যোগ দিন।',
+    subtitle: 'Help us make gift shopping simple and trustworthy.',
+    subtitle_bn: 'উপহার কেনাকাটা সহজ ও বিশ্বস্ত করতে আমাদের সাথে কাজ করুন।',
     sections: [
       {
-        heading: 'Why work with us',
-        heading_bn: 'কেন আমাদের সাথে',
-        bullets: [
-          'Small team, real ownership, fast decisions.',
-          'Fair pay, timely salary and two festival bonuses.',
-          'Employee discount on all products.',
-          'Learning budget for skills that matter to you.',
+        heading: 'Working with us',
+        heading_bn: 'আমাদের সাথে কাজ',
+        body: [
+          'We are a small team that cares about product quality and honest customer service. If you enjoy detail-oriented work — packing, product photography, order support or content — we would like to hear from you.',
         ],
-        bullets_bn: [
-          'ছোট টিম, প্রকৃত দায়িত্ব, দ্রুত সিদ্ধান্ত।',
-          'ন্যায্য বেতন, সময়মতো বেতন ও দুই ঈদ বোনাস।',
-          'সব পণ্যে কর্মী ছাড়।',
-          'আপনার প্রয়োজনীয় দক্ষতার জন্য লার্নিং বাজেট।',
-        ],
-      },
-      {
-        heading: 'Open roles (demo)',
-        heading_bn: 'খালি পদ (ডেমো)',
-        bullets: [
-          'Category Executive — Honey & Dates (Dhaka)',
-          'Customer Support Associate (Evening shift, Dhaka)',
-          'Warehouse & Packing Assistant (Rampura)',
-          'Frontend Developer Intern (Remote)',
-        ],
-        bullets_bn: [
-          'ক্যাটাগরি এক্সিকিউটিভ — মধু ও খেজুর (ঢাকা)',
-          'কাস্টমার সাপোর্ট অ্যাসোসিয়েট (সান্ধ্য শিফট, ঢাকা)',
-          'ওয়্যারহাউস ও প্যাকিং অ্যাসিস্ট্যান্ট (রামপুরা)',
-          'ফ্রন্টএন্ড ডেভেলপার ইন্টার্ন (রিমোট)',
+        body_bn: [
+          'আমরা ছোট একটি টিম, যারা পণ্যের মান ও সৎ কাস্টমার সার্ভিসকে গুরুত্ব দেয়। প্যাকিং, প্রোডাক্ট ফটোগ্রাফি, অর্ডার সাপোর্ট বা কনটেন্ট — বিস্তারিত কাজে আগ্রহ থাকলে আমাদের জানান।',
         ],
       },
       {
         heading: 'How to apply',
-        heading_bn: 'আবেদনের নিয়ম',
+        heading_bn: 'কীভাবে আবেদন করবেন',
         body: [
-          'Email your CV and a short note about the role you want to hello@ghorerbazar.demo with the subject line “Career”. We read every application.',
+          'Send your CV and a short note about the role you are looking for to {{email}} with the subject “Career”. We read every application and reply within one week.',
         ],
         body_bn: [
-          'আপনার সিভি ও কোন পদে আগ্রহী তা সংক্ষেপে লিখে “Career” বিষয়সহ hello@ghorerbazar.demo-তে ইমেইল করুন। আমরা প্রতিটি আবেদন পড়ি।',
+          'আপনার সিভি এবং কোন ধরনের কাজে আগ্রহী তা সংক্ষেপে লিখে “Career” বিষয়সহ {{email}} ঠিকানায় পাঠান। আমরা প্রতিটি আবেদন পড়ি এবং এক সপ্তাহের মধ্যে উত্তর দিই।',
+        ],
+      },
+      {
+        heading: 'No matching role?',
+        heading_bn: 'উপযুক্ত পদ নেই?',
+        body: [
+          'We still want to hear from you. Mention the skills you can bring and we will keep your details for future openings.',
+        ],
+        body_bn: [
+          'তবুও আপনার কথা জানতে চাই। আপনার দক্ষতা উল্লেখ করুন, ভবিষ্যতের সুযোগে আমরা আপনার তথ্য সংরক্ষণ করব।',
         ],
       },
     ],
   },
+
   'support-center': {
     slug: 'support-center',
     title: 'Support Center',
@@ -301,114 +358,141 @@ export const pages = {
     subtitle_bn: 'দ্রুত উত্তর এবং সরাসরি মানুষের সাথে যোগাযোগের সহজ উপায়।',
     sections: [
       {
-        heading: 'Before you contact us',
-        heading_bn: 'যোগাযোগের আগে',
+        heading: 'Fastest ways to reach us',
+        heading_bn: 'যোগাযোগের দ্রুততম উপায়',
         bullets: [
-          'Track your order from the Track Order page using your order ID.',
-          'Check the FAQ for delivery, payment and return questions.',
-          'Keep your order ID and the phone number used at checkout ready.',
+          'Call or WhatsApp: {{phone}} (9am – 9pm, every day)',
+          'Email: {{email}}',
+          'Track an order: use the Track Order page with your order ID and phone number.',
         ],
         bullets_bn: [
-          'অর্ডার আইডি দিয়ে ট্র্যাক অর্ডার পেজ থেকে অর্ডার দেখুন।',
-          'ডেলিভারি, পেমেন্ট ও রিটার্ন সংক্রান্ত প্রশ্নের জন্য FAQ দেখুন।',
-          'অর্ডার আইডি ও চেকআউটে ব্যবহৃত ফোন নম্বর হাতে রাখুন।',
+          'কল বা হোয়াটসঅ্যাপ: {{phone}} (প্রতিদিন সকাল ৯টা – রাত ৯টা)',
+          'ইমেইল: {{email}}',
+          'অর্ডার ট্র্যাক: অর্ডার আইডি ও ফোন নম্বর দিয়ে Track Order পেজ ব্যবহার করুন।',
         ],
       },
       {
-        heading: 'Contact channels',
-        heading_bn: 'যোগাযোগের মাধ্যম',
+        heading: 'Before you contact us',
+        heading_bn: 'যোগাযোগের আগে',
         bullets: [
-          'Hotline: +880 9642 922922 (9am – 9pm)',
-          'WhatsApp: +880 1321 208940',
-          'Email: hello@ghorerbazar.demo',
+          'Keep your order ID ready.',
+          'For a damaged item, send a photo of the product and the packaging.',
+          'For a wrong item, mention the name of the product you received.',
         ],
         bullets_bn: [
-          'হটলাইন: +৮৮০ ৯৬৪২ ৯২২৯২২ (সকাল ৯টা – রাত ৯টা)',
-          'হোয়াটসঅ্যাপ: +৮৮০ ১৩২১ ২০৮৯৪০',
-          'ইমেইল: hello@ghorerbazar.demo',
+          'অর্ডার আইডি হাতে রাখুন।',
+          'পণ্য ভাঙা বা ক্ষতিগ্রস্ত হলে পণ্য ও প্যাকেজিংয়ের ছবি পাঠান।',
+          'ভুল পণ্য এলে আপনি যে পণ্য পেয়েছেন তার নাম লিখুন।',
+        ],
+      },
+      {
+        heading: 'Response time',
+        heading_bn: 'উত্তরের সময়',
+        body: [
+          'Messages sent during support hours are usually answered within a few minutes. Emails are answered within one working day.',
+        ],
+        body_bn: [
+          'সাপোর্ট সময়ে পাঠানো বার্তার উত্তর সাধারণত কয়েক মিনিটের মধ্যে দেওয়া হয়। ইমেইলের উত্তর এক কর্মদিবসের মধ্যে দেওয়া হয়।',
         ],
       },
     ],
   },
+
   'how-to-order': {
     slug: 'how-to-order',
     title: 'How to Order',
     title_bn: 'কীভাবে অর্ডার করবেন',
     subtitle: 'Four simple steps from browsing to delivery.',
-    subtitle_bn: 'ব্রাউজ থেকে ডেলিভারি — চারটি সহজ ধাপ।',
+    subtitle_bn: 'ব্রাউজ করা থেকে ডেলিভারি — মাত্র চারটি সহজ ধাপ।',
     sections: [
       {
-        heading: 'Ordering online',
-        heading_bn: 'অনলাইনে অর্ডার',
-        bullets: [
-          'Browse the shop or use search, then open the product you want.',
-          'Choose the quantity and press Add to Cart. You can adjust quantities in the cart drawer.',
-          'Open the cart, apply a coupon if you have one, and continue to checkout.',
-          'Fill in your delivery details, choose Cash on Delivery or a mobile payment option, and place the order.',
+        heading: '1. Choose your product',
+        heading_bn: '১. পণ্য বেছে নিন',
+        body: [
+          'Open a category or use the search bar, then tap “Add to Cart”. You can change the quantity in the cart before checkout.',
         ],
-        bullets_bn: [
-          'শপ ব্রাউজ করুন বা সার্চ ব্যবহার করুন, তারপর পছন্দের পণ্য খুলুন।',
-          'পরিমাণ বেছে নিয়ে কার্টে যোগ করুন চাপুন। কার্ট ড্রয়ারে পরিমাণ বদলাতে পারবেন।',
-          'কার্ট খুলুন, কুপন থাকলে প্রয়োগ করুন, তারপর চেকআউটে যান।',
-          'ডেলিভারি তথ্য পূরণ করুন, ক্যাশ অন ডেলিভারি বা মোবাইল পেমেন্ট বেছে নিয়ে অর্ডার নিশ্চিত করুন।',
+        body_bn: [
+          'কোনো ক্যাটাগরি খুলুন বা সার্চ বার ব্যবহার করুন, তারপর “কার্টে যোগ করুন” চাপুন। চেকআউটের আগে কার্টে পরিমাণ বদলাতে পারবেন।',
         ],
       },
       {
-        heading: 'Ordering by phone or WhatsApp',
-        heading_bn: 'ফোন বা হোয়াটসঅ্যাপে অর্ডার',
+        heading: '2. Fill in delivery details',
+        heading_bn: '২. ডেলিভারি তথ্য দিন',
         body: [
-          'Call +880 9642 922922 or message +880 1321 208940 with the product names and quantities. Our team will confirm availability, delivery charge and the total before dispatch.',
+          'Enter your name, mobile number, full address and area. The delivery charge is added automatically based on the area you select.',
         ],
         body_bn: [
-          'পণ্যের নাম ও পরিমাণ লিখে +৮৮০ ৯৬৪২ ৯২২৯২২-এ কল করুন বা +৮৮০ ১৩২১ ২০৮৯৪০-এ মেসেজ দিন। পাঠানোর আগে আমাদের টিম স্টক, ডেলিভারি চার্জ ও মোট মূল্য নিশ্চিত করবে।',
+          'নাম, মোবাইল নম্বর, সম্পূর্ণ ঠিকানা ও এলাকা লিখুন। আপনি যে এলাকা বাছাই করবেন তার ভিত্তিতে ডেলিভারি চার্জ স্বয়ংক্রিয়ভাবে যোগ হবে।',
         ],
       },
       {
-        heading: 'What happens next',
-        heading_bn: 'এরপর কী হবে',
+        heading: '3. Choose a payment method',
+        heading_bn: '৩. পেমেন্ট পদ্ধতি বাছুন',
         body: [
-          'You will receive a confirmation call or message, usually within a few hours. Orders placed before 4pm are generally dispatched the same day. You can follow every step on the Track Order page.',
+          'Cash on delivery is available everywhere. For mobile banking, send the amount to the number shown at checkout and enter the transaction ID.',
         ],
         body_bn: [
-          'সাধারণত কয়েক ঘণ্টার মধ্যে কনফার্মেশন কল বা মেসেজ পাবেন। বিকেল ৪টার আগে দেওয়া অর্ডার সাধারণত একই দিনে পাঠানো হয়। ট্র্যাক অর্ডার পেজে প্রতিটি ধাপ দেখতে পারবেন।',
+          'সারাদেশে ক্যাশ অন ডেলিভারি আছে। মোবাইল ব্যাংকিংয়ে চেকআউটে দেখানো নম্বরে টাকা পাঠিয়ে ট্রানজেকশন আইডি লিখুন।',
+        ],
+      },
+      {
+        heading: '4. Confirm and wait for our call',
+        heading_bn: '৪. নিশ্চিত করুন ও কলের অপেক্ষা করুন',
+        body: [
+          'After placing the order you will see an order ID. We call or message to confirm before dispatch, and you can follow every step on the Track Order page.',
+        ],
+        body_bn: [
+          'অর্ডার দেওয়ার পর একটি অর্ডার আইডি দেখতে পাবেন। ডেলিভারির আগে আমরা কল বা মেসেজ করে নিশ্চিত করি, আর Track Order পেজে প্রতিটি ধাপ দেখতে পারবেন।',
         ],
       },
     ],
   },
-  payment: {
+
+  'payment': {
     slug: 'payment',
     title: 'Payment',
     title_bn: 'পেমেন্ট',
     subtitle: 'Ways to pay and what to expect at checkout.',
-    subtitle_bn: 'পেমেন্টের উপায় এবং চেকআউটে যা আশা করবেন।',
+    subtitle_bn: 'পেমেন্টের উপায় এবং চেকআউটে কী হবে।',
     sections: [
       {
-        heading: 'Available methods',
-        heading_bn: 'উপলব্ধ পদ্ধতি',
-        bullets: [
-          'Cash on Delivery — pay the rider when your order arrives.',
-          'bKash — send the total and enter the transaction ID at checkout.',
-          'Nagad — same process as bKash.',
+        heading: 'Cash on delivery',
+        heading_bn: 'ক্যাশ অন ডেলিভারি',
+        body: [
+          'Pay the courier in cash when your parcel arrives. Please keep the exact amount ready — our couriers may not carry change for large notes.',
         ],
-        bullets_bn: [
-          'ক্যাশ অন ডেলিভারি — অর্ডার হাতে পেয়ে রাইডারকে টাকা দিন।',
-          'বিকাশ — মোট টাকা পাঠিয়ে চেকআউটে ট্রানজেকশন আইডি দিন।',
-          'নগদ — বিকাশের মতো একই প্রক্রিয়া।',
+        body_bn: [
+          'পার্সেল হাতে পাওয়ার সময় কুরিয়ারকে নগদ টাকা দিন। সম্ভব হলে নির্দিষ্ট পরিমাণ টাকা প্রস্তুত রাখুন — বড় নোটের খুচরা কুরিয়ারের কাছে নাও থাকতে পারে।',
         ],
       },
       {
-        heading: 'Demo notice',
-        heading_bn: 'ডেমো নোটিশ',
+        heading: 'Mobile banking',
+        heading_bn: 'মোবাইল ব্যাংকিং',
         body: [
-          'This storefront is a demo. Mobile payment details are not processed and no money is transferred. Cash on Delivery orders are also simulated and never dispatched.',
+          'bKash and Nagad are accepted. At checkout you will see the receiving number and instructions. Send the exact total, then enter your sender number and transaction ID so we can verify the payment.',
         ],
         body_bn: [
-          'এই স্টোরফ্রন্টটি ডেমো। মোবাইল পেমেন্টের তথ্য প্রসেস হয় না এবং কোনো টাকা স্থানান্তর হয় না। ক্যাশ অন ডেলিভারি অর্ডারও সিমুলেটেড, কোথাও পাঠানো হয় না।',
+          'বিকাশ ও নগদ গ্রহণ করা হয়। চেকআউটে গ্রহণকারী নম্বর ও নির্দেশনা দেখতে পাবেন। নির্দিষ্ট মোট টাকা পাঠিয়ে আপনার প্রেরকের নম্বর ও ট্রানজেকশন আইডি লিখুন, যাতে আমরা পেমেন্ট যাচাই করতে পারি।',
+        ],
+      },
+      {
+        heading: 'Payment safety',
+        heading_bn: 'পেমেন্ট নিরাপত্তা',
+        bullets: [
+          'We never ask for your mobile banking PIN or OTP.',
+          'Only use the number shown on the checkout page.',
+          'You will receive an order ID after a successful order — keep it for any follow-up.',
+        ],
+        bullets_bn: [
+          'আমরা কখনো আপনার মোবাইল ব্যাংকিং পিন বা OTP চাই না।',
+          'শুধু চেকআউট পেজে দেখানো নম্বরেই টাকা পাঠান।',
+          'সফল অর্ডারের পর একটি অর্ডার আইডি পাবেন — পরবর্তী যোগাযোগের জন্য এটি রাখুন।',
         ],
       },
     ],
   },
-  shipping: {
+
+  'shipping': {
     slug: 'shipping',
     title: 'Shipping',
     title_bn: 'শিপিং',
@@ -416,278 +500,383 @@ export const pages = {
     subtitle_bn: 'ডেলিভারি এলাকা, সময় ও চার্জ।',
     sections: [
       {
-        heading: 'Delivery coverage',
-        heading_bn: 'ডেলিভারি এলাকা',
-        body: [
-          'We deliver to all 64 districts of Bangladesh through our own riders and trusted courier partners. Remote islands and some hill tracts may need extra time.',
-        ],
-        body_bn: [
-          'নিজস্ব রাইডার ও বিশ্বস্ত কুরিয়ার পার্টনারের মাধ্যমে বাংলাদেশের ৬৪ জেলাতেই ডেলিভারি দেওয়া হয়। প্রত্যন্ত দ্বীপ ও কিছু পার্বত্য এলাকায় অতিরিক্ত সময় লাগতে পারে।',
-        ],
-      },
-      {
-        heading: 'Timelines and charges',
-        heading_bn: 'সময় ও চার্জ',
+        heading: 'Delivery charges',
+        heading_bn: 'ডেলিভারি চার্জ',
         bullets: [
-          'Inside Dhaka: 1–2 working days, ৳60.',
-          'Outside Dhaka: 2–3 working days, ৳120.',
-          'Free delivery on orders over ৳2,000 with the FREESHIP coupon.',
-          'Orders placed before 4pm are usually dispatched the same day.',
+          'Inside Dhaka: {{chargeInside}}',
+          'Outside Dhaka: {{chargeOutside}}',
+          'Free delivery on orders of {{freeAt}} or more.',
         ],
         bullets_bn: [
-          'ঢাকার ভিতরে: ১–২ কর্মদিবস, ৳৬০।',
-          'ঢাকার বাইরে: ২–৩ কর্মদিবস, ৳১২০।',
-          'FREESHIP কুপনে ৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি।',
-          'বিকেল ৪টার আগে অর্ডার সাধারণত একই দিনে পাঠানো হয়।',
+          'ঢাকার ভিতরে: {{chargeInside}}',
+          'ঢাকার বাইরে: {{chargeOutside}}',
+          '{{freeAt}} বা তার বেশি অর্ডারে ফ্রি ডেলিভারি।',
         ],
       },
       {
-        heading: 'Receiving your order',
-        heading_bn: 'অর্ডার গ্রহণ',
+        heading: 'Delivery time',
+        heading_bn: 'ডেলিভারির সময়',
         body: [
-          'Please check the sealed packaging in front of the rider. If a bottle is leaking or a packet is torn, refuse that item and call us — we will replace it at no cost.',
+          'Orders inside Dhaka are usually delivered within 1–2 working days. Outside Dhaka takes 2–4 working days depending on the courier route. Orders placed after 6pm may be processed the next morning.',
         ],
         body_bn: [
-          'রাইডারের সামনে সিলড প্যাকেজিং যাচাই করুন। বোতল লিক করলে বা প্যাক ছেঁড়া থাকলে সেই পণ্য নিতে অস্বীকার করুন এবং আমাদের কল করুন — বিনামূল্যে বদলে দেওয়া হবে।',
+          'ঢাকার ভিতরের অর্ডার সাধারণত ১–২ কর্মদিবসে পৌঁছায়। ঢাকার বাইরে কুরিয়ার রুট অনুযায়ী ২–৪ কর্মদিবস লাগে। সন্ধ্যা ৬টার পরে দেওয়া অর্ডার পরদিন সকালে প্রসেস হতে পারে।',
+        ],
+      },
+      {
+        heading: 'Tracking your parcel',
+        heading_bn: 'পার্সেল ট্র্যাকিং',
+        body: [
+          'Use the Track Order page with your order ID and phone number to see the current status. We also call before dispatch to confirm the address.',
+        ],
+        body_bn: [
+          'অর্ডার আইডি ও ফোন নম্বর দিয়ে Track Order পেজে বর্তমান অবস্থা দেখুন। ডেলিভারির আগে ঠিকানা নিশ্চিত করতে আমরা কল করি।',
+        ],
+      },
+      {
+        heading: 'Fragile items',
+        heading_bn: 'ভঙ্গুর পণ্য',
+        body: [
+          'Showpieces and other fragile items are wrapped with extra padding. Please check the parcel in front of the courier and contact us immediately if anything is broken.',
+        ],
+        body_bn: [
+          'শোপিস ও অন্যান্য ভঙ্গুর পণ্য বাড়তি প্যাডিং দিয়ে মোড়া হয়। কুরিয়ারের সামনেই পার্সেল খুলে দেখুন, কিছু ভাঙা থাকলে সাথে সাথে আমাদের জানান।',
         ],
       },
     ],
   },
-  faq: {
+
+  'faq': {
     slug: 'faq',
     title: 'Frequently Asked Questions',
     title_bn: 'সাধারণ প্রশ্ন',
     subtitle: 'Short answers to the questions we hear most.',
-    subtitle_bn: 'সবচেয়ে বেশি শোনা প্রশ্নের সংক্ষিপ্ত উত্তর।',
+    subtitle_bn: 'সবচেয়ে বেশি জিজ্ঞাসিত প্রশ্নের সংক্ষিপ্ত উত্তর।',
     sections: [
       {
-        heading: 'Orders & delivery',
-        heading_bn: 'অর্ডার ও ডেলিভারি',
-        bullets: [
-          'How do I track my order? Open Track Order and enter the order ID shown after checkout.',
-          'Can I change my address after ordering? Yes, call us before the order is dispatched.',
-          'Do you deliver outside Dhaka? Yes, to all 64 districts.',
-          'What if I am not home? The rider will call you and reschedule once.',
+        heading: 'How long does delivery take?',
+        heading_bn: 'ডেলিভারিতে কত সময় লাগে?',
+        body: [
+          'Inside Dhaka 1–2 working days, outside Dhaka 2–4 working days. You can follow the status on the Track Order page.',
         ],
-        bullets_bn: [
-          'অর্ডার কীভাবে ট্র্যাক করব? ট্র্যাক অর্ডার খুলে চেকআউটের পর দেখানো অর্ডার আইডি দিন।',
-          'অর্ডারের পর ঠিকানা বদলানো যাবে? হ্যাঁ, অর্ডার পাঠানোর আগে কল করুন।',
-          'ঢাকার বাইরে ডেলিভারি হয়? হ্যাঁ, ৬৪ জেলাতেই।',
-          'বাসায় না থাকলে কী হবে? রাইডার কল দিয়ে একবার সময় পুনর্নির্ধারণ করবে।',
+        body_bn: [
+          'ঢাকার ভিতরে ১–২ কর্মদিবস, ঢাকার বাইরে ২–৪ কর্মদিবস। Track Order পেজে অবস্থা দেখতে পারবেন।',
         ],
       },
       {
-        heading: 'Products & payments',
-        heading_bn: 'পণ্য ও পেমেন্ট',
-        bullets: [
-          'Are your products authentic? We source directly and check every batch before packing.',
-          'Can I pay after receiving? Yes, Cash on Delivery is available nationwide.',
-          'Do you offer refunds? Yes, see the Refund Policy for conditions and timelines.',
-          'Is there a minimum order? No minimum order value.',
+        heading: 'Can I pay after receiving the product?',
+        heading_bn: 'পণ্য পাওয়ার পর টাকা দিতে পারি?',
+        body: [
+          'Yes. Cash on delivery is available across Bangladesh. Mobile banking is also accepted if you prefer to pay in advance.',
         ],
-        bullets_bn: [
-          'পণ্য কি খাঁটি? আমরা সরাসরি সোর্স করি এবং প্যাক করার আগে প্রতিটি ব্যাচ যাচাই করি।',
-          'হাতে পেয়ে টাকা দেওয়া যাবে? হ্যাঁ, সারাদেশে ক্যাশ অন ডেলিভারি আছে।',
-          'রিফান্ড পাওয়া যায়? হ্যাঁ, শর্ত ও সময় জানতে রিফান্ড পলিসি দেখুন।',
-          'সর্বনিম্ন অর্ডার আছে? কোনো সর্বনিম্ন অর্ডার মূল্য নেই।',
+        body_bn: [
+          'হ্যাঁ। সারাদেশে ক্যাশ অন ডেলিভারি আছে। আগে টাকা দিতে চাইলে মোবাইল ব্যাংকিংও গ্রহণ করা হয়।',
         ],
       },
       {
-        heading: 'Account & data',
-        heading_bn: 'অ্যাকাউন্ট ও ডেটা',
-        bullets: [
-          'Do I need an account to order? No, guest checkout works, but an account lets you track orders.',
-          'Where is my data stored? Only in your browser, using localStorage.',
-          'How do I delete my data? Clear this site’s data in your browser settings.',
+        heading: 'What if the product is damaged?',
+        heading_bn: 'পণ্য ভাঙা এলে কী করব?',
+        body: [
+          'Send us a photo of the item and the packaging within 48 hours of delivery. We will arrange a replacement or refund after checking the issue.',
         ],
-        bullets_bn: [
-          'অর্ডার করতে অ্যাকাউন্ট লাগবে? না, গেস্ট চেকআউট работает, তবে অ্যাকাউন্টে অর্ডার ট্র্যাক করা যায়।',
-          'আমার ডেটা কোথায় থাকে? শুধু আপনার ব্রাউজারে, localStorage-এ।',
-          'ডেটা কীভাবে মুছব? ব্রাউজার সেটিংসে এই সাইটের ডেটা মুছে ফেলুন।',
+        body_bn: [
+          'পণ্য পাওয়ার ৪৮ ঘণ্টার মধ্যে পণ্য ও প্যাকেজিংয়ের ছবি পাঠান। যাচাই করে আমরা রিপ্লেসমেন্ট বা রিফান্ডের ব্যবস্থা করব।',
+        ],
+      },
+      {
+        heading: 'Can I cancel an order?',
+        heading_bn: 'অর্ডার বাতিল করা যাবে?',
+        body: [
+          'Yes, before the order is handed to the courier. Use the Track Order page or call {{phone}} with your order ID.',
+        ],
+        body_bn: [
+          'হ্যাঁ, কুরিয়ারে দেওয়ার আগ পর্যন্ত। Track Order পেজ ব্যবহার করুন অথবা অর্ডার আইডি দিয়ে {{phone}} নম্বরে কল করুন।',
+        ],
+      },
+      {
+        heading: 'Do you offer exchanges?',
+        heading_bn: 'এক্সচেঞ্জ করা যায়?',
+        body: [
+          'Unused products in original packaging can be exchanged within 7 days. See the Exchange page for the full conditions.',
+        ],
+        body_bn: [
+          'অব্যবহৃত ও আসল প্যাকেজিংয়ের পণ্য ৭ দিনের মধ্যে এক্সচেঞ্জ করা যায়। বিস্তারিত শর্ত Exchange পেজে দেখুন।',
+        ],
+      },
+      {
+        heading: 'Is there a warranty on watches?',
+        heading_bn: 'ঘড়ির ওয়ারেন্টি আছে?',
+        body: [
+          'Warranty depends on the brand and is mentioned on the product page when available. Physical damage and water damage are not covered.',
+        ],
+        body_bn: [
+          'ওয়ারেন্টি ব্র্যান্ডের উপর নির্ভর করে এবং থাকলে প্রোডাক্ট পেজে উল্লেখ করা হয়। শারীরিক ক্ষতি ও পানিতে ক্ষতির ক্ষেত্রে ওয়ারেন্টি প্রযোজ্য নয়।',
         ],
       },
     ],
   },
+
   'happy-return': {
     slug: 'happy-return',
     title: 'Happy Return',
     title_bn: 'হ্যাপি রিটার্ন',
     subtitle: 'If something is not right, we make it right.',
-    subtitle_bn: 'কিছু ঠিক না হলে আমরা সেটি ঠিক করি।',
+    subtitle_bn: 'কিছু ঠিক না থাকলে আমরা সেটি ঠিক করে দিই।',
     sections: [
       {
         heading: '7-day return window',
-        heading_bn: '৭ দিনের রিটার্ন সময়',
+        heading_bn: '৭ দিনের রিটার্ন সুবিধা',
         body: [
-          'You can request a return within 7 days of delivery if the product is damaged, expired, wrong, or clearly different from the description. The item should be unused and in its original packaging where possible.',
+          'You can request a return within 7 days of receiving your order. The product must be unused, undamaged and in its original packaging with any tags or accessories included.',
         ],
         body_bn: [
-          'পণ্য নষ্ট, মেয়াদোত্তীর্ণ, ভুল বা বিবরণের সাথে স্পষ্ট অমিল হলে ডেলিভারির ৭ দিনের মধ্যে রিটার্নের আবেদন করতে পারবেন। সম্ভব হলে পণ্য অব্যবহৃত ও মূল প্যাকেজিংয়ে থাকতে হবে।',
+          'অর্ডার পাওয়ার ৭ দিনের মধ্যে রিটার্নের অনুরোধ করতে পারবেন। পণ্য অব্যবহৃত, অক্ষত এবং আসল প্যাকেজিংয়ে থাকতে হবে; ট্যাগ ও এক্সেসরিও সাথে থাকতে হবে।',
+        ],
+      },
+      {
+        heading: 'When a return is not accepted',
+        heading_bn: 'কখন রিটার্ন গ্রহণ করা হয় না',
+        bullets: [
+          'Used, washed or altered products.',
+          'Items damaged after delivery due to misuse.',
+          'Products without the original packaging or missing accessories.',
+          'Personalised or customised items.',
+        ],
+        bullets_bn: [
+          'ব্যবহৃত, ধোয়া বা পরিবর্তন করা পণ্য।',
+          'ডেলিভারির পর অসতর্ক ব্যবহারে ক্ষতিগ্রস্ত পণ্য।',
+          'আসল প্যাকেজিং না থাকলে বা এক্সেসরি না থাকলে।',
+          'ব্যক্তিগতভাবে তৈরি বা কাস্টমাইজ করা পণ্য।',
         ],
       },
       {
         heading: 'How to start a return',
         heading_bn: 'রিটার্ন কীভাবে শুরু করবেন',
-        bullets: [
-          'Call or WhatsApp us with your order ID and a photo of the issue.',
-          'Our team will confirm whether a return, replacement or refund applies.',
-          'Keep the item packed and ready for pickup.',
+        body: [
+          'Call {{phone}} or email {{email}} with your order ID and a photo of the product. We will confirm whether a pickup or courier drop-off is available in your area.',
         ],
-        bullets_bn: [
-          'অর্ডার আইডি ও সমস্যার ছবি দিয়ে কল বা হোয়াটসঅ্যাপ করুন।',
-          'আমাদের টিম রিটার্ন, রিপ্লেসমেন্ট বা রিফান্ড প্রযোজ্য কিনা নিশ্চিত করবে।',
-          'পণ্য প্যাক করে পিকআপের জন্য প্রস্তুত রাখুন।',
+        body_bn: [
+          'অর্ডার আইডি ও পণ্যের ছবিসহ {{phone}} নম্বরে কল করুন বা {{email}} ঠিকানায় ইমেইল করুন। আপনার এলাকায় পিকআপ নাকি কুরিয়ারে পাঠাতে হবে তা আমরা জানিয়ে দেব।',
         ],
       },
     ],
   },
+
   'refund-policy': {
     slug: 'refund-policy',
     title: 'Refund Policy',
-    title_bn: 'রিফান্ড পলিসি',
+    title_bn: 'রিফান্ড নীতি',
     subtitle: 'When refunds are issued and how long they take.',
     subtitle_bn: 'কখন রিফান্ড দেওয়া হয় এবং কত সময় লাগে।',
     sections: [
       {
-        heading: 'Eligible refunds',
-        heading_bn: 'রিফান্ডযোগ্য ক্ষেত্র',
+        heading: 'When you get a refund',
+        heading_bn: 'কখন রিফান্ড পাবেন',
         bullets: [
-          'The product was out of stock after your order was confirmed.',
-          'The item arrived damaged, expired or incorrect and cannot be replaced.',
-          'A prepaid order was cancelled before dispatch.',
+          'The product is out of stock after your order is confirmed.',
+          'The item arrived damaged or is not the one you ordered.',
+          'A return is accepted and the product passes inspection.',
+          'A prepaid order is cancelled before dispatch.',
         ],
         bullets_bn: [
-          'অর্ডার নিশ্চিত হওয়ার পর পণ্য স্টকে ছিল না।',
-          'পণ্য নষ্ট, মেয়াদোত্তীর্ণ বা ভুল এসেছে এবং বদলে দেওয়া সম্ভব নয়।',
-          'পাঠানোর আগে প্রিপেইড অর্ডার বাতিল হয়েছে।',
+          'অর্ডার নিশ্চিত হওয়ার পর পণ্য স্টকে না থাকলে।',
+          'পণ্য ভাঙা অবস্থায় এলে বা ভুল পণ্য এলে।',
+          'রিটার্ন গ্রহণযোগ্য হলে এবং পণ্য যাচাইয়ে উত্তীর্ণ হলে।',
+          'অগ্রিম পেমেন্টের অর্ডার ডেলিভারির আগে বাতিল হলে।',
         ],
       },
       {
-        heading: 'Processing time',
-        heading_bn: 'প্রসেসিং সময়',
+        heading: 'How the refund is paid',
+        heading_bn: 'রিফান্ড কীভাবে দেওয়া হয়',
         body: [
-          'Approved refunds are processed within 3–5 business days. Mobile wallet refunds usually arrive within 24 hours of processing; card refunds may take up to 7 business days depending on your bank.',
+          'Mobile banking payments are refunded to the same account within 3–7 working days after approval. Cash-on-delivery refunds are paid through bKash or Nagad, or in cash for local deliveries.',
         ],
         body_bn: [
-          'অনুমোদিত রিফান্ড ৩–৫ কর্মদিবসের মধ্যে প্রসেস করা হয়। মোবাইল ওয়ালেটে সাধারণত প্রসেসিংয়ের ২৪ ঘণ্টার মধ্যে পৌঁছায়; কার্ডের ক্ষেত্রে ব্যাংক অনুযায়ী ৭ কর্মদিবস পর্যন্ত লাগতে পারে।',
+          'মোবাইল ব্যাংকিংয়ের টাকা অনুমোদনের পর ৩–৭ কর্মদিবসের মধ্যে একই অ্যাকাউন্টে ফেরত দেওয়া হয়। ক্যাশ অন ডেলিভারির ক্ষেত্রে বিকাশ বা নগদে, অথবা স্থানীয় ডেলিভারিতে নগদে রিফান্ড দেওয়া হয়।',
+        ],
+      },
+      {
+        heading: 'Delivery charges',
+        heading_bn: 'ডেলিভারি চার্জ',
+        body: [
+          'Delivery charges are refunded only when the mistake was ours (wrong or damaged item). For change-of-mind returns, the delivery charge is not refunded.',
+        ],
+        body_bn: [
+          'ভুল বা ক্ষতিগ্রস্ত পণ্যের মতো আমাদের ভুল হলে ডেলিভারি চার্জ ফেরত দেওয়া হয়। মন পরিবর্তনের কারণে রিটার্নে ডেলিভারি চার্জ ফেরত দেওয়া হয় না।',
         ],
       },
     ],
   },
-  exchange: {
+
+  'exchange': {
     slug: 'exchange',
     title: 'Exchange',
     title_bn: 'এক্সচেঞ্জ',
     subtitle: 'Swap a product for another size, variant or item.',
-    subtitle_bn: 'অন্য সাইজ, ভ্যারিয়েন্ট বা পণ্যের সাথে বদলান।',
+    subtitle_bn: 'অন্য সাইজ, ভ্যারিয়েন্ট বা পণ্যের সাথে বদল করুন।',
     sections: [
       {
-        heading: 'Exchange conditions',
-        heading_bn: 'এক্সচেঞ্জের শর্ত',
+        heading: 'Exchange window',
+        heading_bn: 'এক্সচেঞ্জের সময়',
+        body: [
+          'Exchanges are accepted within 7 days of delivery, subject to stock availability. The product must be unused and in its original packaging.',
+        ],
+        body_bn: [
+          'স্টক থাকা সাপেক্ষে ডেলিভারির ৭ দিনের মধ্যে এক্সচেঞ্জ গ্রহণ করা হয়। পণ্য অব্যবহৃত ও আসল প্যাকেজিংয়ে থাকতে হবে।',
+        ],
+      },
+      {
+        heading: 'How it works',
+        heading_bn: 'কীভাবে কাজ করে',
         bullets: [
-          'Request within 7 days of delivery.',
-          'The product must be unopened and in resalable condition.',
-          'If the new item costs more, pay the difference; if less, the balance is refunded.',
-          'Delivery charges for exchanges are ৳60 inside Dhaka and ৳120 outside.',
+          'Call {{phone}} with your order ID and the item you want instead.',
+          'We confirm availability and any price difference.',
+          'If the new item costs more, pay the difference; if it costs less, the balance is refunded.',
+          'Pickup and re-delivery charges may apply for change-of-mind exchanges.',
         ],
         bullets_bn: [
-          'ডেলিভারির ৭ দিনের মধ্যে আবেদন করুন।',
-          'পণ্য খোলা না থাকতে হবে এবং পুনরায় বিক্রয়যোগ্য অবস্থায় থাকতে হবে।',
-          'নতুন পণ্যের দাম বেশি হলে পার্থক্য দিন; কম হলে ব্যালেন্স ফেরত দেওয়া হবে।',
-          'এক্সচেঞ্জের ডেলিভারি চার্জ ঢাকার ভিতরে ৳৬০, বাইরে ৳১২০।',
+          'অর্ডার আইডি ও আপনি যে পণ্য চান তা নিয়ে {{phone}} নম্বরে কল করুন।',
+          'স্টক ও দামের পার্থক্য আমরা নিশ্চিত করব।',
+          'নতুন পণ্যের দাম বেশি হলে পার্থক্য দিন; কম হলে বাকি টাকা ফেরত দেওয়া হবে।',
+          'মন পরিবর্তনের কারণে এক্সচেঞ্জে পিকআপ ও পুনরায় ডেলিভারি চার্জ প্রযোজ্য হতে পারে।',
+        ],
+      },
+      {
+        heading: 'Faulty products',
+        heading_bn: 'ত্রুটিপূর্ণ পণ্য',
+        body: [
+          'If the product is faulty or damaged on arrival, exchange and delivery are free. Send a photo within 48 hours so we can verify the issue quickly.',
+        ],
+        body_bn: [
+          'পণ্য ত্রুটিপূর্ণ বা ভাঙা অবস্থায় এলে এক্সচেঞ্জ ও ডেলিভারি সম্পূর্ণ ফ্রি। দ্রুত যাচাইয়ের জন্য ৪৮ ঘণ্টার মধ্যে ছবি পাঠান।',
         ],
       },
     ],
   },
-  cancellation: {
+
+  'cancellation': {
     slug: 'cancellation',
     title: 'Cancellation',
-    title_bn: 'ক্যান্সেলেশন',
+    title_bn: 'অর্ডার বাতিল',
     subtitle: 'Cancel an order before it leaves our warehouse.',
-    subtitle_bn: 'গুদাম থেকে পাঠানোর আগে অর্ডার বাতিল করুন।',
+    subtitle_bn: 'পণ্য ডেলিভারিতে যাওয়ার আগেই অর্ডার বাতিল করুন।',
     sections: [
       {
-        heading: 'How to cancel',
-        heading_bn: 'কীভাবে বাতিল করবেন',
+        heading: 'Before dispatch',
+        heading_bn: 'ডেলিভারির আগে',
         body: [
-          'Call or WhatsApp us with your order ID as soon as possible. Orders can be cancelled free of charge until they are handed to the courier. Once dispatched, the order cannot be cancelled — you may refuse delivery or request a return instead.',
+          'Orders can be cancelled free of charge at any time before they are handed to the courier. Use the Track Order page or call {{phone}} with your order ID.',
         ],
         body_bn: [
-          'যত দ্রুত সম্ভব অর্ডার আইডি দিয়ে কল বা হোয়াটসঅ্যাপ করুন। কুরিয়ারে দেওয়ার আগ পর্যন্ত বিনামূল্যে অর্ডার বাতিল করা যায়। পাঠানোর পর আর বাতিল করা যায় না — ডেলিভারি নিতে অস্বীকার করতে পারেন বা রিটার্নের আবেদন করতে পারেন।',
+          'কুরিয়ারে দেওয়ার আগ পর্যন্ত যেকোনো সময় বিনামূল্যে অর্ডার বাতিল করা যায়। Track Order পেজ ব্যবহার করুন অথবা অর্ডার আইডি দিয়ে {{phone}} নম্বরে কল করুন।',
+        ],
+      },
+      {
+        heading: 'After dispatch',
+        heading_bn: 'ডেলিভারিতে যাওয়ার পর',
+        body: [
+          'Once the parcel is with the courier it cannot be cancelled online. You may refuse the delivery, but the delivery charge is not refunded in that case.',
+        ],
+        body_bn: [
+          'পার্সেল কুরিয়ারের কাছে চলে গেলে অনলাইনে বাতিল করা যায় না। ডেলিভারি নিতে অস্বীকার করতে পারেন, তবে সেক্ষেত্রে ডেলিভারি চার্জ ফেরত দেওয়া হয় না।',
         ],
       },
       {
         heading: 'Prepaid orders',
-        heading_bn: 'প্রিপেইড অর্ডার',
+        heading_bn: 'অগ্রিম পেমেন্টের অর্ডার',
         body: [
-          'If a prepaid order is cancelled before dispatch, the full amount is refunded within 3–5 business days.',
+          'If you already paid by mobile banking and cancel before dispatch, the full amount including delivery is refunded within 3–7 working days.',
         ],
         body_bn: [
-          'পাঠানোর আগে প্রিপেইড অর্ডার বাতিল হলে সম্পূর্ণ টাকা ৩–৫ কর্মদিবসের মধ্যে ফেরত দেওয়া হয়।',
+          'মোবাইল ব্যাংকিংয়ে টাকা দেওয়ার পর ডেলিভারির আগে বাতিল করলে ডেলিভারি চার্জসহ সম্পূর্ণ টাকা ৩–৭ কর্মদিবসের মধ্যে ফেরত দেওয়া হয়।',
         ],
       },
     ],
   },
+
   'pre-order': {
     slug: 'pre-order',
     title: 'Pre-Order',
     title_bn: 'প্রি-অর্ডার',
-    subtitle: 'Reserve seasonal or limited-stock products ahead of time.',
-    subtitle_bn: 'মৌসুমি বা সীমিত স্টকের পণ্য আগেই সংরক্ষণ করুন।',
+    subtitle: 'Reserve limited-stock or upcoming products ahead of time.',
+    subtitle_bn: 'সীমিত স্টক বা আসন্ন পণ্য আগেই সংরক্ষণ করুন।',
     sections: [
       {
         heading: 'How pre-order works',
         heading_bn: 'প্রি-অর্ডার কীভাবে কাজ করে',
         body: [
-          'Some seasonal items — such as certain honey harvests or date varieties — sell out before they arrive. Pre-order lets you reserve a quantity from the next batch.',
-          'Pre-order items are marked on the product page with an expected arrival window. You will be called before dispatch to confirm.',
+          'Some products are listed as pre-order when stock is on the way. You can reserve one by placing a normal order; we confirm the expected delivery date by phone before you pay anything.',
         ],
         body_bn: [
-          'কিছু মৌসুমি পণ্য — যেমন নির্দিষ্ট মধুর সংগ্রহ বা খেজুরের জাত — আসার আগেই শেষ হয়ে যায়। প্রি-অর্ডারে পরবর্তী ব্যাচ থেকে পরিমাণ সংরক্ষণ করা যায়।',
-          'প্রি-অর্ডার পণ্যে প্রত্যাশিত আগমনের সময় লেখা থাকে। পাঠানোর আগে কল করে নিশ্চিত করা হবে।',
+          'স্টক পথে থাকলে কিছু পণ্য প্রি-অর্ডার হিসেবে দেখানো হয়। সাধারণ অর্ডারের মতোই আপনি একটি সংরক্ষণ করতে পারেন; টাকা দেওয়ার আগে ফোনে সম্ভাব্য ডেলিভারির তারিখ নিশ্চিত করা হয়।',
         ],
       },
       {
-        heading: 'Payment and cancellation',
-        heading_bn: 'পেমেন্ট ও বাতিল',
-        body: [
-          'No advance payment is required. You may cancel a pre-order at any time before dispatch without charge.',
+        heading: 'Payment and timeline',
+        heading_bn: 'পেমেন্ট ও সময়',
+        bullets: [
+          'Cash on delivery is available for most pre-orders.',
+          'The expected delivery date is shown on the product page or confirmed by our team.',
+          'If the date changes, we inform you before dispatch.',
+          'You can cancel a pre-order at any time before it ships.',
         ],
-        body_bn: [
-          'অগ্রিম পেমেন্ট লাগবে না। পাঠানোর আগে যেকোনো সময় বিনামূল্যে প্রি-অর্ডার বাতিল করা যাবে।',
+        bullets_bn: [
+          'বেশিরভাগ প্রি-অর্ডারে ক্যাশ অন ডেলিভারি আছে।',
+          'সম্ভাব্য ডেলিভারির তারিখ প্রোডাক্ট পেজে দেখানো হয় বা আমাদের টিম নিশ্চিত করে।',
+          'তারিখ বদলালে ডেলিভারির আগে আপনাকে জানানো হয়।',
+          'পণ্য পাঠানোর আগে যেকোনো সময় প্রি-অর্ডার বাতিল করা যায়।',
         ],
+      },
+      {
+        heading: 'Questions',
+        heading_bn: 'প্রশ্ন',
+        body: ['Call {{phone}} for the latest stock and delivery estimate.'],
+        body_bn: ['সর্বশেষ স্টক ও ডেলিভারির সম্ভাব্য সময় জানতে {{phone}} নম্বরে কল করুন।'],
       },
     ],
   },
+
   'extra-discount': {
     slug: 'extra-discount',
     title: 'Extra Discount',
     title_bn: 'এক্সট্রা ডিসকাউন্ট',
-    subtitle: 'Stack a coupon on top of existing offers.',
-    subtitle_bn: 'বিদ্যমান অফারের উপর কুপন প্রয়োগ করুন।',
+    subtitle: 'How coupons work on top of existing offers.',
+    subtitle_bn: 'চলমান অফারের উপরে কুপন কীভাবে কাজ করে।',
     sections: [
       {
-        heading: 'Available coupons',
-        heading_bn: 'চলমান কুপন',
-        bullets: [
-          'GB100 — ৳100 off on orders over ৳1,000.',
-          'NEW10 — 10% off on orders over ৳1,500.',
-          'FREESHIP — free delivery on orders over ৳2,000.',
+        heading: 'Applying a coupon',
+        heading_bn: 'কুপন প্রয়োগ',
+        body: [
+          'Enter your coupon code in the cart or at checkout and tap Apply. The discount is shown before you place the order, so you always know the final total.',
         ],
-        bullets_bn: [
-          'GB100 — ৳১,০০০-এর বেশি অর্ডারে ৳১০০ ছাড়।',
-          'NEW10 — ৳১,৫০০-এর বেশি অর্ডারে ১০% ছাড়।',
-          'FREESHIP — ৳২,০০০-এর বেশি অর্ডারে ফ্রি ডেলিভারি।',
+        body_bn: [
+          'কার্টে বা চেকআউটে কুপন কোড লিখে Apply চাপুন। অর্ডার দেওয়ার আগেই ছাড় দেখা যাবে, তাই চূড়ান্ত মোট টাকা সবসময় পরিষ্কার থাকবে।',
         ],
       },
       {
-        heading: 'How to apply',
-        heading_bn: 'কীভাবে প্রয়োগ করবেন',
+        heading: 'Coupon rules',
+        heading_bn: 'কুপনের নিয়ম',
+        bullets: [
+          'One coupon per order.',
+          'A minimum order value may apply and is shown with the coupon.',
+          'Expired or fully used coupons do not apply.',
+          'Coupons cannot be exchanged for cash.',
+        ],
+        bullets_bn: [
+          'এক অর্ডারে একটি কুপন।',
+          'সর্বনিম্ন অর্ডার মূল্য প্রযোজ্য হতে পারে, যা কুপনের সাথে দেখানো হয়।',
+          'মেয়াদোত্তীর্ণ বা সম্পূর্ণ ব্যবহৃত কুপন কাজ করবে না।',
+          'কুপন নগদে বদলানো যায় না।',
+        ],
+      },
+      {
+        heading: 'Getting new codes',
+        heading_bn: 'নতুন কোড পাওয়া',
         body: [
-          'Enter the coupon code in the cart or at checkout and press Apply. Only one coupon can be used per order, and coupons cannot be combined with another campaign.',
+          'Subscribe to our newsletter at the bottom of any page. Seasonal codes are also announced on our social pages.',
         ],
         body_bn: [
-          'কার্টে বা চেকআউটে কুপন কোড লিখে প্রয়োগ করুন চাপুন। প্রতি অর্ডারে একটি কুপন ব্যবহার করা যাবে, এবং অন্য ক্যাম্পেইনের সাথে একসাথে ব্যবহার করা যাবে না।',
+          'যেকোনো পেজের নিচে নিউজলেটারে সাবস্ক্রাইব করুন। মৌসুমি কোড আমাদের সোশ্যাল পেজেও ঘোষণা করা হয়।',
         ],
       },
     ],
@@ -695,6 +884,9 @@ export const pages = {
 }
 
 export const getPage = (slug) => {
-  if (slug === 'ghorer-bazar-stories') return pages['our-story'] || null
-  return pages[slug] || null
+  if (!slug) return null
+  if (pages[slug]) return pages[slug]
+  // Tolerate links saved with an accidental prefix such as /page/about-us.
+  const cleaned = String(slug).replace(/^\/?page\//, '').replace(/\/$/, '')
+  return pages[cleaned] || null
 }

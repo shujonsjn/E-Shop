@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight, BadgeCheck } from 'lucide-react'
 import { Breadcrumbs, PageBanner } from '../components/ui'
-import { bannerImage } from '../data/catalog'
 import { useProducts } from '../context/ProductsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { getMergedBrands } from '../utils/mergeBrands'
@@ -61,10 +60,10 @@ const Brands = () => {
       <PageBanner
         title={t('nav.brands')}
         subtitle={tx(
-          'Trusted names we work with directly — from our own label to specialist producers.',
-          'আমরা সরাসরি যাদের সাথে কাজ করি — আমাদের নিজস্ব ব্র্যান্ড থেকে বিশেষজ্ঞ উৎপাদক পর্যন্ত।'
+          'The brands and labels behind our collection.',
+          'আমাদের সংগ্রহে থাকা ব্র্যান্ড ও লেবেল।'
         )}
-        image={settings.pageBanners?.brands || bannerImage('KQlqd1788006502-4000x1039.jpeg')}
+        image={settings.pageBanners?.brands || ''}
       />
 
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
