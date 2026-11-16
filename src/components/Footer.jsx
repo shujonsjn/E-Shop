@@ -122,8 +122,8 @@ const Footer = () => {
             </span>
             <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/60">
               {tx(
-                settings.siteTagline ?? 'Pure food, honest price',
-                settings.siteTagline_bn ?? 'খাঁটি খাবার, সেরা দাম'
+                settings.siteTagline ?? 'Your Ultimate Choice for Perfect Gifts',
+                settings.siteTagline_bn ?? 'নিখুঁত উপহার ও আকর্ষণীয় শোপিসের জন্য আপনার সেরা পছন্দ'
               )}
             </span>
           </Link>

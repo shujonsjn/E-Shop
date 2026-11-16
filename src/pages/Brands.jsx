@@ -7,29 +7,6 @@ import { useLanguage } from '../i18n/LanguageContext'
 import { getMergedBrands } from '../utils/mergeBrands'
 import { useSettings } from '../context/SettingsContext'
 
-const brandBlurbs = {
-  ghorerbazar: {
-    en: 'Our own label — pantry staples sourced directly and packed in small batches.',
-    bn: 'আমাদের নিজস্ব ব্র্যান্ড — সরাসরি সংগ্রহ করা ও ছোট ব্যাচে প্যাক করা নিত্যপণ্য।',
-  },
-  glarvest: {
-    en: 'Cold-pressed oils and premium pantry products for everyday cooking.',
-    bn: 'প্রতিদিনের রান্নার জন্য কোল্ড-প্রেসড তেল ও প্রিমিয়াম নিত্যপণ্য।',
-  },
-  khejuri: {
-    en: 'Authentic dates and dry fruit, hand-sorted before every pack.',
-    bn: 'খাঁটি খেজুর ও শুকনো ফল, প্রতিটি প্যাকের আগে হাতে বাছাই করা।',
-  },
-  'shosti-food': {
-    en: 'Everyday spices and kitchen essentials at honest prices.',
-    bn: 'সৎ দামে প্রতিদিনের মসলা ও রান্নাঘরের প্রয়োজনীয় পণ্য।',
-  },
-  honeyraj: {
-    en: 'Raw honey from trusted beekeepers across Bangladesh.',
-    bn: 'বাংলাদেশের বিশ্বস্ত মৌচাষীদের কাছ থেকে খাঁটি মধু।',
-  },
-}
-
 const Brands = () => {
   const { products } = useProducts()
   const { t, tx } = useLanguage()
@@ -69,7 +46,6 @@ const Brands = () => {
       <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
         {brands.map((brand) => {
           const count = countFor(brand)
-          const blurb = brandBlurbs[brand.slug]
           return (
             <Link
               key={brand.slug}
@@ -88,7 +64,7 @@ const Brands = () => {
                 {tx(brand.name, brand.name_bn)}
               </h2>
               <p className="mt-1 flex-1 text-[12.5px] leading-5 text-ink-muted">
-                {blurb ? tx(blurb.en, blurb.bn) : ''}
+                {tx(brand.description || '', brand.description_bn || '')}
               </p>
               <div className="mt-3 flex items-center justify-between border-t border-gray-100 pt-2.5">
                 <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-ink-muted">

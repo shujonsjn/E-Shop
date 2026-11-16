@@ -142,7 +142,7 @@ const mergeSavedSettings = (parsed) => {
   // "c 2026 . All rights Giftshop.com" and grocery copy in the footer.
   if (
     typeof merged.siteContent.footerCopyright === 'string' &&
-    /^\s*c\s*\d{4}/i.test(merged.siteContent.footerCopyright)
+    /^\s*[©c]\s*\d{4}\s*\./i.test(merged.siteContent.footerCopyright)
   ) {
     merged.siteContent.footerCopyright = `© ${new Date().getFullYear()} ${merged.siteName}. All rights reserved.`
   }
@@ -211,7 +211,8 @@ export const SettingsProvider = ({ children }) => {
       }
       const description =
         settings.siteDescription ||
-        `Shop quality products online in Bangladesh with fast home delivery from ${settings.siteName}.`
+        'Shop gifts, showpieces, watches, bags and shoes online in Bangladesh with fast home delivery from ' +
+          `${settings.siteName}.`
       setMeta('meta[name="description"]', description)
       setMeta('meta[property="og:title"]', settings.siteName)
       setMeta('meta[property="og:description"]', description)

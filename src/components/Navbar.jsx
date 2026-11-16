@@ -133,7 +133,13 @@ const Navbar = () => {
   if (HIDE_ON.some((path) => location.pathname.startsWith(path))) return null
 
   const suggestions = query.trim() ? searchProducts(query).slice(0, 6) : []
-  const popular = ['Honey', 'Dates', 'Ghee', 'Mustard oil', 'Cashew', 'Masala']
+  const popular = (
+    categories.length
+      ? categories.map((category) => tx(category.name, category.name_bn))
+      : [tx('Gift', 'উপহার'), tx('Showpiece', 'শোপিস'), tx('Bag', 'ব্যাগ')]
+  )
+    .filter(Boolean)
+    .slice(0, 6)
 
   const goSearch = (value) => {
     const q = String(value || '').trim()
@@ -229,8 +235,8 @@ const Navbar = () => {
             </span>
             <span className="mt-1 hidden text-[9px] font-semibold uppercase tracking-[0.18em] text-ink-muted sm:block">
               {tx(
-                settings.siteTagline ?? 'Pure food, honest price',
-                settings.siteTagline_bn ?? 'খাঁটি খাবার, সেরা দাম'
+                settings.siteTagline ?? 'Your Ultimate Choice for Perfect Gifts',
+                settings.siteTagline_bn ?? 'নিখুঁত উপহার ও আকর্ষণীয় শোপিসের জন্য আপনার সেরা পছন্দ'
               )}
             </span>
           </Link>

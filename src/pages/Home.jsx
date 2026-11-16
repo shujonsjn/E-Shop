@@ -19,6 +19,7 @@ import { useSettings } from '../context/SettingsContext'
 import { getMergedCategories } from '../utils/mergeCategories'
 import { getMergedBrands } from '../utils/mergeBrands'
 import { isDemoAsset } from '../utils/media'
+import { safeHref } from '../utils/links'
 
 const ProductRow = ({ title, subtitle, items, href, linkLabel }) => {
   if (!items.length) return null
@@ -125,7 +126,7 @@ const Home = () => {
                 {sideBanners.map((banner) => (
                   <Link
                     key={banner.id}
-                    to={banner.href}
+                    to={safeHref(banner.href)}
                     className="group relative overflow-hidden rounded-lg bg-cream"
                   >
                     <img
@@ -276,7 +277,7 @@ const Home = () => {
               {promoBanners.map((banner) => (
                 <Link
                   key={banner.id}
-                  to={banner.href}
+                  to={safeHref(banner.href)}
                   className="group overflow-hidden rounded-lg bg-cream"
                 >
                   <img
@@ -367,7 +368,7 @@ const Home = () => {
               <HeroSlider />
               <div className="hidden grid-rows-2 gap-3 lg:grid">
                 {sideBanners.map((banner) => (
-                  <Link key={banner.id} to={banner.href} className="group relative overflow-hidden rounded-lg bg-cream">
+                  <Link key={banner.id} to={safeHref(banner.href)} className="group relative overflow-hidden rounded-lg bg-cream">
                     <img src={banner.image} alt={banner.alt || 'Banner'} className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]" loading="lazy" />
                   </Link>
                 ))}

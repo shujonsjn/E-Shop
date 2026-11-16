@@ -254,7 +254,7 @@ const Products = () => {
             `Explore our ${category.name.toLowerCase()} collection`,
             `আমাদের ${category.name_bn} কালেকশন দেখুন`
           )
-        : tx('Everything your kitchen needs, in one place', 'রান্নাঘরের সব প্রয়োজন, এক জায়গায়')
+        : tx('Gifts, showpieces and more — all in one place', 'উপহার, শোপিস ও আরও অনেক কিছু — এক জায়গায়')
 
   const breadcrumbs = [
     { label: t('common.home'), to: '/' },

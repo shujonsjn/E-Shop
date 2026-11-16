@@ -4,6 +4,7 @@ import { ChevronLeft, ChevronRight, ShoppingBag } from 'lucide-react'
 import { useSettings } from '../context/SettingsContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { isDemoAsset } from '../utils/media'
+import { safeHref } from '../utils/links'
 
 const HeroSlider = () => {
   const { settings } = useSettings()
@@ -71,7 +72,7 @@ const HeroSlider = () => {
         {heroSlides.map((slide, slideIndex) => (
           <Link
             key={slide.id}
-            to={slide.href || '/shop'}
+            to={safeHref(slide.href)}
             className={`absolute inset-0 transition-opacity duration-700 ${
               slideIndex === activeIndex ? 'z-10 opacity-100' : 'pointer-events-none opacity-0'
             }`}
