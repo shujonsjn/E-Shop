@@ -35,7 +35,10 @@ const ContentPage = () => {
     } catch {}
   }, [slug])
 
-  const page = pagesData[slug] || getPage(slug)
+  const savedEntry = pagesData[slug]
+  // A page deleted in the admin panel is stored as a tombstone (`hidden: true`)
+  // so the bundled default must not reappear.
+  const page = savedEntry?.hidden ? null : savedEntry || getPage(slug)
   const contactPhone = settings.callOrderNumber || settings.sitePhone || ''
   const deliveryCharges = Array.isArray(settings.deliveryCharges) ? settings.deliveryCharges : []
   const chargeInside = deliveryCharges.find((row) => /inside/i.test(row.area || ''))?.charge
@@ -90,7 +93,7 @@ const ContentPage = () => {
 
   const title = brandText(isBn && page.title_bn ? page.title_bn : page.title)
   const subtitle = brandText(isBn && page.subtitle_bn ? page.subtitle_bn : page.subtitle)
-  const availableLinks = quickLinks.filter(([linkSlug]) => pagesList[linkSlug])
+  const availableLinks = quickLinks.filter(([linkSlug]) => pagesList[linkSlug] && !pagesList[linkSlug].hidden)
 
   return (
     <div className="container-gb py-3">
@@ -101,7 +104,7 @@ const ContentPage = () => {
       <div className="mt-5 grid gap-5 lg:grid-cols-[1fr_260px]">
         <article className="card p-5 sm:p-7">
           <div className="space-y-7">
-            {page.sections.map((section, index) => {
+            {(page.sections || []).map((section, index) => {
               const heading = brandText(isBn && section.heading_bn ? section.heading_bn : section.heading)
               const body = brandText(isBn && section.body_bn ? section.body_bn : section.body)
               const bullets = brandText(isBn && section.bullets_bn ? section.bullets_bn : section.bullets)

@@ -117,7 +117,7 @@ export const CartProvider = ({ children }) => {
 
   const applyCoupon = (code) => {
     const normalized = String(code || '').trim().toUpperCase()
-    const allCoupons = settings?.coupons || []
+    const allCoupons = Array.isArray(settings?.coupons) ? settings.coupons : []
     const found = allCoupons.find((c) => String(c.code || '').toUpperCase() === normalized)
     if (!found) return { ok: false, message: 'Invalid coupon code' }
     if (found.expiryDate) {
@@ -126,9 +126,6 @@ export const CartProvider = ({ children }) => {
       if (exp < new Date(today.toDateString())) {
         return { ok: false, message: 'Coupon expired' }
       }
-    }
-    if (found.usageLimit && found.usedCount >= found.usageLimit) {
-      return { ok: false, message: 'Coupon usage limit reached' }
     }
     const minOrder = found.minOrder || found.min || 0
     if (subtotal < minOrder) {

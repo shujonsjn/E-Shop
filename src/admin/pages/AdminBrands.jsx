@@ -4,9 +4,20 @@ import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
 import { getMergedBrands } from '../../utils/mergeBrands'
 import { saveStore } from '../../services/store'
+import { useProducts } from '../../context/ProductsContext'
+
+const slugify = (value) =>
+  String(value || '')
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '')
+
+const emptyForm = { name: '', name_bn: '', slug: '', description: '', description_bn: '', logo: '' }
 
 const AdminBrands = () => {
   const [brands, setBrands] = useState([])
+  const { products, replaceProducts } = useProducts()
 
   useEffect(() => {
     setBrands(getMergedBrands())
@@ -14,43 +25,101 @@ const AdminBrands = () => {
 
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ name: '', name_bn: '', slug: '', logo: '' })
+  const [form, setForm] = useState(emptyForm)
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    let updated
-    if (editing) {
-      updated = brands.map((b) => (b.slug === editing.slug ? { ...b, ...form } : b))
-      toast.success('Brand updated')
-    } else {
-      updated = [...brands, { ...form }]
-      toast.success('Brand added')
+    const name = form.name.trim()
+    if (!name) {
+      toast.error('Brand name is required')
+      return
     }
+    const slug = slugify(form.slug || name)
+    if (!slug) {
+      toast.error('Slug could not be generated — use English letters')
+      return
+    }
+    const duplicate = brands.some(
+      (b) => b.slug === slug && (!editing || b.slug !== editing.slug)
+    )
+    if (duplicate) {
+      toast.error('Another brand already uses this slug')
+      return
+    }
+
+    const nextBrand = {
+      ...form,
+      name,
+      slug,
+      description: form.description.trim(),
+      description_bn: form.description_bn.trim(),
+    }
+
+    const updated = editing
+      ? brands.map((b) => (b.slug === editing.slug ? { ...b, ...nextBrand } : b))
+      : [...brands, nextBrand]
+
     setBrands(updated)
-    if (saveStore('brands', updated)) {
-      window.dispatchEvent(new Event('storage'))
-    } else {
-      toast.error('Could not save — browser storage is full. Try a smaller logo.')
+    const ok = saveStore('brands', updated)
+    if (!ok) {
+      toast.error('Could not save. Check that you are signed in as admin.')
+      return
     }
+
+    // Products store the brand *name*, so renaming a brand must follow through
+    // or the brand page (and shop filter) would go empty.
+    if (editing && editing.name && editing.name !== name) {
+      const renamed = products.map((p) =>
+        String(p.brand || '') === String(editing.name)
+          ? { ...p, brand: name }
+          : p
+      )
+      const changed = renamed.some((p, i) => p !== products[i])
+      if (changed) replaceProducts(renamed)
+    }
+
+    window.dispatchEvent(new Event('storage'))
+    toast.success(editing ? 'Brand updated' : 'Brand added')
     setShowModal(false)
     setEditing(null)
-    setForm({ name: '', name_bn: '', slug: '', logo: '' })
+    setForm(emptyForm)
   }
 
   const handleEdit = (brand) => {
     setEditing(brand)
-    setForm({ name: brand.name, name_bn: brand.name_bn || '', slug: brand.slug, logo: brand.logo || '' })
+    setForm({
+      name: brand.name || '',
+      name_bn: brand.name_bn || '',
+      slug: brand.slug || '',
+      description: brand.description || '',
+      description_bn: brand.description_bn || '',
+      logo: brand.logo || '',
+    })
     setShowModal(true)
   }
 
   const handleDelete = (slug) => {
-    if (confirm('Delete this brand?')) {
-      const updated = brands.filter((b) => b.slug !== slug)
-      setBrands(updated)
-      saveStore('brands', updated)
+    if (
+      !confirm(
+        'Delete this brand? Products keep their brand name, so they will simply stop appearing on the brand page.'
+      )
+    ) {
+      return
+    }
+    const updated = brands.filter((b) => b.slug !== slug)
+    setBrands(updated)
+    if (saveStore('brands', updated)) {
       window.dispatchEvent(new Event('storage'))
       toast.success('Brand deleted')
+    } else {
+      toast.error('Could not delete. Check that you are signed in as admin.')
     }
+  }
+
+  const openAdd = () => {
+    setEditing(null)
+    setForm(emptyForm)
+    setShowModal(true)
   }
 
   return (
@@ -60,7 +129,10 @@ const AdminBrands = () => {
           <h1 className="text-2xl font-bold text-gray-900">Brands</h1>
           <p className="text-gray-500 mt-1">Manage product brands</p>
         </div>
-        <button onClick={() => { setEditing(null); setForm({ name: '', name_bn: '', slug: '', logo: '' }); setShowModal(true) }} className="flex items-center gap-2 bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16]">
+        <button
+          onClick={openAdd}
+          className="flex items-center gap-2 bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16]"
+        >
           <Plus size={18} /> Add Brand
         </button>
       </div>
@@ -80,39 +152,92 @@ const AdminBrands = () => {
             {brands.map((brand) => (
               <tr key={brand.slug}>
                 <td className="px-6 py-4">
-                  {brand.logo ? <img src={brand.logo} alt={brand.name} className="h-10 w-10 object-contain" /> : <div className="h-10 w-10 bg-gray-100 rounded" />}
+                  {brand.logo ? (
+                    <img src={brand.logo} alt={brand.name} className="h-10 w-10 object-contain" />
+                  ) : (
+                    <div className="h-10 w-10 bg-gray-100 rounded" />
+                  )}
                 </td>
                 <td className="px-6 py-4 font-medium text-gray-900">{brand.name}</td>
                 <td className="px-6 py-4 text-gray-500">{brand.name_bn || '-'}</td>
                 <td className="px-6 py-4 text-gray-500">{brand.slug}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(brand)} className="text-blue-600 hover:text-blue-800"><Edit2 size={18} /></button>
-                    <button onClick={() => handleDelete(brand.slug)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
+                    <button onClick={() => handleEdit(brand)} className="text-blue-600 hover:text-blue-800" title="Edit">
+                      <Edit2 size={18} />
+                    </button>
+                    <button onClick={() => handleDelete(brand.slug)} className="text-red-600 hover:text-red-800" title="Delete">
+                      <Trash2 size={18} />
+                    </button>
                   </div>
                 </td>
               </tr>
             ))}
           </tbody>
         </table>
+        {brands.length === 0 && (
+          <div className="py-12 text-center">
+            <p className="text-gray-700 font-medium">এখনো কোনো ব্র্যান্ড নেই</p>
+            <p className="mt-1 text-sm text-gray-500">Add Brand চেপে প্রথম ব্র্যান্ড যোগ করুন।</p>
+          </div>
+        )}
       </div>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 w-full max-w-md">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
             <h2 className="text-xl font-bold mb-4">{editing ? 'Edit Brand' : 'Add Brand'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Brand Name (English)</label>
-                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border rounded" required />
+                <label className="block text-sm font-medium mb-1">Brand Name (English) *</label>
+                <input
+                  type="text"
+                  value={form.name}
+                  onChange={(e) => setForm({ ...form, name: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Brand Name (Bangla)</label>
-                <input type="text" value={form.name_bn} onChange={(e) => setForm({ ...form, name_bn: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="বাংলা নাম" />
+                <input
+                  type="text"
+                  value={form.name_bn}
+                  onChange={(e) => setForm({ ...form, name_bn: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="বাংলা নাম"
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Slug</label>
-                <input type="text" value={form.slug} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full px-3 py-2 border rounded" required />
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => setForm({ ...form, slug: e.target.value })}
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="Auto-generated from the name"
+                />
+                <p className="text-xs text-gray-500 mt-1">/brand/{form.slug || slugify(form.name) || 'brand-name'}</p>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (English)</label>
+                <textarea
+                  value={form.description}
+                  onChange={(e) => setForm({ ...form, description: e.target.value })}
+                  rows="2"
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="Short introduction shown on the brand page"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Description (Bangla)</label>
+                <textarea
+                  value={form.description_bn}
+                  onChange={(e) => setForm({ ...form, description_bn: e.target.value })}
+                  rows="2"
+                  className="w-full px-3 py-2 border rounded"
+                  placeholder="ব্র্যান্ড পেজে দেখানো সংক্ষিপ্ত পরিচিতি"
+                />
               </div>
               <ImageUpload
                 label="Brand Logo"
@@ -123,8 +248,20 @@ const AdminBrands = () => {
                 fit="contain"
               />
               <div className="flex gap-2">
-                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Save</button>
-                <button type="button" onClick={() => { setShowModal(false); setEditing(null); setForm({ name: '', name_bn: '', slug: '', logo: '' }) }} className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">Cancel</button>
+                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
+                  Save
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false)
+                    setEditing(null)
+                    setForm(emptyForm)
+                  }}
+                  className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400"
+                >
+                  Cancel
+                </button>
               </div>
             </form>
           </div>

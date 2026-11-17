@@ -8,7 +8,7 @@ const STORAGE_KEY = 'gb_settings'
 
 import { heroSlides as defaultHeroSlides, sideBanners as defaultSideBanners, promoBanners as defaultPromoBanners } from '../data/catalog'
 
-const defaultHomeLayout = [
+export const defaultHomeLayout = [
   { id: 'hero', type: 'hero', enabled: true, order: 0 },
   { id: 'trust', type: 'trust', enabled: true, order: 1 },
   { id: 'categories', type: 'categories', enabled: true, order: 2, title: 'Featured Categories', subtitle: 'Shop by your favorite category', href: '/shop', linkLabel: 'View All Categories' },
@@ -270,19 +270,26 @@ export const SettingsProvider = ({ children }) => {
   const addDeliveryCharge = (charge) => {
     setSettings((prev) => ({
       ...prev,
-      deliveryCharges: [...prev.deliveryCharges, { ...charge, id: Date.now() }],
+      deliveryCharges: [
+        ...(Array.isArray(prev.deliveryCharges) ? prev.deliveryCharges : []),
+        { ...charge, id: Date.now() },
+      ],
     }))
   }
   const updateDeliveryCharge = (id, updates) => {
     setSettings((prev) => ({
       ...prev,
-      deliveryCharges: prev.deliveryCharges.map((c) => (c.id === id ? { ...c, ...updates } : c)),
+      deliveryCharges: (Array.isArray(prev.deliveryCharges) ? prev.deliveryCharges : []).map((c) =>
+        c.id === id ? { ...c, ...updates } : c
+      ),
     }))
   }
   const deleteDeliveryCharge = (id) => {
     setSettings((prev) => ({
       ...prev,
-      deliveryCharges: prev.deliveryCharges.filter((c) => c.id !== id),
+      deliveryCharges: (Array.isArray(prev.deliveryCharges) ? prev.deliveryCharges : []).filter(
+        (c) => c.id !== id
+      ),
     }))
   }
 
@@ -290,19 +297,26 @@ export const SettingsProvider = ({ children }) => {
   const addDeliverySlot = (slot) => {
     setSettings((prev) => ({
       ...prev,
-      deliverySlots: [...prev.deliverySlots, { ...slot, id: Date.now() }],
+      deliverySlots: [
+        ...(Array.isArray(prev.deliverySlots) ? prev.deliverySlots : []),
+        { ...slot, id: Date.now() },
+      ],
     }))
   }
   const updateDeliverySlot = (id, updates) => {
     setSettings((prev) => ({
       ...prev,
-      deliverySlots: prev.deliverySlots.map((s) => (s.id === id ? { ...s, ...updates } : s)),
+      deliverySlots: (Array.isArray(prev.deliverySlots) ? prev.deliverySlots : []).map((s) =>
+        s.id === id ? { ...s, ...updates } : s
+      ),
     }))
   }
   const deleteDeliverySlot = (id) => {
     setSettings((prev) => ({
       ...prev,
-      deliverySlots: prev.deliverySlots.filter((s) => s.id !== id),
+      deliverySlots: (Array.isArray(prev.deliverySlots) ? prev.deliverySlots : []).filter(
+        (s) => s.id !== id
+      ),
     }))
   }
 
@@ -311,8 +325,8 @@ export const SettingsProvider = ({ children }) => {
     setSettings((prev) => ({
       ...prev,
       paymentMethods: {
-        ...prev.paymentMethods,
-        [key]: { ...prev.paymentMethods[key], ...updates },
+        ...(prev.paymentMethods || {}),
+        [key]: { ...(prev.paymentMethods?.[key] || {}), ...updates },
       },
     }))
   }
@@ -321,19 +335,24 @@ export const SettingsProvider = ({ children }) => {
   const addCoupon = (coupon) => {
     setSettings((prev) => ({
       ...prev,
-      coupons: [...prev.coupons, { ...coupon, id: Date.now(), usedCount: 0, createdAt: new Date().toISOString() }],
+      coupons: [
+        ...(Array.isArray(prev.coupons) ? prev.coupons : []),
+        { ...coupon, id: Date.now(), usedCount: 0, createdAt: new Date().toISOString() },
+      ],
     }))
   }
   const updateCoupon = (id, updates) => {
     setSettings((prev) => ({
       ...prev,
-      coupons: prev.coupons.map((c) => (c.id === id ? { ...c, ...updates } : c)),
+      coupons: (Array.isArray(prev.coupons) ? prev.coupons : []).map((c) =>
+        c.id === id ? { ...c, ...updates } : c
+      ),
     }))
   }
   const deleteCoupon = (id) => {
     setSettings((prev) => ({
       ...prev,
-      coupons: prev.coupons.filter((c) => c.id !== id),
+      coupons: (Array.isArray(prev.coupons) ? prev.coupons : []).filter((c) => c.id !== id),
     }))
   }
 
@@ -355,13 +374,16 @@ export const SettingsProvider = ({ children }) => {
   const addExpense = (expense) => {
     setSettings((prev) => ({
       ...prev,
-      expenses: [{ ...expense, id: Date.now(), createdAt: new Date().toISOString() }, ...prev.expenses],
+      expenses: [
+        { ...expense, id: Date.now(), createdAt: new Date().toISOString() },
+        ...(Array.isArray(prev.expenses) ? prev.expenses : []),
+      ],
     }))
   }
   const deleteExpense = (id) => {
     setSettings((prev) => ({
       ...prev,
-      expenses: prev.expenses.filter((e) => e.id !== id),
+      expenses: (Array.isArray(prev.expenses) ? prev.expenses : []).filter((e) => e.id !== id),
     }))
   }
 
@@ -369,19 +391,24 @@ export const SettingsProvider = ({ children }) => {
   const addStaff = (staff) => {
     setSettings((prev) => ({
       ...prev,
-      staff: [...prev.staff, { ...staff, id: Date.now(), createdAt: new Date().toISOString() }],
+      staff: [
+        ...(Array.isArray(prev.staff) ? prev.staff : []),
+        { ...staff, id: Date.now(), createdAt: new Date().toISOString() },
+      ],
     }))
   }
   const updateStaff = (id, updates) => {
     setSettings((prev) => ({
       ...prev,
-      staff: prev.staff.map((s) => (s.id === id ? { ...s, ...updates } : s)),
+      staff: (Array.isArray(prev.staff) ? prev.staff : []).map((s) =>
+        s.id === id ? { ...s, ...updates } : s
+      ),
     }))
   }
   const deleteStaff = (id) => {
     setSettings((prev) => ({
       ...prev,
-      staff: prev.staff.filter((s) => s.id !== id),
+      staff: (Array.isArray(prev.staff) ? prev.staff : []).filter((s) => s.id !== id),
     }))
   }
 
@@ -434,12 +461,49 @@ export const SettingsProvider = ({ children }) => {
       return updated
     })
   }
+  const addSideBanner = (banner) => {
+    setSettings((prev) => ({
+      ...prev,
+      siteContent: {
+        ...(prev.siteContent || {}),
+        sideBanners: [
+          ...(Array.isArray(prev.siteContent?.sideBanners) ? prev.siteContent.sideBanners : []),
+          { ...banner, id: Date.now() + Math.random() },
+        ],
+      },
+    }))
+  }
   const updateSideBanner = (id, updates) => {
     setSettings((prev) => ({
       ...prev,
       siteContent: {
         ...prev.siteContent,
-        sideBanners: prev.siteContent.sideBanners.map((b) => (b.id === id ? { ...b, ...updates } : b)),
+        sideBanners: (Array.isArray(prev.siteContent?.sideBanners) ? prev.siteContent.sideBanners : []).map(
+          (b) => (b.id === id ? { ...b, ...updates } : b)
+        ),
+      },
+    }))
+  }
+  const deleteSideBanner = (id) => {
+    setSettings((prev) => ({
+      ...prev,
+      siteContent: {
+        ...prev.siteContent,
+        sideBanners: (Array.isArray(prev.siteContent?.sideBanners) ? prev.siteContent.sideBanners : []).filter(
+          (b) => String(b.id) !== String(id)
+        ),
+      },
+    }))
+  }
+  const addPromoBanner = (banner) => {
+    setSettings((prev) => ({
+      ...prev,
+      siteContent: {
+        ...(prev.siteContent || {}),
+        promoBanners: [
+          ...(Array.isArray(prev.siteContent?.promoBanners) ? prev.siteContent.promoBanners : []),
+          { ...banner, id: Date.now() + Math.random() },
+        ],
       },
     }))
   }
@@ -448,7 +512,20 @@ export const SettingsProvider = ({ children }) => {
       ...prev,
       siteContent: {
         ...prev.siteContent,
-        promoBanners: prev.siteContent.promoBanners.map((b) => (b.id === id ? { ...b, ...updates } : b)),
+        promoBanners: (Array.isArray(prev.siteContent?.promoBanners) ? prev.siteContent.promoBanners : []).map(
+          (b) => (b.id === id ? { ...b, ...updates } : b)
+        ),
+      },
+    }))
+  }
+  const deletePromoBanner = (id) => {
+    setSettings((prev) => ({
+      ...prev,
+      siteContent: {
+        ...prev.siteContent,
+        promoBanners: (Array.isArray(prev.siteContent?.promoBanners) ? prev.siteContent.promoBanners : []).filter(
+          (b) => String(b.id) !== String(id)
+        ),
       },
     }))
   }
@@ -483,6 +560,15 @@ export const SettingsProvider = ({ children }) => {
       }
     })
   }
+  const removeHomeSection = (id) => {
+    setSettings((prev) => {
+      const layout = prev.homeLayout || defaultHomeLayout
+      return {
+        ...prev,
+        homeLayout: layout.filter((item) => item.id !== id).map((item, idx) => ({ ...item, order: idx })),
+      }
+    })
+  }
 
   const value = {
     settings,
@@ -492,7 +578,11 @@ export const SettingsProvider = ({ children }) => {
     addHeroSlide,
     deleteHeroSlide,
     updateSideBanner,
+    deleteSideBanner,
+    addSideBanner,
     updatePromoBanner,
+    deletePromoBanner,
+    addPromoBanner,
     addDeliveryCharge,
     updateDeliveryCharge,
     deleteDeliveryCharge,
@@ -514,6 +604,7 @@ export const SettingsProvider = ({ children }) => {
     reorderHomeLayout,
     toggleHomeSection,
     updateHomeSection,
+    removeHomeSection,
   }
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

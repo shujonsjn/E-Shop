@@ -1,15 +1,14 @@
 import { useState, useEffect } from 'react'
-import { Plus, Edit, Trash2, RotateCcw } from 'lucide-react'
+import { Plus, Edit, Trash2 } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useProducts } from '../../context/ProductsContext'
 import { getMergedCategories } from '../../utils/mergeCategories'
-import toast from 'react-hot-toast'
 
 const categoryName = (slug) =>
   getMergedCategories().find((category) => category.slug === slug)?.name || slug
 
 const AdminProducts = () => {
-  const { products, deleteProduct, importCatalog } = useProducts()
+  const { products, deleteProduct } = useProducts()
   const navigate = useNavigate()
   const [adminCategories, setAdminCategories] = useState([])
 
@@ -19,17 +18,6 @@ const AdminProducts = () => {
       if (saved) setAdminCategories(JSON.parse(saved))
     } catch {}
   }, [])
-
-  const resetCatalog = () => {
-    if (
-      confirm(
-        'Import the demo catalog? This replaces the current product list. Your own products will be removed.'
-      )
-    ) {
-      importCatalog()
-      toast.success('Demo catalog imported')
-    }
-  }
 
   const handleAdd = () => {
     navigate('/admin/products/add')
@@ -53,13 +41,6 @@ const AdminProducts = () => {
           <p className="text-gray-500 mt-1">Manage your product catalog</p>
         </div>
         <div className="flex items-center gap-2">
-          <button
-            onClick={resetCatalog}
-            className="flex items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-200 transition"
-          >
-            <RotateCcw size={18} />
-            Import from Catalog
-          </button>
           <button
             onClick={handleAdd}
             className="flex items-center bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16] transition"
@@ -106,6 +87,14 @@ const AdminProducts = () => {
             ))}
           </tbody>
         </table>
+        {products.length === 0 && (
+          <div className="py-12 text-center">
+            <p className="text-gray-700 font-medium">এখনো কোনো পণ্য নেই</p>
+            <p className="mt-1 text-sm text-gray-500">
+              Add Product চেপে প্রথম পণ্যটি যোগ করুন। কোনো ডেমো পণ্য স্বয়ংক্রিয়ভাবে আসে না।
+            </p>
+          </div>
+        )}
       </div>
     </div>
   )

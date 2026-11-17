@@ -219,7 +219,7 @@ const AdminProductForm = () => {
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className={fieldClass}
-                    placeholder="e.g. Sundarban Honey 1kg"
+                    placeholder="e.g. Ceramic Flower Vase"
                     required
                   />
                 </div>
@@ -230,7 +230,7 @@ const AdminProductForm = () => {
                     value={formData.name_bn}
                     onChange={(e) => setFormData({ ...formData, name_bn: e.target.value })}
                     className={fieldClass}
-                    placeholder="যেমন সুন্দরবনের মধু ১ কেজি"
+                    placeholder="যেমন সিরামিক ফুলদানি"
                   />
                 </div>
                 <div>
@@ -253,7 +253,7 @@ const AdminProductForm = () => {
                     value={formData.unit}
                     onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                     className={fieldClass}
-                    placeholder="e.g. 1 kg, 500 g, 1 L, 24 pcs"
+                    placeholder="e.g. Medium, 1 pc, 30 cm"
                   />
                 </div>
                 <div className="md:col-span-2">
@@ -327,7 +327,7 @@ const AdminProductForm = () => {
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                     className={fieldClass}
-                    placeholder="2125"
+                    placeholder="1250"
                     min="0"
                     required
                   />
@@ -339,7 +339,7 @@ const AdminProductForm = () => {
                     value={formData.oldPrice}
                     onChange={(e) => setFormData({ ...formData, oldPrice: e.target.value })}
                     className={fieldClass}
-                    placeholder="2500"
+                    placeholder="1500"
                     min="0"
                   />
                   <p className="text-xs text-gray-500 mt-1">Shown crossed out when higher than the current price.</p>
@@ -402,6 +402,7 @@ const AdminProductForm = () => {
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                     className={`${fieldClass} bg-white`}
                   >
+                    <option value="">No brand</option>
                     {brands.map((brand) => (
                       <option key={brand.slug} value={brand.name}>
                         {brand.name}
@@ -416,10 +417,10 @@ const AdminProductForm = () => {
                     value={formData.badges}
                     onChange={(e) => setFormData({ ...formData, badges: e.target.value })}
                     className={fieldClass}
-                    placeholder="Best Selling, Organic"
+                    placeholder="Best Selling, New Arrival"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Comma separated. Known badges: Best Selling, New Arrival, Offered, Premium, Organic.
+                    Comma separated. Known badges: Best Selling, New Arrival, Offered, Premium.
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 pt-1">

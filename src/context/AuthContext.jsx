@@ -5,6 +5,7 @@ import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import {
   cancelOrderRemote,
   decrementStockRemote,
+  deleteOrderRemote,
   fetchOrders,
   insertOrder,
   pushOrderUpdate,
@@ -417,6 +418,28 @@ export const AuthProvider = ({ children }) => {
     )
   }
 
+  // Admin-only hard delete. Deleting the cloud row fires the database trigger
+  // that returns the stock of not-yet-shipped orders, so removing a test order
+  // never leaves the inventory short.
+  const deleteOrder = async (orderId) => {
+    if (user?.role !== 'admin') {
+      toast.error('Only an admin can delete an order')
+      return false
+    }
+    const order = orders.find((o) => String(o.id) === String(orderId))
+    if (!order) return false
+    setOrders((prev) => prev.filter((o) => String(o.id) !== String(orderId)))
+    const ok = await deleteOrderRemote(order.id)
+    if (ok) {
+      toast.success('Order deleted')
+      return true
+    }
+    // Put the row back so the panel never lies about what still exists.
+    setOrders((prev) => [order, ...prev])
+    toast.error('Could not delete the order')
+    return false
+  }
+
   const getUserOrders = () => {
     if (!user) return []
     return orders.filter((order) => String(order.userId) === String(user.id))
@@ -439,6 +462,7 @@ export const AuthProvider = ({ children }) => {
         updateOrderStatus,
         cancelOrder,
         cancelOrderByPhone,
+        deleteOrder,
         refreshOrders,
         getUserOrders,
         getOrderById,

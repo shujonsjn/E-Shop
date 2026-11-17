@@ -3,16 +3,25 @@ import { useAuth } from '../../context/AuthContext'
 import { useProducts } from '../../context/ProductsContext'
 
 const AdminDashboard = () => {
-  const { users, orders } = useAuth()
+  const { orders } = useAuth()
   const { products } = useProducts()
 
-  const totalRevenue = orders.reduce((sum, order) => sum + (order.total || 0), 0)
+  // Cancelled orders are not sales. Only count the rest for revenue, and derive
+  // customer count from those orders (the local `users` list is device-only and
+  // would always show 0 on a fresh admin browser).
+  const paidOrders = orders.filter((o) => o.status !== 'Cancelled')
+  const totalRevenue = paidOrders.reduce((sum, order) => sum + (Number(order.total) || 0), 0)
   const pendingOrders = orders.filter((o) => o.status === 'Pending').length
+  const customers = new Set(
+    paidOrders
+      .map((o) => String(o.shippingAddress?.phone || o.phone || o.userEmail || o.userId || ''))
+      .filter(Boolean)
+  ).size
 
   const stats = [
     { title: 'Total Orders', value: orders.length, icon: ShoppingBag },
-    { title: 'Total Sales', value: `৳${totalRevenue}`, icon: DollarSign },
-    { title: 'Total Users', value: users.filter((u) => u.role !== 'admin').length, icon: Users },
+    { title: 'Total Sales', value: `৳${totalRevenue.toLocaleString('en-US')}`, icon: DollarSign },
+    { title: 'Customers', value: customers, icon: Users },
     { title: 'Total Products', value: products.length, icon: Package },
   ]
 

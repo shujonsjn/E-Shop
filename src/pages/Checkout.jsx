@@ -53,14 +53,19 @@ const Checkout = () => {
   const [paymentDetails, setPaymentDetails] = useState({ senderNumber: '', transactionId: '' })
   const [couponCode, setCouponCode] = useState('')
   const [couponMessage, setCouponMessage] = useState('')
+  const [deliverySlot, setDeliverySlot] = useState('')
   const [placing, setPlacing] = useState(false)
+
+  const availableSlots = (Array.isArray(settings.deliverySlots) ? settings.deliverySlots : []).filter(
+    (slot) => slot && slot.enabled !== false && slot.label
+  )
 
   const availableDistricts = formData.division ? districts[formData.division] || [] : []
   const availableUpazilas = formData.district ? upazilas[formData.district] || [] : []
 
   // Rates come from Admin -> Delivery. "Inside Dhaka" / "Outside Dhaka" rows are
   // matched by name so the admin can rename them freely.
-  const chargeRows = settings.deliveryCharges || []
+  const chargeRows = Array.isArray(settings.deliveryCharges) ? settings.deliveryCharges : []
   const insideCharge = Number(
     (chargeRows.find((row) => /inside|dhaka city|ঢাকা/i.test(row.area || '')) || {}).charge ?? 0
   )
@@ -118,6 +123,7 @@ const Checkout = () => {
       couponCode: coupon?.code || null,
       deliveryCharge,
       total,
+      deliverySlot: deliverySlot || null,
       orderNotes: formData.notes,
       fullName: formData.fullName,
       phone: formData.phone,
@@ -366,6 +372,33 @@ const Checkout = () => {
                   required
                 />
               </div>
+
+              {availableSlots.length > 0 && (
+                <div className="sm:col-span-2">
+                  <label htmlFor="deliverySlot" className="label">
+                    {tx('Preferred delivery time (optional)', 'পছন্দের ডেলিভারি সময় (ঐচ্ছিক)')}
+                  </label>
+                  <select
+                    id="deliverySlot"
+                    value={deliverySlot}
+                    onChange={(e) => setDeliverySlot(e.target.value)}
+                    className="input"
+                  >
+                    <option value="">{tx('Any time', 'যেকোনো সময়')}</option>
+                    {availableSlots.map((slot) => (
+                      <option key={slot.id} value={slot.label}>
+                        {slot.label}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="mt-1 text-[11px] text-ink-muted">
+                    {tx(
+                      'We call before dispatch to confirm the exact time.',
+                      'ডেলিভারির আগে ফোন করে সময় নিশ্চিত করা হবে।'
+                    )}
+                  </p>
+                </div>
+              )}
 
               <div className="sm:col-span-2">
                 <label htmlFor="notes" className="label">

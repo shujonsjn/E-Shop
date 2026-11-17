@@ -1,9 +1,16 @@
 import { useState } from 'react'
-import { Eye } from 'lucide-react'
+import { Eye, Trash2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
 
+// Neutral inline placeholder — never a bundled demo photo.
+const IMAGE_PLACEHOLDER =
+  'data:image/svg+xml;utf8,' +
+  encodeURIComponent(
+    '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="48" height="48" fill="#f3f4f6"/><path d="M14 32l7-8 5 5 4-4 4 7z" fill="#d1d5db"/><circle cx="18" cy="17" r="3" fill="#d1d5db"/></svg>'
+  )
+
 const AdminOrders = () => {
-  const { orders, updateOrderStatus } = useAuth()
+  const { orders, updateOrderStatus, deleteOrder } = useAuth()
   const [selectedOrder, setSelectedOrder] = useState(null)
 
   const statusOptions = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled']
@@ -90,9 +97,30 @@ const AdminOrders = () => {
                 </td>
                 <td className="px-6 py-4 text-gray-600">{formatDate(order.createdAt)}</td>
                 <td className="px-6 py-4">
-                  <button onClick={() => setSelectedOrder(order)} className="text-blue-600 hover:text-blue-800">
-                    <Eye size={18} />
-                  </button>
+                  <div className="flex items-center gap-3">
+                    <button
+                      onClick={() => setSelectedOrder(order)}
+                      className="text-blue-600 hover:text-blue-800"
+                      title="View order"
+                    >
+                      <Eye size={18} />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (
+                          confirm(
+                            `Delete order #${order.id}? This cannot be undone. Stock of orders that were not shipped yet is returned automatically.`
+                          )
+                        ) {
+                          deleteOrder(order.id)
+                        }
+                      }}
+                      className="text-red-600 hover:text-red-800"
+                      title="Delete order"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </div>
                 </td>
               </tr>
             ))}
@@ -124,6 +152,12 @@ const AdminOrders = () => {
                     {selectedOrder.shippingAddress?.upazila && <p><span className="font-medium">Thana/Upazila:</span> {selectedOrder.shippingAddress.upazila}</p>}
                     {!selectedOrder.shippingAddress?.division && selectedOrder.shippingAddress?.city && <p><span className="font-medium">City:</span> {selectedOrder.shippingAddress.city}</p>}
                     <p><span className="font-medium">Address:</span> {selectedOrder.shippingAddress?.address || '—'}</p>
+                    {selectedOrder.deliverySlot && (
+                      <p><span className="font-medium">Preferred delivery time:</span> {selectedOrder.deliverySlot}</p>
+                    )}
+                    {selectedOrder.orderNotes && (
+                      <p><span className="font-medium">Note:</span> {selectedOrder.orderNotes}</p>
+                    )}
                   </div>
                 </div>
                 <div>
@@ -132,11 +166,11 @@ const AdminOrders = () => {
                     {(selectedOrder.items || []).map((item, index) => (
                       <div key={`${item.id ?? index}-${item.size || ''}`} className="flex gap-3 bg-gray-50 p-3 rounded">
                         <img
-                          src={item.image || '/images/hero/hero-1.jpg'}
+                          src={item.image || IMAGE_PLACEHOLDER}
                           alt={item.name || 'Product'}
                           className="w-12 h-12 object-cover rounded"
                           onError={(event) => {
-                            event.currentTarget.src = '/images/hero/hero-1.jpg'
+                            event.currentTarget.src = IMAGE_PLACEHOLDER
                           }}
                         />
                         <div className="flex-1">

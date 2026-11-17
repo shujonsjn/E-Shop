@@ -11,8 +11,12 @@ const AdminAccounts = () => {
   const [showExpenseModal, setShowExpenseModal] = useState(false)
   const [expenseForm, setExpenseForm] = useState({ title: '', amount: '', category: '', date: '', note: '' })
 
-  const totalRevenue = orders.reduce((sum, o) => sum + (o.total || 0), 0)
-  const totalExpenses = settings.expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0)
+  // Cancelled orders never earned money, so they must not inflate revenue or
+  // profit. Only non-cancelled orders count.
+  const paidOrders = orders.filter((o) => o.status !== 'Cancelled')
+  const expenses = Array.isArray(settings.expenses) ? settings.expenses : []
+  const totalRevenue = paidOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0)
+  const totalExpenses = expenses.reduce((sum, e) => sum + Number(e.amount || 0), 0)
   const netProfit = totalRevenue - totalExpenses
 
   const handleExpenseSubmit = (e) => {
@@ -31,6 +35,7 @@ const AdminAccounts = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <p className="text-gray-500 text-sm mb-1">Total Revenue</p>
           <p className="text-2xl font-bold text-green-600">৳{totalRevenue}</p>
+          <p className="text-xs text-gray-400 mt-1">Cancelled orders excluded</p>
         </div>
         <div className="bg-white rounded-lg shadow p-6">
           <p className="text-gray-500 text-sm mb-1">Total Expenses</p>
@@ -60,7 +65,7 @@ const AdminAccounts = () => {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
-              {orders.slice(0, 20).map((order) => (
+              {paidOrders.slice(0, 20).map((order) => (
                 <tr key={order.id}>
                   <td className="px-6 py-4 font-medium">#{order.id}</td>
                   <td className="px-6 py-4">{order.userName}</td>
@@ -92,7 +97,7 @@ const AdminAccounts = () => {
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {settings.expenses.map((expense) => (
+                {expenses.map((expense) => (
                   <tr key={expense.id}>
                     <td className="px-6 py-4">{expense.title}</td>
                     <td className="px-6 py-4">{expense.category}</td>
@@ -105,7 +110,7 @@ const AdminAccounts = () => {
                 ))}
               </tbody>
             </table>
-            {settings.expenses.length === 0 && <p className="text-center py-8 text-gray-500">No expenses yet</p>}
+            {expenses.length === 0 && <p className="text-center py-8 text-gray-500">No expenses yet</p>}
           </div>
         </div>
       )}

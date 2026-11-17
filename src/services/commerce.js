@@ -86,9 +86,10 @@ export const pushOrderUpdate = async (order) => {
 }
 
 export const deleteOrderRemote = async (orderId) => {
-  if (!supabase) return
+  if (!supabase) return true
   const { error } = await supabase.from('orders').delete().eq('id', orderId)
   warn('could not delete order', error)
+  return !error
 }
 
 /** Guest lookup with id + phone. Returns `{ order, error }`. */

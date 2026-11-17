@@ -7,7 +7,7 @@ import ImageUpload from '../../components/admin/ImageUpload'
 import { migrateDataUrls } from '../../services/media'
 
 const AdminSiteContent = () => {
-  const { settings, updateSettings, updateSiteContent, updateHeroSlide, addHeroSlide, deleteHeroSlide, updateSideBanner, updatePromoBanner } = useSettings()
+  const { settings, updateSettings, updateSiteContent, updateHeroSlide, addHeroSlide, deleteHeroSlide, updateSideBanner, deleteSideBanner, addSideBanner, updatePromoBanner, deletePromoBanner, addPromoBanner } = useSettings()
   const { products, replaceProducts } = useProducts()
   const [activeTab, setActiveTab] = useState('general')
   const [showHeroModal, setShowHeroModal] = useState(false)
@@ -64,10 +64,6 @@ const AdminSiteContent = () => {
       setEditingHero(null)
       setHeroForm({ image: '', href: '', alt: '' })
     }, 100)
-  }
-
-  const saveGeneral = () => {
-    toast.success('Settings saved')
   }
 
   return (
@@ -203,6 +199,7 @@ const AdminSiteContent = () => {
               />
               <p className="mt-1 text-xs text-gray-500">
                 খালি রাখলে ডেলিভারি সেটিং থেকে ফ্রি ডেলিভারির লেখা নিজে থেকেই তৈরি হবে।
+                Delivery পেজে ফ্রি ডেলিভারির সীমা 0 (বন্ধ) থাকলে এখানে লেখা "ফ্রি ডেলিভারি" দেখানো হবে না।
               </p>
             </div>
             <div>
@@ -268,7 +265,14 @@ const AdminSiteContent = () => {
               <input type="text" value={settings.siteContent?.ctaHref ?? ''} onChange={(e) => updateSiteContent({ ctaHref: e.target.value })} placeholder="/shop" className="w-full px-3 py-2 border rounded" />
             </div>
           </div>
-          <button onClick={saveGeneral} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"><Save size={18} /> Save</button>
+          <p className="mb-4 text-xs text-gray-500">
+            CTA-তে ফ্রি ডেলিভারির অঙ্ক লেখা থাকলে সেটি Delivery পেজের সীমার সাথে মিলিয়ে দেখানো হয়।
+            সীমা 0 (বন্ধ) থাকলে ফ্রি ডেলিভারির দাবি বাদ দিয়ে শুধু "ক্যাশ অন ডেলিভারি" দেখাবে।
+          </p>
+          <div className="mt-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
+            <Save size={16} />
+            সব পরিবর্তন সাথে সাথে সেভ হয় — আলাদা করে Save চাপতে হবে না।
+          </div>
         </div>
       )}
 
@@ -308,7 +312,7 @@ const AdminSiteContent = () => {
             <h2 className="text-xl font-bold mb-1">Page Banners</h2>
             <p className="text-sm text-gray-500 mb-4">
               পেজের উপরের বড় ব্যানার। Shop/Category, Offer Zone আর Brands পেজের জন্য আলাদা ছবি দিতে পারবেন।
-              খালি রাখলে ডিফল্ট ছবি দেখাবে।
+              ছবি না দিলে ব্যানারটি শুধু কালো ব্যাকগ্রাউন্ডে শিরোনামসহ দেখাবে — কোনো ডেমো ছবি বসবে না।
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <ImageUpload
@@ -338,11 +342,28 @@ const AdminSiteContent = () => {
             </div>
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">Side Banners</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-bold mb-1">Side Banners</h2>
+            <button
+              onClick={() => {
+                addSideBanner({ image: '', href: '/shop', alt: '' })
+                toast.success('Side banner slot added — upload an image')
+              }}
+              className="flex items-center gap-2 rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+            >
+              <Plus size={16} /> Add Side Banner
+            </button>
+          </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {(settings.siteContent?.sideBanners || []).map((banner) => (
+              {(Array.isArray(settings.siteContent?.sideBanners) ? settings.siteContent.sideBanners : []).map((banner) => (
                 <div key={banner.id} className="border rounded overflow-hidden">
-                  <img src={banner.image} alt={banner.alt} className="w-full h-32 object-cover" />
+                  {banner.image ? (
+                    <img src={banner.image} alt={banner.alt || 'Side banner'} className="w-full h-32 object-cover" />
+                  ) : (
+                    <div className="flex h-32 w-full items-center justify-center bg-gray-100 text-sm text-gray-400">
+                      No image yet
+                    </div>
+                  )}
                   <div className="p-3 space-y-2">
                     <ImageUpload
                       label="Side Banner Image"
@@ -351,19 +372,50 @@ const AdminSiteContent = () => {
                       width={600}
                       height={340}
                     />
-                    <input type="text" value={banner.href} onChange={(e) => updateSideBanner(banner.id, { href: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Link" />
-                    <input type="text" value={banner.alt} onChange={(e) => updateSideBanner(banner.id, { alt: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Alt text" />
+                    <input type="text" value={banner.href || ''} onChange={(e) => updateSideBanner(banner.id, { href: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Link (e.g. /shop)" />
+                    <input type="text" value={banner.alt || ''} onChange={(e) => updateSideBanner(banner.id, { alt: e.target.value })} className="w-full px-2 py-1 border rounded text-sm" placeholder="Alt text" />
+                    <button
+                      onClick={() => {
+                        if (confirm('Delete this side banner?')) {
+                          deleteSideBanner(banner.id)
+                          toast.success('Side banner deleted')
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 size={15} /> Delete banner
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
+            {(Array.isArray(settings.siteContent?.sideBanners) ? settings.siteContent.sideBanners : []).length === 0 && (
+              <p className="text-sm text-gray-500">কোনো সাইড ব্যানার নেই। উপরে Add Side Banner চাপুন।</p>
+            )}
           </div>
           <div className="bg-white rounded-lg shadow p-6">
-            <h2 className="text-xl font-bold mb-4">Promo Banners</h2>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-bold">Promo Banners</h2>
+              <button
+                onClick={() => {
+                  addPromoBanner({ image: '', href: '/shop', alt: '' })
+                  toast.success('Promo banner slot added — upload an image')
+                }}
+                className="flex items-center gap-2 rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+              >
+                <Plus size={16} /> Add Promo Banner
+              </button>
+            </div>
             <div className="space-y-4">
-              {(settings.siteContent?.promoBanners || []).map((banner) => (
+              {(Array.isArray(settings.siteContent?.promoBanners) ? settings.siteContent.promoBanners : []).map((banner) => (
                 <div key={banner.id} className="border rounded overflow-hidden">
-                  <img src={banner.image} alt={banner.alt} className="w-full h-40 object-cover" />
+                  {banner.image ? (
+                    <img src={banner.image} alt={banner.alt || 'Promo banner'} className="w-full h-40 object-cover" />
+                  ) : (
+                    <div className="flex h-40 w-full items-center justify-center bg-gray-100 text-sm text-gray-400">
+                      No image yet
+                    </div>
+                  )}
                   <div className="p-3 space-y-2">
                     <ImageUpload
                       label="Promo Banner Image"
@@ -373,13 +425,27 @@ const AdminSiteContent = () => {
                       height={480}
                     />
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-                      <input type="text" value={banner.href} onChange={(e) => updatePromoBanner(banner.id, { href: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Link" />
-                      <input type="text" value={banner.alt} onChange={(e) => updatePromoBanner(banner.id, { alt: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Alt text" />
+                      <input type="text" value={banner.href || ''} onChange={(e) => updatePromoBanner(banner.id, { href: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Link (e.g. /shop)" />
+                      <input type="text" value={banner.alt || ''} onChange={(e) => updatePromoBanner(banner.id, { alt: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Alt text" />
                     </div>
+                    <button
+                      onClick={() => {
+                        if (confirm('Delete this promo banner?')) {
+                          deletePromoBanner(banner.id)
+                          toast.success('Promo banner deleted')
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 text-sm text-red-600 hover:text-red-800"
+                    >
+                      <Trash2 size={15} /> Delete banner
+                    </button>
                   </div>
                 </div>
               ))}
             </div>
+            {(Array.isArray(settings.siteContent?.promoBanners) ? settings.siteContent.promoBanners : []).length === 0 && (
+              <p className="text-sm text-gray-500">কোনো প্রোমো ব্যানার নেই। উপরে Add Promo Banner চাপুন।</p>
+            )}
           </div>
         </div>
       )}
@@ -406,7 +472,10 @@ const AdminSiteContent = () => {
               <input type="text" value={settings.siteContent?.newsletterText || ''} onChange={(e) => updateSiteContent({ newsletterText: e.target.value })} className="w-full px-3 py-2 border rounded" />
             </div>
           </div>
-          <button onClick={saveGeneral} className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"><Save size={18} /> Save</button>
+          <div className="mt-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
+            <Save size={16} />
+            সব পরিবর্তন সাথে সাথে সেভ হয় — আলাদা করে Save চাপতে হবে না।
+          </div>
         </div>
       )}
 
@@ -424,7 +493,8 @@ const AdminSiteContent = () => {
               />
               <div>
                 <label className="block text-sm font-medium mb-1">Link (href)</label>
-                <input type="text" value={heroForm.href} onChange={(e) => setHeroForm({ ...heroForm, href: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="/collections/honey" />
+                <input type="text" value={heroForm.href} onChange={(e) => setHeroForm({ ...heroForm, href: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="/shop" />
+                <p className="mt-1 text-xs text-gray-500">সাইটের ভেতরের লিংক দিন — যেমন /shop, /offer, /brand/নাম।</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Alt Text</label>

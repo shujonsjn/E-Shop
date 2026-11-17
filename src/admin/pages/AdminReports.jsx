@@ -3,15 +3,16 @@ import { useProducts } from '../../context/ProductsContext'
 import { BarChart3, TrendingUp, Users, Package } from 'lucide-react'
 
 const AdminReports = () => {
-  const { orders, users } = useAuth()
+  const { orders } = useAuth()
   const { products } = useProducts()
 
+  const paidOrders = orders.filter((o) => o.status !== 'Cancelled')
   const deliveredOrders = orders.filter((o) => o.status === 'Delivered')
-  const totalRevenue = deliveredOrders.reduce((sum, o) => sum + (o.total || 0), 0)
+  const totalRevenue = deliveredOrders.reduce((sum, o) => sum + (Number(o.total) || 0), 0)
 
   // Best selling products
   const productSales = {}
-  orders.forEach((order) => {
+  paidOrders.forEach((order) => {
     if (order.items) {
       order.items.forEach((item) => {
         const key = item.id || item.name
@@ -25,15 +26,24 @@ const AdminReports = () => {
   })
   const bestSelling = Object.values(productSales).sort((a, b) => b.quantity - a.quantity).slice(0, 10)
 
-  // Customer insights
+  // Customer insights (phone-based, so guest orders count too)
   const ordersByCustomer = {}
-  orders.forEach((order) => {
-    const key = order.userId || order.userEmail
+  paidOrders.forEach((order) => {
+    const key =
+      order.shippingAddress?.phone || order.phone || order.userEmail || order.userId || `order-${order.id}`
     if (!ordersByCustomer[key]) {
-      ordersByCustomer[key] = { name: order.userName, count: 0, total: 0 }
+      ordersByCustomer[key] = {
+        name:
+          order.shippingAddress?.fullName ||
+          order.userName ||
+          order.shippingAddress?.phone ||
+          'Guest',
+        count: 0,
+        total: 0,
+      }
     }
     ordersByCustomer[key].count += 1
-    ordersByCustomer[key].total += order.total || 0
+    ordersByCustomer[key].total += Number(order.total) || 0
   })
   const topCustomers = Object.values(ordersByCustomer).sort((a, b) => b.count - a.count).slice(0, 10)
 
@@ -64,7 +74,7 @@ const AdminReports = () => {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-gray-500 text-sm">Customers</p>
-              <p className="text-2xl font-bold text-purple-600">{users.filter((u) => u.role !== 'admin').length}</p>
+              <p className="text-2xl font-bold text-purple-600">{Object.keys(ordersByCustomer).length}</p>
             </div>
             <Users className="text-purple-600" size={32} />
           </div>

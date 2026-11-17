@@ -65,8 +65,13 @@ const Navbar = () => {
     ''
   ).trim()
   const savedAmount = readAmount(customTopBar)
+  // If free delivery is switched off (threshold 0) the saved announcement may
+  // still advertise an old amount. Never promise an offer checkout will not
+  // honour — fall back to the generic delivery line instead.
+  const claimsFreeDelivery = /free\s*delivery|ফ্রি\s*ডেলিভারি/i.test(customTopBar)
   const topBarText =
     !customTopBar ||
+    (claimsFreeDelivery && freeDeliveryThreshold <= 0) ||
     (freeDeliveryThreshold > 0 && savedAmount !== null && savedAmount !== freeDeliveryThreshold)
       ? autoTopBar
       : customTopBar

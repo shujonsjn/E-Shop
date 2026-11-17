@@ -1,6 +1,6 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
-import { Plus, Edit2, Trash2 } from 'lucide-react'
+import { Plus, Edit2, Trash2, Save } from 'lucide-react'
 import toast from 'react-hot-toast'
 
 const AdminDelivery = () => {
@@ -11,6 +11,28 @@ const AdminDelivery = () => {
   const [editingSlot, setEditingSlot] = useState(null)
   const [chargeForm, setChargeForm] = useState({ area: '', charge: '' })
   const [slotForm, setSlotForm] = useState({ label: '', enabled: true })
+  // The old input saved on every keystroke, so clearing the box wrote 0 and
+  // silently switched the free-delivery offer off. Edit a draft and save it.
+  const [thresholdDraft, setThresholdDraft] = useState(String(settings.freeDeliveryThreshold ?? 0))
+
+  useEffect(() => {
+    setThresholdDraft(String(settings.freeDeliveryThreshold ?? 0))
+  }, [settings.freeDeliveryThreshold])
+
+  const deliveryCharges = Array.isArray(settings.deliveryCharges) ? settings.deliveryCharges : []
+  const deliverySlots = Array.isArray(settings.deliverySlots) ? settings.deliverySlots : []
+  const activeThreshold = Number(settings.freeDeliveryThreshold || 0)
+
+  const saveThreshold = () => {
+    const value = Math.max(0, Math.round(Number(thresholdDraft) || 0))
+    setThresholdDraft(String(value))
+    updateSettings({ freeDeliveryThreshold: value })
+    toast.success(
+      value > 0
+        ? `Free delivery চালু — ৳${value.toLocaleString('en-US')} বা তার বেশি অর্ডারে`
+        : 'Free delivery বন্ধ করা হলো (0)'
+    )
+  }
 
   const handleChargeSubmit = (e) => {
     e.preventDefault()
@@ -56,12 +78,23 @@ const AdminDelivery = () => {
             <input
               type="number"
               min="0"
-              value={settings.freeDeliveryThreshold ?? 0}
-              onChange={(e) => updateSettings({ freeDeliveryThreshold: Math.max(0, Number(e.target.value) || 0) })}
+              value={thresholdDraft}
+              onChange={(e) => setThresholdDraft(e.target.value.replace(/[^\d]/g, ''))}
               className="w-48 px-3 py-2 border rounded"
             />
           </div>
+          <button
+            type="button"
+            onClick={saveThreshold}
+            className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+          >
+            <Save size={18} /> Save
+          </button>
           <p className="text-xs text-gray-500 pb-2">
+            {activeThreshold > 0
+              ? `এখন সক্রিয়: ৳${activeThreshold.toLocaleString('en-US')} বা তার বেশি অর্ডারে ফ্রি ডেলিভারি।`
+              : 'এখন বন্ধ (0)। সাইটে ফ্রি ডেলিভারির দাবি দেখানো হচ্ছে না।'}
+            <br />
             চেকআউটে এই অঙ্কের নিচে থাকলে ডেলিভারি চার্জ যোগ হবে।
           </p>
         </div>
@@ -82,7 +115,7 @@ const AdminDelivery = () => {
               ব্যবহৃত হয়।
             </p>
             <div className="space-y-3">
-              {settings.deliveryCharges.map((charge) => (
+              {deliveryCharges.map((charge) => (
                 <div key={charge.id} className="flex items-center justify-between p-3 border rounded">
                   <div>
                     <p className="font-medium text-gray-900">{charge.area}</p>
@@ -90,10 +123,15 @@ const AdminDelivery = () => {
                   </div>
                   <div className="flex items-center gap-2">
                     <button onClick={() => { setEditingCharge(charge); setChargeForm({ area: charge.area, charge: charge.charge }); setShowChargeModal(true) }} className="text-blue-600 hover:text-blue-800"><Edit2 size={18} /></button>
-                    <button onClick={() => { if (confirm('Delete?')) { deleteDeliveryCharge(charge.id); toast.success('Deleted') } }} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
+                    <button onClick={() => { if (confirm('Delete this delivery charge?')) { deleteDeliveryCharge(charge.id); toast.success('Delivery charge deleted') } }} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
                   </div>
                 </div>
               ))}
+              {deliveryCharges.length === 0 && (
+                <p className="text-sm text-gray-500">
+                  কোনো ডেলিভারি চার্জ নেই। Add চেপে "Inside Dhaka" ও "Outside Dhaka" যোগ করুন।
+                </p>
+              )}
             </div>
           </div>
         </div>
@@ -108,18 +146,23 @@ const AdminDelivery = () => {
           </div>
           <div className="p-6">
             <div className="space-y-3">
-              {settings.deliverySlots.map((slot) => (
+              {deliverySlots.map((slot) => (
                 <div key={slot.id} className="flex items-center justify-between p-3 border rounded">
                   <div>
                     <p className="font-medium text-gray-900">{slot.label}</p>
-                    <p className="text-sm text-gray-500">{slot.enabled ? 'Enabled' : 'Disabled'}</p>
+                    <p className="text-sm text-gray-500">{slot.enabled !== false ? 'Enabled' : 'Disabled'}</p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <button onClick={() => { setEditingSlot(slot); setSlotForm(slot); setShowSlotModal(true) }} className="text-blue-600 hover:text-blue-800"><Edit2 size={18} /></button>
-                    <button onClick={() => { if (confirm('Delete?')) { deleteDeliverySlot(slot.id); toast.success('Deleted') } }} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
+                    <button onClick={() => { setEditingSlot(slot); setSlotForm({ label: slot.label || '', enabled: slot.enabled !== false }); setShowSlotModal(true) }} className="text-blue-600 hover:text-blue-800"><Edit2 size={18} /></button>
+                    <button onClick={() => { if (confirm('Delete this delivery slot?')) { deleteDeliverySlot(slot.id); toast.success('Delivery slot deleted') } }} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
                   </div>
                 </div>
               ))}
+              {deliverySlots.length === 0 && (
+                <p className="text-sm text-gray-500">
+                  কোনো সময়সূচি নেই। চেকআউটে "পছন্দের ডেলিভারি সময়" দেখাতে Add চাপুন।
+                </p>
+              )}
             </div>
           </div>
         </div>

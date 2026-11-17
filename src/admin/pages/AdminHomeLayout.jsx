@@ -1,7 +1,8 @@
 import { useState } from 'react'
-import { useSettings } from '../../context/SettingsContext'
-import { GripVertical, Eye, EyeOff, Edit2, Save, X } from 'lucide-react'
+import { useSettings, defaultHomeLayout } from '../../context/SettingsContext'
+import { GripVertical, Eye, EyeOff, Edit2, Save, X, Trash2, AlertTriangle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import { getMergedCategories } from '../../utils/mergeCategories'
 
 const sectionTypes = {
   hero: 'Hero Slider + Side Banners',
@@ -16,13 +17,16 @@ const sectionTypes = {
 }
 
 const AdminHomeLayout = () => {
-  const { settings, reorderHomeLayout, toggleHomeSection, updateHomeSection } = useSettings()
+  const { settings, reorderHomeLayout, toggleHomeSection, updateHomeSection, removeHomeSection, updateHomeLayout } = useSettings()
   const layout = [...(settings.homeLayout || [])]
     .map((item, idx) => ({ order: idx, enabled: true, ...item }))
     .sort((a, b) => (a.order || 0) - (b.order || 0))
   const [draggedId, setDraggedId] = useState(null)
   const [editing, setEditing] = useState(null)
   const [form, setForm] = useState({})
+  const categorySlugs = getMergedCategories().map((c) => c.slug)
+  const formCategoryMissing =
+    form.type === 'productRow' && form.category && !categorySlugs.includes(form.category)
 
   const handleDragStart = (id) => {
     setDraggedId(id)
@@ -55,6 +59,15 @@ const AdminHomeLayout = () => {
     toast.success('Section updated')
   }
 
+  const handleRemove = (item) => {
+    if (item.type !== 'productRow' && item.type !== 'categories') return
+    if (!confirm('Remove this section from the home page? The section can be added back later by editing the layout data.')) {
+      return
+    }
+    removeHomeSection(item.id)
+    toast.success('Section removed')
+  }
+
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
@@ -62,6 +75,21 @@ const AdminHomeLayout = () => {
           <h1 className="text-2xl font-bold text-gray-900">Home Layout</h1>
           <p className="text-gray-500 mt-1">Drag & drop to reorder, show/hide or edit sections</p>
         </div>
+        <button
+          onClick={() => {
+            if (
+              confirm(
+                'Restore the default home layout? This puts back every default section and removes custom product rows.'
+              )
+            ) {
+              updateHomeLayout(defaultHomeLayout.map((item) => ({ ...item })))
+              toast.success('Default layout restored')
+            }
+          }}
+          className="text-sm font-medium text-blue-600 hover:text-blue-800"
+        >
+          Restore default layout
+        </button>
       </div>
 
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
@@ -80,7 +108,12 @@ const AdminHomeLayout = () => {
                 <div className="flex items-center gap-3">
                   <h3 className="font-semibold text-gray-900">{sectionTypes[item.type] || item.type}</h3>
                   {item.type === 'productRow' && item.title && <span className="text-sm text-gray-500">- {item.title}</span>}
-                  {item.type === 'categories' && <span className="text-sm text-gray-500">- {item.title}</span>}
+                  {item.type === 'categories' && <span className="text-sm text-gray-500">- {item.title || 'Categories'}</span>}
+                  {item.type === 'productRow' && item.category && !categorySlugs.includes(item.category) && (
+                    <span className="inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
+                      <AlertTriangle size={11} /> category "{item.category}" missing
+                    </span>
+                  )}
                 </div>
                 <p className="text-xs text-gray-500 mt-1">ID: {item.id}</p>
               </div>
@@ -93,10 +126,20 @@ const AdminHomeLayout = () => {
                     <Edit2 size={18} className="text-blue-600" />
                   </button>
                 )}
+                {(item.type === 'productRow' || item.type === 'categories') && (
+                  <button onClick={() => handleRemove(item)} className="p-2 hover:bg-red-50 rounded-lg" title="Remove section">
+                    <Trash2 size={18} className="text-red-600" />
+                  </button>
+                )}
               </div>
             </div>
           ))}
         </div>
+        {layout.length === 0 && (
+          <p className="py-8 text-center text-gray-500">
+            সব সেকশন মুছে ফেলা হয়েছে। উপরের "Restore default layout" চেপে ফিরিয়ে আনুন।
+          </p>
+        )}
       </div>
 
       {editing && (
@@ -139,7 +182,24 @@ const AdminHomeLayout = () => {
                   </div>
                   <div>
                     <label className="block text-sm font-medium mb-1">Category Slug</label>
-                    <input type="text" value={form.category || ''} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full px-3 py-2 border rounded-lg" />
+                    <select
+                      value={form.category || ''}
+                      onChange={(e) => setForm({ ...form, category: e.target.value })}
+                      className="w-full px-3 py-2 border rounded-lg bg-white"
+                    >
+                      <option value="">Any category (uses all products)</option>
+                      {categorySlugs.map((slug) => (
+                        <option key={slug} value={slug}>{slug}</option>
+                      ))}
+                      {form.category && !categorySlugs.includes(form.category) && (
+                        <option value={form.category}>{form.category} (missing)</option>
+                      )}
+                    </select>
+                    {formCategoryMissing && (
+                      <p className="mt-1 flex items-center gap-1 text-xs text-amber-700">
+                        <AlertTriangle size={12} /> এই ক্যাটাগরিটি আর নেই — রো-টি খালি দেখাবে।
+                      </p>
+                    )}
                   </div>
                 </div>
               )}

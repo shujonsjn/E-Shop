@@ -84,16 +84,23 @@ const Home = () => {
   const savedCtaAmount = Number(
     String(settings.siteContent?.ctaSubtitle || '').replace(/[^\d০-৯]/g, '').replace(/[০-৯]/g, (d) => '০১২৩৪৫৬৭৮৯'.indexOf(d))
   )
+  const savedCta = settings.siteContent?.ctaSubtitle || ''
+  const savedCtaBn = settings.siteContent?.ctaSubtitleBn || ''
+  const claimsFreeDelivery = /free\s*delivery|ফ্রি\s*ডেলিভারি/i.test(
+    `${savedCta} ${savedCtaBn}`
+  )
+  // Same rule as the top bar: a saved CTA that advertises free delivery must not
+  // survive when the delivery setting has the offer switched off (0).
+  const showSavedCta = !(claimsFreeDelivery && freeDeliveryThreshold <= 0)
   const ctaSubtitle =
     freeDeliveryThreshold > 0 && (!savedCtaAmount || savedCtaAmount !== freeDeliveryThreshold)
       ? tx(
           `Free delivery on orders above ${formatTaka(freeDeliveryThreshold)} · Cash on delivery available`,
           `${formatTaka(freeDeliveryThreshold)} টাকার বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে`
         )
-      : tx(
-          settings.siteContent?.ctaSubtitle || 'Cash on delivery available',
-          settings.siteContent?.ctaSubtitleBn || 'ক্যাশ অন ডেলিভারি আছে'
-        )
+      : showSavedCta
+        ? tx(savedCta || 'Cash on delivery available', savedCtaBn || 'ক্যাশ অন ডেলিভারি আছে')
+        : tx('Cash on delivery available', 'ক্যাশ অন ডেলিভারি আছে')
 
   const trustItems = [
     { icon: ShieldCheck, title: t('home.trustAuthentic'), text: t('home.trustAuthenticSub') },
