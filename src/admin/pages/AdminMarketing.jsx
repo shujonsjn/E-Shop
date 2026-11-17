@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
 import { Plus, Trash2, AlertTriangle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 
 const emptyCoupon = {
   code: '',
@@ -64,8 +65,8 @@ const AdminMarketing = () => {
       <div>
         <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
           <p className="max-w-xl text-sm text-gray-500">
-            কুপন তৈরি করলে কাস্টমার কার্ট বা চেকআউটে কোড বসিয়ে ছাড় পাবে। এখানে না থাকা কোনো
-            ডেমো কুপন আর কাজ করবে না।
+            Create a coupon to give customers a discount at cart or checkout. Only the coupons
+            listed here work — demo coupons are never applied.
           </p>
           <button
             onClick={() => setShowCouponModal(true)}
@@ -123,11 +124,14 @@ const AdminMarketing = () => {
           </table>
           {coupons.length === 0 && (
             <div className="py-12 text-center">
-              <p className="text-gray-700 font-medium">এখনো কোনো কুপন নেই</p>
-              <p className="mt-1 text-sm text-gray-500">Create Coupon চেপে একটি ডিসকাউন্ট কোড বানান।</p>
+              <p className="text-gray-700 font-medium">No coupons yet</p>
+              <p className="mt-1 text-sm text-gray-500">Click Create Coupon to make a discount code.</p>
             </div>
           )}
         </div>
+        <AutoSaveNote className="mt-4">
+          Coupons save automatically as soon as you create or delete them.
+        </AutoSaveNote>
       </div>
 
       {/* Coupon Modal */}

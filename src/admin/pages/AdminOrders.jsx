@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Eye, Trash2 } from 'lucide-react'
 import { useAuth } from '../../context/AuthContext'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 
 // Neutral inline placeholder — never a bundled demo photo.
 const IMAGE_PLACEHOLDER =
@@ -50,10 +51,16 @@ const AdminOrders = () => {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-        <p className="text-gray-500 mt-1">Manage and track customer orders</p>
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
+          <p className="text-gray-500 mt-1">Manage and track customer orders</p>
+        </div>
       </div>
+      <AutoSaveNote className="mb-6">
+        Status changes save immediately. Deleting an order cannot be undone and returns stock
+        automatically for orders that were not shipped yet.
+      </AutoSaveNote>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <table className="w-full">

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
 import { Plus, Edit2, Trash2, Save } from 'lucide-react'
 import toast from 'react-hot-toast'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 
 const AdminDelivery = () => {
   const { settings, updateSettings, addDeliveryCharge, updateDeliveryCharge, deleteDeliveryCharge, addDeliverySlot, updateDeliverySlot, deleteDeliverySlot } = useSettings()
@@ -29,8 +30,8 @@ const AdminDelivery = () => {
     updateSettings({ freeDeliveryThreshold: value })
     toast.success(
       value > 0
-        ? `Free delivery চালু — ৳${value.toLocaleString('en-US')} বা তার বেশি অর্ডারে`
-        : 'Free delivery বন্ধ করা হলো (0)'
+        ? `Free delivery enabled — on orders of ৳${value.toLocaleString('en-US')} or more`
+        : 'Free delivery disabled (0)'
     )
   }
 
@@ -69,8 +70,8 @@ const AdminDelivery = () => {
       <div className="bg-white rounded-lg shadow p-6 mb-6">
         <h2 className="text-xl font-bold text-gray-900 mb-1">Free Delivery</h2>
         <p className="text-sm text-gray-500 mb-4">
-          এই পরিমাণ বা তার বেশি অর্ডারে ডেলিভারি ফ্রি হবে। ০ দিলে অফারটি বন্ধ থাকবে। হোম পেজ ও কার্টে এই
-          অফারটি স্বয়ংক্রিয়ভাবে দেখানো হবে।
+          Orders at or above this amount ship free. Set 0 to turn the offer off. The home page
+          and cart show this offer automatically.
         </p>
         <div className="flex flex-wrap items-end gap-4">
           <div>
@@ -92,10 +93,10 @@ const AdminDelivery = () => {
           </button>
           <p className="text-xs text-gray-500 pb-2">
             {activeThreshold > 0
-              ? `এখন সক্রিয়: ৳${activeThreshold.toLocaleString('en-US')} বা তার বেশি অর্ডারে ফ্রি ডেলিভারি।`
-              : 'এখন বন্ধ (0)। সাইটে ফ্রি ডেলিভারির দাবি দেখানো হচ্ছে না।'}
+              ? `Active now: free delivery on orders of ৳${activeThreshold.toLocaleString('en-US')} or more.`
+              : 'Currently off (0). The site does not claim free delivery.'}
             <br />
-            চেকআউটে এই অঙ্কের নিচে থাকলে ডেলিভারি চার্জ যোগ হবে।
+            Orders below this amount are charged delivery according to the rows below.
           </p>
         </div>
       </div>
@@ -111,8 +112,8 @@ const AdminDelivery = () => {
           </div>
           <div className="p-6">
             <p className="mb-4 text-xs text-gray-500">
-              "Inside Dhaka" ও "Outside Dhaka" নামের রো দুটি চেকআউটে ঢাকা/ঢাকার বাইরের চার্জ হিসেবে
-              ব্যবহৃত হয়।
+              The rows named "Inside Dhaka" and "Outside Dhaka" are used as the Dhaka / outside-Dhaka
+              charges at checkout.
             </p>
             <div className="space-y-3">
               {deliveryCharges.map((charge) => (
@@ -129,7 +130,7 @@ const AdminDelivery = () => {
               ))}
               {deliveryCharges.length === 0 && (
                 <p className="text-sm text-gray-500">
-                  কোনো ডেলিভারি চার্জ নেই। Add চেপে "Inside Dhaka" ও "Outside Dhaka" যোগ করুন।
+                  No delivery charges yet. Click Add to create "Inside Dhaka" and "Outside Dhaka".
                 </p>
               )}
             </div>
@@ -160,13 +161,17 @@ const AdminDelivery = () => {
               ))}
               {deliverySlots.length === 0 && (
                 <p className="text-sm text-gray-500">
-                  কোনো সময়সূচি নেই। চেকআউটে "পছন্দের ডেলিভারি সময়" দেখাতে Add চাপুন।
+                  No delivery slots yet. Click Add to show a preferred delivery time at checkout.
                 </p>
               )}
             </div>
           </div>
         </div>
       </div>
+
+      <AutoSaveNote className="mt-6">
+        Delivery charges and slots save automatically. The free-delivery threshold needs the Save button.
+      </AutoSaveNote>
 
       {showChargeModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
@@ -197,7 +202,7 @@ const AdminDelivery = () => {
             <form onSubmit={handleSlotSubmit} className="space-y-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Slot Label</label>
-                <input type="text" value={slotForm.label} onChange={(e) => setSlotForm({ ...slotForm, label: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="সকাল ১০টা - ১২টা" required />
+                <input type="text" value={slotForm.label} onChange={(e) => setSlotForm({ ...slotForm, label: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="e.g. Morning 10 AM - 12 PM" required />
               </div>
               <label className="flex items-center gap-2">
                 <input type="checkbox" checked={slotForm.enabled} onChange={(e) => setSlotForm({ ...slotForm, enabled: e.target.checked })} />

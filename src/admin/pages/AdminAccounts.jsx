@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext'
 import { useSettings } from '../../context/SettingsContext'
 import { Plus, Trash2 } from 'lucide-react'
 import toast from 'react-hot-toast'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 
 const AdminAccounts = () => {
   const { orders } = useAuth()
@@ -29,7 +30,11 @@ const AdminAccounts = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Payment & Accounts</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment & Accounts</h1>
+      <p className="mb-4 text-sm text-gray-500">
+        Revenue is calculated from real orders. Expenses are added manually.
+      </p>
+      <AutoSaveNote className="mb-6">Expenses save automatically when you add or delete them.</AutoSaveNote>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
         <div className="bg-white rounded-lg shadow p-6">

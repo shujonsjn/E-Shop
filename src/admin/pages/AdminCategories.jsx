@@ -201,8 +201,8 @@ const AdminCategories = () => {
         </table>
         {categories.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">এখনো কোনো ক্যাটাগরি নেই</p>
-            <p className="mt-1 text-sm text-gray-500">Add Category চেপে প্রথম ক্যাটাগরি যোগ করুন।</p>
+            <p className="text-gray-700 font-medium">No categories yet</p>
+            <p className="mt-1 text-sm text-gray-500">Click Add Category to create your first category.</p>
           </div>
         )}
       </div>
@@ -218,7 +218,7 @@ const AdminCategories = () => {
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Category Name (Bangla)</label>
-                <input type="text" value={form.name_bn || ''} onChange={(e) => setForm({ ...form, name_bn: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="বাংলা নাম" />
+                <input type="text" value={form.name_bn || ''} onChange={(e) => setForm({ ...form, name_bn: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="Bangla name" />
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Slug</label>

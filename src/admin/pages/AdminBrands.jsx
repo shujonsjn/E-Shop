@@ -177,8 +177,8 @@ const AdminBrands = () => {
         </table>
         {brands.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">এখনো কোনো ব্র্যান্ড নেই</p>
-            <p className="mt-1 text-sm text-gray-500">Add Brand চেপে প্রথম ব্র্যান্ড যোগ করুন।</p>
+            <p className="text-gray-700 font-medium">No brands yet</p>
+            <p className="mt-1 text-sm text-gray-500">Click Add Brand to create your first brand.</p>
           </div>
         )}
       </div>
@@ -205,7 +205,7 @@ const AdminBrands = () => {
                   value={form.name_bn}
                   onChange={(e) => setForm({ ...form, name_bn: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="বাংলা নাম"
+                  placeholder="Bangla name"
                 />
               </div>
               <div>
@@ -236,7 +236,7 @@ const AdminBrands = () => {
                   onChange={(e) => setForm({ ...form, description_bn: e.target.value })}
                   rows="2"
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="ব্র্যান্ড পেজে দেখানো সংক্ষিপ্ত পরিচিতি"
+                  placeholder="Short Bangla introduction for the brand page"
                 />
               </div>
               <ImageUpload

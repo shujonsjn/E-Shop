@@ -1,5 +1,4 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
-import { products as catalogProducts } from '../data/catalog'
 import { saveStore } from '../services/store'
 
 const ProductsContext = createContext()
@@ -18,9 +17,9 @@ const readSavedProducts = () => {
   }
 }
 
-// The shop starts empty. The bundled demo catalog is only used when the admin
-// explicitly clicks "Import from Catalog" — otherwise products the admin never
-// created (or already deleted) would keep coming back after every reload.
+// The shop starts empty. Bundled demo products are never loaded automatically,
+// otherwise products the admin never created (or already deleted) would come
+// back after every reload.
 const loadInitialProducts = () => {
   const saved = readSavedProducts()
   if (saved) return saved
@@ -91,13 +90,6 @@ export const ProductsProvider = ({ children }) => {
     setProducts((prev) => prev.filter((p) => String(p.id) !== String(id)))
   }
 
-  // Explicit admin action: load the bundled demo catalog (replaces current list).
-  const importCatalog = () => {
-    const restored = catalogProducts.map((p) => ({ ...p }))
-    setProducts(restored)
-    return restored
-  }
-
   // Bulk replace used by the "move images to storage" migration.
   const replaceProducts = (next) => {
     const list = Array.isArray(next) ? next : []
@@ -152,7 +144,6 @@ export const ProductsProvider = ({ children }) => {
         addProduct,
         updateProduct,
         deleteProduct,
-        importCatalog,
         replaceProducts,
         getProductById,
         getProductBySlug,

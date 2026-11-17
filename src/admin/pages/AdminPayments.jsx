@@ -1,5 +1,6 @@
 import { useSettings } from '../../context/SettingsContext'
 import toast from 'react-hot-toast'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 
 const AdminPayments = () => {
   const { settings, updatePaymentMethod } = useSettings()
@@ -7,16 +8,18 @@ const AdminPayments = () => {
     ? Object.entries(settings.paymentMethods)
     : []
 
-  const handleSave = () => {
+  // SettingsContext persists the change automatically; this only confirms it.
+  const notifyUpdated = () => {
     toast.success('Payment method updated')
   }
 
   return (
     <div>
       <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment Methods</h1>
-      <p className="mb-8 text-sm text-gray-500">
-        চেকআউটে যে পেমেন্ট অপশনগুলো দেখাবে সেগুলো এখান থেকে চালু/বন্ধ করুন। পরিবর্তন সাথে সাথেই সেভ হয়।
+      <p className="mb-4 text-sm text-gray-500">
+        Enable or disable the payment options shown at checkout.
       </p>
+      <AutoSaveNote className="mb-6" />
 
       <div className="space-y-4">
         {paymentMethods.map(([key, method]) => {
@@ -31,7 +34,7 @@ const AdminPayments = () => {
                     checked={Boolean(method.enabled)}
                     onChange={(e) => {
                       updatePaymentMethod(key, { enabled: e.target.checked })
-                      handleSave()
+                      notifyUpdated()
                     }}
                     className="w-5 h-5"
                   />
@@ -55,7 +58,7 @@ const AdminPayments = () => {
         })}
         {paymentMethods.length === 0 && (
           <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            কোনো পেমেন্ট মেথড পাওয়া যায়নি। সেটিংস রিফ্রেশ করুন।
+            No payment methods found. Refresh the page or check your settings.
           </p>
         )}
       </div>

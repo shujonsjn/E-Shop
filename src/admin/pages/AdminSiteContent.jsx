@@ -1,9 +1,10 @@
 import { useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
 import { useProducts } from '../../context/ProductsContext'
-import { Plus, Edit2, Trash2, Save, CloudUpload } from 'lucide-react'
+import { Plus, Edit2, Trash2, CloudUpload } from 'lucide-react'
 import toast from 'react-hot-toast'
 import ImageUpload from '../../components/admin/ImageUpload'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 import { migrateDataUrls } from '../../services/media'
 
 const AdminSiteContent = () => {
@@ -19,11 +20,11 @@ const AdminSiteContent = () => {
   // public `media` bucket and swaps them for their URL. This is what keeps the
   // shared store rows small and localStorage under the browser quota.
   const migrateImages = async () => {
-    if (!window.confirm('সব base64 ছবি Supabase Storage-এ সরিয়ে নেওয়া হবে। চালিয়ে যাবেন?')) {
+    if (!window.confirm('All base64 images will be moved to Supabase Storage. Continue?')) {
       return
     }
     setMigrating(true)
-    const loading = toast.loading('ছবিগুলো আপলোড হচ্ছে…')
+    const loading = toast.loading('Uploading images…')
     try {
       const settingsResult = await migrateDataUrls(settings, 'settings')
       const productsResult = await migrateDataUrls(products, 'products')
@@ -32,15 +33,15 @@ const AdminSiteContent = () => {
       const total = settingsResult.uploaded + productsResult.uploaded
       const failed = settingsResult.failed + productsResult.failed
       if (total === 0) {
-        toast.error('কোনো base64 ছবি পাওয়া যায়নি', { id: loading })
+        toast.error('No base64 images found', { id: loading })
       } else {
         toast.success(
-          `${total}টি ছবি Storage-এ সরানো হয়েছে${failed ? ` · ${failed}টি ব্যর্থ` : ''}`,
+          `${total} image${total === 1 ? '' : 's'} moved to Storage${failed ? ` · ${failed} failed` : ''}`,
           { id: loading, duration: 8000 }
         )
       }
     } catch {
-      toast.error('ছবি সরানো যায়নি, আবার চেষ্টা করুন', { id: loading })
+      toast.error('Could not move the images. Please try again.', { id: loading })
     } finally {
       setMigrating(false)
     }
@@ -76,7 +77,7 @@ const AdminSiteContent = () => {
       <div className="mb-6 rounded-lg border border-blue-100 bg-blue-50 p-4">
         <p className="text-sm font-semibold text-blue-900">Image sizes (auto-fixed on upload)</p>
         <p className="mt-1 text-xs text-blue-800">
-          যেকোনো সাইজের ছবি আপলোড করলেও নিচের সাইজে অটো রিসাইজ/ক্রপ হয়ে সেভ হবে।
+          Any image size is automatically resized and cropped to the sizes below when uploaded.
         </p>
         <div className="mt-3 grid grid-cols-1 gap-1.5 text-[12px] text-blue-900 sm:grid-cols-2 lg:grid-cols-3">
           <span>• Site Logo — <b>400 × 100</b> (fit inside)</span>
@@ -96,9 +97,9 @@ const AdminSiteContent = () => {
               <CloudUpload size={16} /> Image storage cleanup
             </p>
             <p className="mt-1 max-w-2xl text-xs text-amber-800">
-              পুরোনো ছবিগুলো base64 হিসেবে সেটিংস ও প্রোডাক্টের ভেতরে আছে, তাই সাইট ও
-              localStorage ভারী হচ্ছে। একবার চাপলে সব ছবি Supabase Storage-এ চলে যাবে এবং
-              হালকা URL দিয়ে বদলে যাবে। নতুন আপলোডও এখন সরাসরি Storage-এ যাবে।
+              Old images are stored as base64 inside settings and products, which makes the site and
+              localStorage heavy. One click moves every image to Supabase Storage and replaces it
+              with a lightweight URL. New uploads go straight to Storage.
             </p>
           </div>
           <button
@@ -138,15 +139,15 @@ const AdminSiteContent = () => {
                 placeholder="Your Ultimate Choice for Perfect Gifts"
                 className="w-full px-3 py-2 border rounded"
               />
-              <p className="mt-1 text-xs text-gray-500">Logo-র নিচে দেখানো হয় (ডেস্কটপে)। খালি রাখলে দেখাবে না।</p>
+              <p className="mt-1 text-xs text-gray-500">Shown under the logo on desktop. Leave empty to hide it.</p>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Tagline (বাংলা)</label>
+              <label className="block text-sm font-medium mb-1">Tagline (Bangla)</label>
               <input
                 type="text"
                 value={settings.siteTagline_bn ?? ''}
                 onChange={(e) => updateSettings({ siteTagline_bn: e.target.value })}
-                placeholder="নিখুঁত উপহার ও আকর্ষণীয় শোপিসের জন্য আপনার সেরা পছন্দ"
+                placeholder="Bangla tagline shown under the logo"
                 className="w-full px-3 py-2 border rounded"
               />
             </div>
@@ -198,21 +199,22 @@ const AdminSiteContent = () => {
                 className="w-full px-3 py-2 border rounded"
               />
               <p className="mt-1 text-xs text-gray-500">
-                খালি রাখলে ডেলিভারি সেটিং থেকে ফ্রি ডেলিভারির লেখা নিজে থেকেই তৈরি হবে।
-                Delivery পেজে ফ্রি ডেলিভারির সীমা 0 (বন্ধ) থাকলে এখানে লেখা "ফ্রি ডেলিভারি" দেখানো হবে না।
+                Leave empty to generate the free-delivery line from Delivery settings.
+                If the free-delivery threshold on the Delivery page is 0 (off), any
+                free-delivery claim written here is hidden on the site.
               </p>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Top Bar Text (বাংলা)</label>
+              <label className="block text-sm font-medium mb-1">Top Bar Text (Bangla)</label>
               <input
                 type="text"
                 value={settings.topBarText_bn ?? ''}
                 onChange={(e) => updateSettings({ topBarText_bn: e.target.value })}
-                placeholder="৳১,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি"
+                placeholder="Bangla top bar text"
                 className="w-full px-3 py-2 border rounded"
               />
               <p className="mt-1 text-xs text-gray-500">
-                বাংলা মোডে এটি দেখাবে। খালি রাখলে ইংরেজি লেখাটাই ব্যবহার হবে।
+                Shown in Bengali mode. Falls back to the English text when empty.
               </p>
             </div>
           </div>
@@ -233,7 +235,8 @@ const AdminSiteContent = () => {
           </div>
           <h3 className="text-lg font-bold mb-3 mt-6">Home CTA Banner</h3>
           <p className="text-sm text-gray-500 mb-3">
-            হোম পেজের নিচের কালো ব্যানার ("Find the perfect gift today")। খালি রাখলে ডিফল্ট লেখা দেখাবে।
+            The black banner at the bottom of the home page ("Find the perfect gift today").
+            Default text is used when left empty.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <div>
@@ -241,24 +244,24 @@ const AdminSiteContent = () => {
               <input type="text" value={settings.siteContent?.ctaTitle ?? ''} onChange={(e) => updateSiteContent({ ctaTitle: e.target.value })} placeholder="Find the perfect gift today" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">CTA Title (বাংলা)</label>
-              <input type="text" value={settings.siteContent?.ctaTitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaTitleBn: e.target.value })} placeholder="আজই নিখুঁত উপহার খুঁজে নিন" className="w-full px-3 py-2 border rounded" />
+              <label className="block text-sm font-medium mb-1">CTA Title (Bangla)</label>
+              <input type="text" value={settings.siteContent?.ctaTitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaTitleBn: e.target.value })} placeholder="Bangla CTA title" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">CTA Subtitle (English)</label>
               <input type="text" value={settings.siteContent?.ctaSubtitle ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitle: e.target.value })} placeholder="Free delivery on orders above ৳1,000 · Cash on delivery available" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">CTA Subtitle (বাংলা)</label>
-              <input type="text" value={settings.siteContent?.ctaSubtitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitleBn: e.target.value })} placeholder="৳১,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি" className="w-full px-3 py-2 border rounded" />
+              <label className="block text-sm font-medium mb-1">CTA Subtitle (Bangla)</label>
+              <input type="text" value={settings.siteContent?.ctaSubtitleBn ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitleBn: e.target.value })} placeholder="Bangla CTA subtitle" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Button Text (English)</label>
               <input type="text" value={settings.siteContent?.ctaButton ?? ''} onChange={(e) => updateSiteContent({ ctaButton: e.target.value })} placeholder="Shop Now" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Button Text (বাংলা)</label>
-              <input type="text" value={settings.siteContent?.ctaButtonBn ?? ''} onChange={(e) => updateSiteContent({ ctaButtonBn: e.target.value })} placeholder="এখনই কিনুন" className="w-full px-3 py-2 border rounded" />
+              <label className="block text-sm font-medium mb-1">Button Text (Bangla)</label>
+              <input type="text" value={settings.siteContent?.ctaButtonBn ?? ''} onChange={(e) => updateSiteContent({ ctaButtonBn: e.target.value })} placeholder="Bangla button text" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Button Link</label>
@@ -266,13 +269,10 @@ const AdminSiteContent = () => {
             </div>
           </div>
           <p className="mb-4 text-xs text-gray-500">
-            CTA-তে ফ্রি ডেলিভারির অঙ্ক লেখা থাকলে সেটি Delivery পেজের সীমার সাথে মিলিয়ে দেখানো হয়।
-            সীমা 0 (বন্ধ) থাকলে ফ্রি ডেলিভারির দাবি বাদ দিয়ে শুধু "ক্যাশ অন ডেলিভারি" দেখাবে।
+            Amounts in the CTA are checked against the Delivery threshold. When the threshold
+            is 0 (off), the free-delivery claim is replaced with cash-on-delivery copy only.
           </p>
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
-            <Save size={16} />
-            সব পরিবর্তন সাথে সাথে সেভ হয় — আলাদা করে Save চাপতে হবে না।
-          </div>
+          <AutoSaveNote className="mt-4" />
         </div>
       )}
 
@@ -311,8 +311,9 @@ const AdminSiteContent = () => {
           <div className="bg-white rounded-lg shadow p-6">
             <h2 className="text-xl font-bold mb-1">Page Banners</h2>
             <p className="text-sm text-gray-500 mb-4">
-              পেজের উপরের বড় ব্যানার। Shop/Category, Offer Zone আর Brands পেজের জন্য আলাদা ছবি দিতে পারবেন।
-              ছবি না দিলে ব্যানারটি শুধু কালো ব্যাকগ্রাউন্ডে শিরোনামসহ দেখাবে — কোনো ডেমো ছবি বসবে না।
+              Large banner at the top of Shop/Category, Offer Zone and Brands pages. You can give
+              each page a different image. With no image the banner shows only the title on a dark
+              background — no demo image is used.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <ImageUpload
@@ -390,7 +391,7 @@ const AdminSiteContent = () => {
               ))}
             </div>
             {(Array.isArray(settings.siteContent?.sideBanners) ? settings.siteContent.sideBanners : []).length === 0 && (
-              <p className="text-sm text-gray-500">কোনো সাইড ব্যানার নেই। উপরে Add Side Banner চাপুন।</p>
+              <p className="text-sm text-gray-500">No side banners yet. Click Add Side Banner above.</p>
             )}
           </div>
           <div className="bg-white rounded-lg shadow p-6">
@@ -444,7 +445,7 @@ const AdminSiteContent = () => {
               ))}
             </div>
             {(Array.isArray(settings.siteContent?.promoBanners) ? settings.siteContent.promoBanners : []).length === 0 && (
-              <p className="text-sm text-gray-500">কোনো প্রোমো ব্যানার নেই। উপরে Add Promo Banner চাপুন।</p>
+              <p className="text-sm text-gray-500">No promo banners yet. Click Add Promo Banner above.</p>
             )}
           </div>
         </div>
@@ -459,9 +460,9 @@ const AdminSiteContent = () => {
               <textarea value={settings.siteContent?.footerAbout || ''} onChange={(e) => updateSiteContent({ footerAbout: e.target.value })} className="w-full px-3 py-2 border rounded" rows={4} />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">Footer About Text (বাংলা)</label>
-              <textarea value={settings.siteContent?.footerAbout_bn || ''} onChange={(e) => updateSiteContent({ footerAbout_bn: e.target.value })} className="w-full px-3 py-2 border rounded" rows={4} placeholder="বাংলায় দেখাতে চাইলে এখানে লিখুন" />
-              <p className="mt-1 text-xs text-gray-500">খালি রাখলে ইংরেজি লেখাটাই বাংলা মোডে দেখাবে।</p>
+              <label className="block text-sm font-medium mb-1">Footer About Text (Bangla)</label>
+              <textarea value={settings.siteContent?.footerAbout_bn || ''} onChange={(e) => updateSiteContent({ footerAbout_bn: e.target.value })} className="w-full px-3 py-2 border rounded" rows={4} placeholder="Bangla footer text" />
+              <p className="mt-1 text-xs text-gray-500">Leave empty to show the English text in Bengali mode.</p>
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">Copyright Text</label>
@@ -472,10 +473,7 @@ const AdminSiteContent = () => {
               <input type="text" value={settings.siteContent?.newsletterText || ''} onChange={(e) => updateSiteContent({ newsletterText: e.target.value })} className="w-full px-3 py-2 border rounded" />
             </div>
           </div>
-          <div className="mt-4 flex items-center gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800">
-            <Save size={16} />
-            সব পরিবর্তন সাথে সাথে সেভ হয় — আলাদা করে Save চাপতে হবে না।
-          </div>
+          <AutoSaveNote className="mt-4" />
         </div>
       )}
 
@@ -494,7 +492,7 @@ const AdminSiteContent = () => {
               <div>
                 <label className="block text-sm font-medium mb-1">Link (href)</label>
                 <input type="text" value={heroForm.href} onChange={(e) => setHeroForm({ ...heroForm, href: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="/shop" />
-                <p className="mt-1 text-xs text-gray-500">সাইটের ভেতরের লিংক দিন — যেমন /shop, /offer, /brand/নাম।</p>
+                <p className="mt-1 text-xs text-gray-500">Use an internal link such as /shop, /offer or /brand/name.</p>
               </div>
               <div>
                 <label className="block text-sm font-medium mb-1">Alt Text</label>

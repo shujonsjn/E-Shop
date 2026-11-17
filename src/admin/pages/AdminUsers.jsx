@@ -41,7 +41,7 @@ const AdminUsers = () => {
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
         <p className="text-gray-500 mt-1">
-          অর্ডার থেকে তৈরি কাস্টমার তালিকা — ফোন নম্বর অনুযায়ী একসাথে দেখানো হচ্ছে।
+          Customers are built from real orders and grouped by phone number.
         </p>
       </div>
 
@@ -74,8 +74,8 @@ const AdminUsers = () => {
         </table>
         {customers.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">এখনো কোনো কাস্টমার নেই</p>
-            <p className="mt-1 text-sm text-gray-500">প্রথম অর্ডার এলে এখানে কাস্টমার দেখা যাবে।</p>
+            <p className="text-gray-700 font-medium">No customers yet</p>
+            <p className="mt-1 text-sm text-gray-500">Customers will appear here after the first order.</p>
           </div>
         )}
       </div>

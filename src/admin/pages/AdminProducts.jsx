@@ -89,9 +89,9 @@ const AdminProducts = () => {
         </table>
         {products.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">এখনো কোনো পণ্য নেই</p>
+            <p className="text-gray-700 font-medium">No products yet</p>
             <p className="mt-1 text-sm text-gray-500">
-              Add Product চেপে প্রথম পণ্যটি যোগ করুন। কোনো ডেমো পণ্য স্বয়ংক্রিয়ভাবে আসে না।
+              Click Add Product to add your first product. Demo products never appear automatically.
             </p>
           </div>
         )}

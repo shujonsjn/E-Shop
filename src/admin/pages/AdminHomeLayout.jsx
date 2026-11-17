@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useSettings, defaultHomeLayout } from '../../context/SettingsContext'
 import { GripVertical, Eye, EyeOff, Edit2, Save, X, Trash2, AlertTriangle } from 'lucide-react'
 import toast from 'react-hot-toast'
+import AutoSaveNote from '../../components/admin/AutoSaveNote'
 import { getMergedCategories } from '../../utils/mergeCategories'
 
 const sectionTypes = {
@@ -92,6 +93,10 @@ const AdminHomeLayout = () => {
         </button>
       </div>
 
+      <AutoSaveNote className="mb-4">
+        Layout changes (order, visibility, edits) save automatically.
+      </AutoSaveNote>
+
       <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="divide-y divide-gray-100">
           {layout.map((item) => (
@@ -137,7 +142,7 @@ const AdminHomeLayout = () => {
         </div>
         {layout.length === 0 && (
           <p className="py-8 text-center text-gray-500">
-            সব সেকশন মুছে ফেলা হয়েছে। উপরের "Restore default layout" চেপে ফিরিয়ে আনুন।
+            All sections have been removed. Click "Restore default layout" above to bring them back.
           </p>
         )}
       </div>
@@ -197,7 +202,7 @@ const AdminHomeLayout = () => {
                     </select>
                     {formCategoryMissing && (
                       <p className="mt-1 flex items-center gap-1 text-xs text-amber-700">
-                        <AlertTriangle size={12} /> এই ক্যাটাগরিটি আর নেই — রো-টি খালি দেখাবে।
+                        <AlertTriangle size={12} /> This category no longer exists — the row will appear empty.
                       </p>
                     )}
                   </div>

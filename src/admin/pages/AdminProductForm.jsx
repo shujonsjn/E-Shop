@@ -230,7 +230,7 @@ const AdminProductForm = () => {
                     value={formData.name_bn}
                     onChange={(e) => setFormData({ ...formData, name_bn: e.target.value })}
                     className={fieldClass}
-                    placeholder="যেমন সিরামিক ফুলদানি"
+                    placeholder="e.g. ceramic flower vase"
                   />
                 </div>
                 <div>
@@ -273,7 +273,7 @@ const AdminProductForm = () => {
                     onChange={(e) => setFormData({ ...formData, description_bn: e.target.value })}
                     rows="4"
                     className={fieldClass}
-                    placeholder="বাংলায় পণ্যের বিবরণ লিখুন..."
+                    placeholder="Product description in Bangla..."
                   ></textarea>
                   <p className="text-xs text-gray-500 mt-1">Falls back to English when left empty.</p>
                 </div>

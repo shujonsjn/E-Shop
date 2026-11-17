@@ -76,9 +76,8 @@ const AdminStaff = () => {
       <div className="mb-4 flex items-start gap-2 rounded-lg border border-blue-200 bg-blue-50 p-3 text-sm text-blue-800">
         <Info size={16} className="mt-0.5 shrink-0" />
         <p>
-          এটি শুধু স্টাফদের নাম-ফোনের তালিকা (কর্মীদের তথ্য সংরক্ষণ)। এখানে যোগ করলে
-          অ্যাডমিন প্যানেলে আলাদা লগইন তৈরি হয় না। নতুন অ্যাডমিন লগইন তৈরি করতে হবে
-          Supabase Auth থেকে।
+          This page only stores staff contact details. Adding someone here does NOT create an
+          admin login — new admin logins must be created in Supabase Auth.
         </p>
       </div>
 
@@ -125,8 +124,8 @@ const AdminStaff = () => {
         </table>
         {staffList.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">এখনো কোনো স্টাফ যোগ করা হয়নি</p>
-            <p className="mt-1 text-sm text-gray-500">Add Staff চেপে কর্মীর তথ্য যোগ করুন।</p>
+            <p className="text-gray-700 font-medium">No staff added yet</p>
+            <p className="mt-1 text-sm text-gray-500">Click Add Staff to add a team member.</p>
           </div>
         )}
       </div>
