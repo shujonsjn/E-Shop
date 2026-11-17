@@ -71,7 +71,7 @@ const AdminCategories = () => {
       return
     }
     const duplicate = categories.some(
-      (c) => c.slug === slug && (!editing || c.id !== editing.id)
+      (c) => c.slug === slug && (!editing || c.slug !== editing.slug)
     )
     if (duplicate) {
       toast.error('Another category already uses this slug')
@@ -85,7 +85,11 @@ const AdminCategories = () => {
       : subs.map((s) => ({ slug: subSlug(s), name: s, name_bn: s }))
     let updated
     if (editing) {
-      updated = categories.map((c) => (c.id === editing.id ? { ...c, name, name_bn: form.name_bn, slug, subcategories: subs, subcategoryList: subList, image: form.image } : c))
+      updated = categories.map((c) =>
+        c.slug === editing.slug
+          ? { ...c, name, name_bn: form.name_bn, slug, subcategories: subs, subcategoryList: subList, image: form.image }
+          : c
+      )
     } else {
       updated = [...categories, { id: Date.now(), name, name_bn: form.name_bn, slug, subcategories: subs, subcategoryList: subList, image: form.image, enabled: true }]
     }
@@ -105,13 +109,28 @@ const AdminCategories = () => {
     setEditing(cat)
     const subList = Array.isArray(cat.subcategoryList) && cat.subcategoryList.length > 0
       ? cat.subcategoryList
-      : (cat.subcategories || []).map((s) => ({ slug: s.toLowerCase().replace(/\s+/g, '-'), name: s, name_bn: s }))
-    setForm({ name: cat.name, name_bn: cat.name_bn || '', slug: cat.slug, subcategories: (cat.subcategories || []).join(', '), image: cat.image || '', subcategoryList: subList })
+      : (Array.isArray(cat.subcategories) ? cat.subcategories : [])
+          .filter(Boolean)
+          .map((s) =>
+            typeof s === 'string'
+              ? { slug: subSlug(s), name: s, name_bn: s }
+              : { slug: s.slug || subSlug(s.name), name: s.name || s.slug || '', name_bn: s.name_bn || s.name || '' }
+          )
+    setForm({
+      name: cat.name,
+      name_bn: cat.name_bn || '',
+      slug: cat.slug,
+      subcategories: Array.isArray(cat.subcategories)
+        ? cat.subcategories.map((s) => (typeof s === 'string' ? s : s.name || s.slug || '')).join(', ')
+        : '',
+      image: cat.image || '',
+      subcategoryList: subList,
+    })
     setShowModal(true)
   }
 
-  const handleDelete = (id) => {
-    const cat = categories.find((c) => c.id === id)
+  const handleDelete = (slug) => {
+    const cat = categories.find((c) => c.slug === slug)
     if (!cat) return
     const used = products.filter((p) => p.category === cat.slug).length
     if (used > 0) {
@@ -121,7 +140,7 @@ const AdminCategories = () => {
       return
     }
     if (!confirm(`Delete category "${cat.name}"?`)) return
-    const updated = categories.filter((c) => c.id !== id)
+    const updated = categories.filter((c) => c.slug !== slug)
     setCategories(updated)
     if (saveStore('categories', updated)) {
       window.dispatchEvent(new Event('storage'))
@@ -158,7 +177,7 @@ const AdminCategories = () => {
           </thead>
           <tbody className="divide-y divide-gray-200">
             {categories.map((cat) => (
-              <tr key={cat.id}>
+              <tr key={cat.slug}>
                 <td className="px-6 py-4">
                   {cat.image ? <img src={cat.image} alt={cat.name} className="h-10 w-10 object-contain" /> : <div className="h-10 w-10 bg-gray-100 rounded-full" />}
                 </td>
@@ -173,7 +192,7 @@ const AdminCategories = () => {
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
                     <button onClick={() => handleEdit(cat)} className="text-blue-600 hover:text-blue-800"><Edit2 size={18} /></button>
-                    <button onClick={() => handleDelete(cat.id)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
+                    <button onClick={() => handleDelete(cat.slug)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
                   </div>
                 </td>
               </tr>
