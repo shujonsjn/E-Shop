@@ -21,6 +21,16 @@ export const defaultHomeLayout = [
   { id: 'cta', type: 'cta', enabled: true, order: 13 },
 ]
 
+// Sections that only existed in the bundled grocery demo. They are removed on
+// load so neither the storefront nor the admin list can show them again; the
+// next admin save also drops them from the cloud row.
+const LEGACY_HOME_SECTION_IDS = ['row_honey', 'row_dates', 'row_cooking', 'row_organic', 'row_grocery']
+
+export const stripLegacyHomeSections = (layout) => {
+  if (!Array.isArray(layout)) return layout
+  return layout.filter((item) => !LEGACY_HOME_SECTION_IDS.includes(item?.id))
+}
+
 const defaultSettings = {
   // Site info
   siteName: 'Gift Shop',
@@ -182,7 +192,10 @@ const mergeSavedSettings = (parsed) => {
   if (!Array.isArray(merged.homeLayout) || merged.homeLayout.length === 0) {
     merged.homeLayout = JSON.parse(JSON.stringify(defaultHomeLayout))
   } else {
-    merged.homeLayout = merged.homeLayout.map((item, idx) => ({ order: idx, enabled: true, ...item }))
+    const cleaned = stripLegacyHomeSections(merged.homeLayout)
+    merged.homeLayout = cleaned.length
+      ? cleaned.map((item, idx) => ({ order: idx, enabled: true, ...item }))
+      : JSON.parse(JSON.stringify(defaultHomeLayout))
   }
   return merged
 }

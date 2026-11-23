@@ -204,11 +204,11 @@ const AdminHomeLayout = () => {
                   )}
                   {item.type === 'productRow' && item.filter === 'category' && item.category && !categorySlugs.includes(item.category) && (
                     <span className="inline-flex items-center gap-1 rounded bg-amber-100 px-2 py-0.5 text-[11px] font-medium text-amber-800">
-                      <AlertTriangle size={11} /> ক্যাটাগরি &quot;{item.category}&quot; আর নেই
+                      <AlertTriangle size={11} /> {`ক্যাটাগরি "${item.category}" আর নেই`}
                     </span>
                   )}
                 </div>
-                <p className="text-xs text-gray-500 mt-1">আইডি: {item.id}</p>
+                <p className="text-xs text-gray-500 mt-1">{`আইডি: ${item.id}`}</p>
               </div>
               <div className="flex items-center gap-2">
                 <button onClick={() => { toggleHomeSection(item.id); toast.success(item.enabled ? 'সেকশন লুকানো হয়েছে' : 'সেকশন দেখানো হয়েছে') }} className="p-2 hover:bg-gray-100 rounded-lg" title={item.enabled ? 'লুকান' : 'দেখান'}>

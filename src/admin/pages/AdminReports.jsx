@@ -103,7 +103,7 @@ const AdminReports = () => {
                     <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">{idx + 1}</span>
                     <div>
                       <p className="font-medium text-gray-900">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.quantity} টি বিক্রি</p>
+                      <p className="text-sm text-gray-500">{`${product.quantity} টি বিক্রি`}</p>
                     </div>
                   </div>
                   <p className="font-medium text-gray-900">৳{product.revenue}</p>
@@ -126,7 +126,7 @@ const AdminReports = () => {
                     <span className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold">{idx + 1}</span>
                     <div>
                       <p className="font-medium text-gray-900">{customer.name === 'Guest' ? 'অতিথি' : customer.name}</p>
-                      <p className="text-sm text-gray-500">{customer.count} টি অর্ডার</p>
+                      <p className="text-sm text-gray-500">{`${customer.count} টি অর্ডার`}</p>
                     </div>
                   </div>
                   <p className="font-medium text-gray-900">৳{customer.total}</p>

@@ -286,7 +286,7 @@ const AdminProductForm = () => {
 
               {formData.images.length > 0 && (
                 <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-700 mb-3">আপলোড করা ছবি ({formData.images.length})</p>
+                  <p className="text-sm font-medium text-gray-700 mb-3">{`আপলোড করা ছবি (${formData.images.length})`}</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {formData.images.map((img, index) => (
                       <div key={index} className="relative group aspect-square">

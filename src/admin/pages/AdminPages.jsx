@@ -193,7 +193,7 @@ const AdminPages = () => {
       {hiddenPages.length > 0 && (
         <div className="mb-6 rounded-xl border border-amber-200 bg-amber-50 p-4">
           <h2 className="text-sm font-semibold text-amber-900 mb-2">
-            মুছে ফেলা পেজ ({hiddenPages.length}) — ভিজিটররা এখন &quot;পেজ পাওয়া যায়নি&quot; দেখছে
+            {`মুছে ফেলা পেজ (${hiddenPages.length}) — ভিজিটররা এখন "পেজ পাওয়া যায়নি" দেখছে`}
           </h2>
           <ul className="space-y-2">
             {hiddenPages.map((page) => (

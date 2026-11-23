@@ -155,7 +155,7 @@ const AdminOrders = () => {
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">অর্ডারের বিস্তারিত - #{selectedOrder.id}</h2>
+                <h2 className="text-xl font-bold text-gray-900">{`অর্ডারের বিস্তারিত - #${selectedOrder.id}`}</h2>
                 <button onClick={() => setSelectedOrder(null)} className="text-gray-500 hover:text-gray-700" aria-label="বন্ধ করুন">
                   ✕
                 </button>
