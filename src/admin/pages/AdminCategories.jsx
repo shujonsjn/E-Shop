@@ -18,6 +18,8 @@ const slugify = (value) =>
 const subSlug = (value) =>
   slugify(value) || String(value || '').trim().toLowerCase().replace(/\s+/g, '-')
 
+const emptyForm = { name: '', name_bn: '', slug: '', subcategories: '', image: '', subcategoryList: [] }
+
 const AdminCategories = () => {
   const { products } = useProducts()
   const [categories, setCategories] = useState(() => {
@@ -32,7 +34,7 @@ const AdminCategories = () => {
   })
   const [showModal, setShowModal] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ name: '', name_bn: '', slug: '', subcategories: '', image: '', subcategoryList: [] })
+  const [form, setForm] = useState(emptyForm)
 
   const [newSub, setNewSub] = useState({ name: '', name_bn: '' })
 
@@ -60,21 +62,21 @@ const AdminCategories = () => {
     e.preventDefault()
     const name = form.name.trim()
     if (!name) {
-      toast.error('Category name is required')
+      toast.error('ক্যাটাগরির নাম দিতে হবে')
       return
     }
     // Slugs are the key products use. A duplicate would make products vanish
     // from every category page, so refuse it.
     const slug = editing ? form.slug : slugify(form.slug || name)
     if (!slug) {
-      toast.error('Slug could not be generated — use English letters')
+      toast.error('URL স্লাগ তৈরি করা যায়নি — ইংরেজি অক্ষর ব্যবহার করুন')
       return
     }
     const duplicate = categories.some(
       (c) => c.slug === slug && (!editing || c.slug !== editing.slug)
     )
     if (duplicate) {
-      toast.error('Another category already uses this slug')
+      toast.error('আরেকটি ক্যাটাগরি ইতিমধ্যে এই URL স্লাগ ব্যবহার করছে')
       return
     }
     const subs = form.subcategoryList && form.subcategoryList.length > 0
@@ -96,13 +98,13 @@ const AdminCategories = () => {
     setCategories(updated)
     if (saveStore('categories', updated)) {
       window.dispatchEvent(new Event('storage'))
-      toast.success(editing ? 'Category updated' : 'Category added')
+      toast.success(editing ? 'ক্যাটাগরি আপডেট হয়েছে' : 'ক্যাটাগরি যোগ হয়েছে')
     } else {
-      toast.error('Could not save. Check that you are signed in as admin.')
+      toast.error('সেভ করা যায়নি। অ্যাডমিন হিসেবে লগইন আছে কিনা দেখুন।')
     }
     setShowModal(false)
     setEditing(null)
-    setForm({ name: '', name_bn: '', slug: '', subcategories: '', image: '', subcategoryList: [] })
+    setForm(emptyForm)
   }
 
   const handleEdit = (cat) => {
@@ -135,31 +137,31 @@ const AdminCategories = () => {
     const used = products.filter((p) => p.category === cat.slug).length
     if (used > 0) {
       toast.error(
-        `${used} product${used > 1 ? 's' : ''} still use this category. Move them first.`
+        `${used}টি পণ্য এখনো এই ক্যাটাগরি ব্যবহার করছে। আগে সেগুলো অন্য ক্যাটাগরিতে সরান।`
       )
       return
     }
-    if (!confirm(`Delete category "${cat.name}"?`)) return
+    if (!confirm(`ক্যাটাগরি "${cat.name}" মুছে ফেলবেন?`)) return
     const updated = categories.filter((c) => c.slug !== slug)
     setCategories(updated)
     if (saveStore('categories', updated)) {
       window.dispatchEvent(new Event('storage'))
-      toast.success('Category deleted')
+      toast.success('ক্যাটাগরি মুছে ফেলা হয়েছে')
       return
     }
     setCategories(categories)
-    toast.error('Could not delete. Check that you are signed in as admin.')
+    toast.error('মুছে ফেলা যায়নি। অ্যাডমিন হিসেবে লগইন আছে কিনা দেখুন।')
   }
 
   return (
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Categories</h1>
-          <p className="text-gray-500 mt-1">Manage product categories</p>
+          <h1 className="text-2xl font-bold text-gray-900">ক্যাটাগরি</h1>
+          <p className="text-gray-500 mt-1">পণ্যের ক্যাটাগরি পরিচালনা করুন</p>
         </div>
-        <button onClick={() => { setEditing(null); setForm({ name: '', name_bn: '', slug: '', subcategories: '', image: '', subcategoryList: [] }); setShowModal(true) }} className="flex items-center gap-2 bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16]">
-          <Plus size={18} /> Add Category
+        <button onClick={() => { setEditing(null); setForm(emptyForm); setShowModal(true) }} className="flex items-center gap-2 bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16]">
+          <Plus size={18} /> নতুন ক্যাটাগরি
         </button>
       </div>
 
@@ -167,12 +169,12 @@ const AdminCategories = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Icon</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name (EN)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name (BN)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Subcategories</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">আইকন</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম (ইংরেজি)</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম (বাংলা)</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">URL স্লাগ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">উপ-ক্যাটাগরি</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাজ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -191,8 +193,8 @@ const AdminCategories = () => {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(cat)} className="text-blue-600 hover:text-blue-800"><Edit2 size={18} /></button>
-                    <button onClick={() => handleDelete(cat.slug)} className="text-red-600 hover:text-red-800"><Trash2 size={18} /></button>
+                    <button onClick={() => handleEdit(cat)} className="text-blue-600 hover:text-blue-800" title="এডিট"><Edit2 size={18} /></button>
+                    <button onClick={() => handleDelete(cat.slug)} className="text-red-600 hover:text-red-800" title="মুছুন"><Trash2 size={18} /></button>
                   </div>
                 </td>
               </tr>
@@ -201,8 +203,8 @@ const AdminCategories = () => {
         </table>
         {categories.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">No categories yet</p>
-            <p className="mt-1 text-sm text-gray-500">Click Add Category to create your first category.</p>
+            <p className="text-gray-700 font-medium">এখনো কোনো ক্যাটাগরি নেই</p>
+            <p className="mt-1 text-sm text-gray-500">“নতুন ক্যাটাগরি” চেপে প্রথম ক্যাটাগরি তৈরি করুন।</p>
           </div>
         )}
       </div>
@@ -210,35 +212,35 @@ const AdminCategories = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">{editing ? 'Edit Category' : 'Add Category'}</h2>
+            <h2 className="text-xl font-bold mb-4">{editing ? 'ক্যাটাগরি এডিট' : 'নতুন ক্যাটাগরি'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Category Name (English)</label>
+                <label className="block text-sm font-medium mb-1">ক্যাটাগরির নাম (ইংরেজি)</label>
                 <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className="w-full px-3 py-2 border rounded" required />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Category Name (Bangla)</label>
-                <input type="text" value={form.name_bn || ''} onChange={(e) => setForm({ ...form, name_bn: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="Bangla name" />
+                <label className="block text-sm font-medium mb-1">ক্যাটাগরির নাম (বাংলা)</label>
+                <input type="text" value={form.name_bn || ''} onChange={(e) => setForm({ ...form, name_bn: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="বাংলা নাম" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
+                <label className="block text-sm font-medium mb-1">URL স্লাগ</label>
                 <input
                   type="text"
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
                   className={`w-full px-3 py-2 border rounded ${editing ? 'bg-gray-100 text-gray-500' : ''}`}
-                  placeholder="Auto-generated from the name"
+                  placeholder="নাম থেকে নিজে থেকে তৈরি হবে"
                   readOnly={Boolean(editing)}
                   required={Boolean(editing)}
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {editing
-                    ? 'Slug is locked while editing because products and links use it. Create a new category if it must change.'
+                    ? 'এডিটের সময় URL স্লাগ বদলানো যায় না, কারণ পণ্য ও লিংক এটির উপর নির্ভর করে। বদলাতে হলে নতুন ক্যাটাগরি তৈরি করুন।'
                     : `/category/${form.slug || slugify(form.name) || 'category-name'}`}
                 </p>
               </div>
               <ImageUpload
-                label="Category Icon/Image"
+                label="ক্যাটাগরির আইকন/ছবি"
                 value={form.image || ''}
                 onChange={(val) => setForm({ ...form, image: val })}
                 width={400}
@@ -246,7 +248,7 @@ const AdminCategories = () => {
                 fit="contain"
               />
               <div>
-                <label className="block text-sm font-medium mb-1">Subcategories</label>
+                <label className="block text-sm font-medium mb-1">উপ-ক্যাটাগরি</label>
                 <div className="space-y-2 mb-2">
                   {(form.subcategoryList || []).map((sub, idx) => (
                     <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
@@ -254,23 +256,23 @@ const AdminCategories = () => {
                         <p className="text-sm font-medium">{sub.name}</p>
                         {sub.name_bn && <p className="text-xs text-gray-500">{sub.name_bn}</p>}
                       </div>
-                      <button type="button" onClick={() => removeSubcategory(idx)} className="text-red-600"><X size={16} /></button>
+                      <button type="button" onClick={() => removeSubcategory(idx)} className="text-red-600" title="মুছুন"><X size={16} /></button>
                     </div>
                   ))}
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <input type="text" value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Subcategory (EN)" />
-                  <input type="text" value={newSub.name_bn} onChange={(e) => setNewSub({ ...newSub, name_bn: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="Subcategory (BN)" />
+                  <input type="text" value={newSub.name} onChange={(e) => setNewSub({ ...newSub, name: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="উপ-ক্যাটাগরি (ইংরেজি)" />
+                  <input type="text" value={newSub.name_bn} onChange={(e) => setNewSub({ ...newSub, name_bn: e.target.value })} className="px-2 py-1 border rounded text-sm" placeholder="উপ-ক্যাটাগরি (বাংলা)" />
                 </div>
-                <button type="button" onClick={addSubcategory} className="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"><Plus size={14} /> Add Subcategory</button>
+                <button type="button" onClick={addSubcategory} className="mt-2 text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1"><Plus size={14} /> উপ-ক্যাটাগরি যোগ করুন</button>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Quick add (comma separated EN)</label>
+                <label className="block text-sm font-medium mb-1">দ্রুত যোগ (কমা দিয়ে আলাদা, ইংরেজি)</label>
                 <input type="text" value={form.subcategories} onChange={(e) => setForm({ ...form, subcategories: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="vase, gift box, wall clock" />
               </div>
               <div className="flex gap-2">
-                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Save</button>
-                <button type="button" onClick={() => { setShowModal(false); setEditing(null); setForm({ name: '', name_bn: '', slug: '', subcategories: '', image: '', subcategoryList: [] }) }} className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">Cancel</button>
+                <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">সেভ করুন</button>
+                <button type="button" onClick={() => { setShowModal(false); setEditing(null); setForm(emptyForm) }} className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400">বাতিল</button>
               </div>
             </form>
           </div>

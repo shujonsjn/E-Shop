@@ -49,13 +49,13 @@ const AdminReports = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Reports & Analytics</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">রিপোর্ট ও বিশ্লেষণ</h1>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-6">
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Delivered Revenue</p>
+              <p className="text-gray-500 text-sm">ডেলিভারি হওয়া আয়</p>
               <p className="text-2xl font-bold text-green-600">৳{totalRevenue}</p>
             </div>
             <TrendingUp className="text-green-600" size={32} />
@@ -64,7 +64,7 @@ const AdminReports = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Total Orders</p>
+              <p className="text-gray-500 text-sm">মোট অর্ডার</p>
               <p className="text-2xl font-bold text-blue-600">{orders.length}</p>
             </div>
             <BarChart3 className="text-blue-600" size={32} />
@@ -73,7 +73,7 @@ const AdminReports = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Customers</p>
+              <p className="text-gray-500 text-sm">কাস্টমার</p>
               <p className="text-2xl font-bold text-purple-600">{Object.keys(ordersByCustomer).length}</p>
             </div>
             <Users className="text-purple-600" size={32} />
@@ -82,7 +82,7 @@ const AdminReports = () => {
         <div className="bg-white rounded-lg shadow p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-gray-500 text-sm">Products</p>
+              <p className="text-gray-500 text-sm">পণ্য</p>
               <p className="text-2xl font-bold text-orange-600">{products.length}</p>
             </div>
             <Package className="text-orange-600" size={32} />
@@ -93,7 +93,7 @@ const AdminReports = () => {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold text-gray-900">Best Selling Products</h2>
+            <h2 className="text-xl font-bold text-gray-900">সর্বাধিক বিক্রিত পণ্য</h2>
           </div>
           <div className="p-6">
             <div className="space-y-4">
@@ -103,20 +103,20 @@ const AdminReports = () => {
                     <span className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-bold">{idx + 1}</span>
                     <div>
                       <p className="font-medium text-gray-900">{product.name}</p>
-                      <p className="text-sm text-gray-500">{product.quantity} sold</p>
+                      <p className="text-sm text-gray-500">{product.quantity} টি বিক্রি</p>
                     </div>
                   </div>
                   <p className="font-medium text-gray-900">৳{product.revenue}</p>
                 </div>
               ))}
-              {bestSelling.length === 0 && <p className="text-center text-gray-500 py-4">No data yet</p>}
+              {bestSelling.length === 0 && <p className="text-center text-gray-500 py-4">এখনো কোনো তথ্য নেই</p>}
             </div>
           </div>
         </div>
 
         <div className="bg-white rounded-lg shadow">
           <div className="p-6 border-b">
-            <h2 className="text-xl font-bold text-gray-900">Top Customers</h2>
+            <h2 className="text-xl font-bold text-gray-900">শীর্ষ কাস্টমার</h2>
           </div>
           <div className="p-6">
             <div className="space-y-4">
@@ -125,14 +125,14 @@ const AdminReports = () => {
                   <div className="flex items-center gap-3">
                     <span className="w-8 h-8 bg-purple-100 text-purple-600 rounded-full flex items-center justify-center font-bold">{idx + 1}</span>
                     <div>
-                      <p className="font-medium text-gray-900">{customer.name}</p>
-                      <p className="text-sm text-gray-500">{customer.count} orders</p>
+                      <p className="font-medium text-gray-900">{customer.name === 'Guest' ? 'অতিথি' : customer.name}</p>
+                      <p className="text-sm text-gray-500">{customer.count} টি অর্ডার</p>
                     </div>
                   </div>
                   <p className="font-medium text-gray-900">৳{customer.total}</p>
                 </div>
               ))}
-              {topCustomers.length === 0 && <p className="text-center text-gray-500 py-4">No data yet</p>}
+              {topCustomers.length === 0 && <p className="text-center text-gray-500 py-4">এখনো কোনো তথ্য নেই</p>}
             </div>
           </div>
         </div>

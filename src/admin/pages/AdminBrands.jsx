@@ -31,19 +31,19 @@ const AdminBrands = () => {
     e.preventDefault()
     const name = form.name.trim()
     if (!name) {
-      toast.error('Brand name is required')
+      toast.error('ব্র্যান্ডের নাম দিতে হবে')
       return
     }
     const slug = slugify(form.slug || name)
     if (!slug) {
-      toast.error('Slug could not be generated — use English letters')
+      toast.error('URL স্লাগ তৈরি করা যায়নি — ইংরেজি অক্ষর ব্যবহার করুন')
       return
     }
     const duplicate = brands.some(
       (b) => b.slug === slug && (!editing || b.slug !== editing.slug)
     )
     if (duplicate) {
-      toast.error('Another brand already uses this slug')
+      toast.error('আরেকটি ব্র্যান্ড ইতিমধ্যে এই URL স্লাগ ব্যবহার করছে')
       return
     }
 
@@ -62,7 +62,7 @@ const AdminBrands = () => {
     setBrands(updated)
     const ok = saveStore('brands', updated)
     if (!ok) {
-      toast.error('Could not save. Check that you are signed in as admin.')
+      toast.error('সেভ করা যায়নি। অ্যাডমিন হিসেবে লগইন আছে কিনা দেখুন।')
       return
     }
 
@@ -79,7 +79,7 @@ const AdminBrands = () => {
     }
 
     window.dispatchEvent(new Event('storage'))
-    toast.success(editing ? 'Brand updated' : 'Brand added')
+    toast.success(editing ? 'ব্র্যান্ড আপডেট হয়েছে' : 'ব্র্যান্ড যোগ হয়েছে')
     setShowModal(false)
     setEditing(null)
     setForm(emptyForm)
@@ -101,7 +101,7 @@ const AdminBrands = () => {
   const handleDelete = (slug) => {
     if (
       !confirm(
-        'Delete this brand? Products keep their brand name, so they will simply stop appearing on the brand page.'
+        'এই ব্র্যান্ডটি মুছে ফেলবেন? পণ্য নিজের ব্র্যান্ডের নাম ধরে রাখবে, তাই সেগুলো শুধু ব্র্যান্ড পেজে দেখানো বন্ধ হবে।'
       )
     ) {
       return
@@ -110,9 +110,9 @@ const AdminBrands = () => {
     setBrands(updated)
     if (saveStore('brands', updated)) {
       window.dispatchEvent(new Event('storage'))
-      toast.success('Brand deleted')
+      toast.success('ব্র্যান্ড মুছে ফেলা হয়েছে')
     } else {
-      toast.error('Could not delete. Check that you are signed in as admin.')
+      toast.error('মুছে ফেলা যায়নি। অ্যাডমিন হিসেবে লগইন আছে কিনা দেখুন।')
     }
   }
 
@@ -126,14 +126,14 @@ const AdminBrands = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Brands</h1>
-          <p className="text-gray-500 mt-1">Manage product brands</p>
+          <h1 className="text-2xl font-bold text-gray-900">ব্র্যান্ড</h1>
+          <p className="text-gray-500 mt-1">পণ্যের ব্র্যান্ড পরিচালনা করুন</p>
         </div>
         <button
           onClick={openAdd}
           className="flex items-center gap-2 bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16]"
         >
-          <Plus size={18} /> Add Brand
+          <Plus size={18} /> নতুন ব্র্যান্ড
         </button>
       </div>
 
@@ -141,11 +141,11 @@ const AdminBrands = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Logo</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name (EN)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name (BN)</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Slug</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">লোগো</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম (ইংরেজি)</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম (বাংলা)</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">URL স্লাগ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাজ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -163,10 +163,10 @@ const AdminBrands = () => {
                 <td className="px-6 py-4 text-gray-500">{brand.slug}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(brand)} className="text-blue-600 hover:text-blue-800" title="Edit">
+                    <button onClick={() => handleEdit(brand)} className="text-blue-600 hover:text-blue-800" title="এডিট">
                       <Edit2 size={18} />
                     </button>
-                    <button onClick={() => handleDelete(brand.slug)} className="text-red-600 hover:text-red-800" title="Delete">
+                    <button onClick={() => handleDelete(brand.slug)} className="text-red-600 hover:text-red-800" title="মুছুন">
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -177,8 +177,8 @@ const AdminBrands = () => {
         </table>
         {brands.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">No brands yet</p>
-            <p className="mt-1 text-sm text-gray-500">Click Add Brand to create your first brand.</p>
+            <p className="text-gray-700 font-medium">এখনো কোনো ব্র্যান্ড নেই</p>
+            <p className="mt-1 text-sm text-gray-500">“নতুন ব্র্যান্ড” চেপে প্রথম ব্র্যান্ড তৈরি করুন।</p>
           </div>
         )}
       </div>
@@ -186,10 +186,10 @@ const AdminBrands = () => {
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-lg p-6 w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <h2 className="text-xl font-bold mb-4">{editing ? 'Edit Brand' : 'Add Brand'}</h2>
+            <h2 className="text-xl font-bold mb-4">{editing ? 'ব্র্যান্ড এডিট' : 'নতুন ব্র্যান্ড'}</h2>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium mb-1">Brand Name (English) *</label>
+                <label className="block text-sm font-medium mb-1">ব্র্যান্ডের নাম (ইংরেজি) *</label>
                 <input
                   type="text"
                   value={form.name}
@@ -199,48 +199,48 @@ const AdminBrands = () => {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Brand Name (Bangla)</label>
+                <label className="block text-sm font-medium mb-1">ব্র্যান্ডের নাম (বাংলা)</label>
                 <input
                   type="text"
                   value={form.name_bn}
                   onChange={(e) => setForm({ ...form, name_bn: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Bangla name"
+                  placeholder="বাংলা নাম"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Slug</label>
+                <label className="block text-sm font-medium mb-1">URL স্লাগ</label>
                 <input
                   type="text"
                   value={form.slug}
                   onChange={(e) => setForm({ ...form, slug: e.target.value })}
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Auto-generated from the name"
+                  placeholder="নাম থেকে নিজে থেকে তৈরি হবে"
                 />
                 <p className="text-xs text-gray-500 mt-1">/brand/{form.slug || slugify(form.name) || 'brand-name'}</p>
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Description (English)</label>
+                <label className="block text-sm font-medium mb-1">বিবরণ (ইংরেজি)</label>
                 <textarea
                   value={form.description}
                   onChange={(e) => setForm({ ...form, description: e.target.value })}
                   rows="2"
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Short introduction shown on the brand page"
+                  placeholder="ব্র্যান্ড পেজে দেখানো সংক্ষিপ্ত পরিচিতি"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">Description (Bangla)</label>
+                <label className="block text-sm font-medium mb-1">বিবরণ (বাংলা)</label>
                 <textarea
                   value={form.description_bn}
                   onChange={(e) => setForm({ ...form, description_bn: e.target.value })}
                   rows="2"
                   className="w-full px-3 py-2 border rounded"
-                  placeholder="Short Bangla introduction for the brand page"
+                  placeholder="ব্র্যান্ড পেজে দেখানো সংক্ষিপ্ত বাংলা পরিচিতি"
                 />
               </div>
               <ImageUpload
-                label="Brand Logo"
+                label="ব্র্যান্ড লোগো"
                 value={form.logo}
                 onChange={(val) => setForm({ ...form, logo: val })}
                 width={320}
@@ -249,7 +249,7 @@ const AdminBrands = () => {
               />
               <div className="flex gap-2">
                 <button type="submit" className="flex-1 bg-blue-600 text-white py-2 rounded hover:bg-blue-700">
-                  Save
+                  সেভ করুন
                 </button>
                 <button
                   type="button"
@@ -260,7 +260,7 @@ const AdminBrands = () => {
                   }}
                   className="flex-1 bg-gray-300 py-2 rounded hover:bg-gray-400"
                 >
-                  Cancel
+                  বাতিল
                 </button>
               </div>
             </form>

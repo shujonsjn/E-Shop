@@ -28,7 +28,7 @@ const AdminProducts = () => {
   }
 
   const handleDelete = (id) => {
-    if (confirm('Are you sure you want to delete this product?')) {
+    if (confirm('আপনি কি নিশ্চিত এই পণ্যটি মুছে ফেলতে চান?')) {
       deleteProduct(id)
     }
   }
@@ -37,8 +37,8 @@ const AdminProducts = () => {
     <div>
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Products</h1>
-          <p className="text-gray-500 mt-1">Manage your product catalog</p>
+          <h1 className="text-2xl font-bold text-gray-900">পণ্য</h1>
+          <p className="text-gray-500 mt-1">আপনার পণ্যের তালিকা পরিচালনা করুন</p>
         </div>
         <div className="flex items-center gap-2">
           <button
@@ -46,7 +46,7 @@ const AdminProducts = () => {
             className="flex items-center bg-[#EF4A23] text-white px-4 py-2 rounded-lg hover:bg-[#d63a16] transition"
           >
             <Plus size={18} className="mr-2" />
-            Add Product
+            নতুন পণ্য
           </button>
         </div>
       </div>
@@ -55,11 +55,11 @@ const AdminProducts = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Image</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Category</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Price</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ছবি</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ক্যাটাগরি</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">দাম</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাজ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -75,10 +75,10 @@ const AdminProducts = () => {
                 <td className="px-6 py-4 text-gray-900 font-medium">৳{product.price}</td>
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-2">
-                    <button onClick={() => handleEdit(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="Edit">
+                    <button onClick={() => handleEdit(product)} className="p-2 text-blue-600 hover:bg-blue-50 rounded-lg transition" title="এডিট">
                       <Edit size={18} />
                     </button>
-                    <button onClick={() => handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="Delete">
+                    <button onClick={() => handleDelete(product.id)} className="p-2 text-red-600 hover:bg-red-50 rounded-lg transition" title="মুছুন">
                       <Trash2 size={18} />
                     </button>
                   </div>
@@ -89,9 +89,9 @@ const AdminProducts = () => {
         </table>
         {products.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">No products yet</p>
+            <p className="text-gray-700 font-medium">এখনো কোনো পণ্য নেই</p>
             <p className="mt-1 text-sm text-gray-500">
-              Click Add Product to add your first product. Demo products never appear automatically.
+              “নতুন পণ্য” চেপে প্রথম পণ্যটি যোগ করুন। কোনো ডেমো পণ্য নিজে থেকে আসে না।
             </p>
           </div>
         )}

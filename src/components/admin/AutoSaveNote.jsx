@@ -10,7 +10,7 @@ const AutoSaveNote = ({ children, className = '' }) => (
     className={`flex items-start gap-2 rounded-lg border border-green-200 bg-green-50 px-3 py-2 text-sm text-green-800 ${className}`}
   >
     <Save size={16} className="mt-0.5 shrink-0" />
-    <p>{children || 'Changes on this page save automatically — no separate Save button needed.'}</p>
+    <p>{children || 'এই পেজের পরিবর্তনগুলো সাথে সাথে সেভ হয় — আলাদা করে সেভ চাপতে হবে না।'}</p>
   </div>
 )
 

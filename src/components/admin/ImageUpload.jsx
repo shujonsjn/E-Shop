@@ -91,7 +91,7 @@ const optimizeUrl = async (url, options = {}) => {
 const ImageUpload = ({
   value = '',
   onChange,
-  label = 'Image',
+  label = 'ছবি',
   multiple = false,
   onAddMultiple,
   width,
@@ -105,7 +105,7 @@ const ImageUpload = ({
   const [busy, setBusy] = useState(false)
 
   const options = { width, height, fit }
-  const sizeLabel = width && height ? `${width} × ${height} px` : 'auto'
+  const sizeLabel = width && height ? `${width} × ${height} px` : 'স্বয়ংক্রিয়'
 
   // Keep images in Supabase Storage instead of embedding base64 in settings /
   // products. Falls back to the data URL (offline, or before the media bucket
@@ -125,7 +125,7 @@ const ImageUpload = ({
       if (multiple && onAddMultiple) {
         for (const file of files) {
           if (file.size > 5 * 1024 * 1024) {
-            alert('Image size must be less than 5 MB')
+            alert('ছবির সাইজ ৫ MB-এর কম হতে হবে')
             continue
           }
           onAddMultiple(await persistImage(await optimizeImage(file, options)))
@@ -136,7 +136,7 @@ const ImageUpload = ({
 
       const file = files[0]
       if (file.size > 5 * 1024 * 1024) {
-        alert('Image size must be less than 5 MB')
+        alert('ছবির সাইজ ৫ MB-এর কম হতে হবে')
         e.target.value = null
         return
       }
@@ -181,7 +181,7 @@ const ImageUpload = ({
           }`}
         >
           <Upload size={16} />
-          <span>Upload from Device</span>
+          <span>ডিভাইস থেকে আপলোড</span>
         </button>
         <button
           type="button"
@@ -193,7 +193,7 @@ const ImageUpload = ({
           }`}
         >
           <LinkIcon size={16} />
-          <span>Add URL</span>
+          <span>URL যোগ করুন</span>
         </button>
       </div>
 
@@ -205,9 +205,9 @@ const ImageUpload = ({
           <div className="flex flex-col items-center justify-center">
             <Upload className="w-8 h-8 mb-2 text-gray-400" />
             <p className="text-sm text-gray-600">
-              <span className="font-semibold">{busy ? 'Processing…' : 'Click to upload'}</span> from local device
+              <span className="font-semibold">{busy ? 'প্রসেস হচ্ছে…' : 'আপলোড করতে চাপুন'}</span> — ডিভাইস থেকে
             </p>
-            <p className="text-xs text-gray-500">PNG, JPG, JPEG (max 5 MB)</p>
+            <p className="text-xs text-gray-500">PNG, JPG, JPEG (সর্বোচ্চ ৫ MB)</p>
           </div>
           <input
             ref={fileInputRef}
@@ -233,21 +233,21 @@ const ImageUpload = ({
             disabled={busy}
             className="px-4 py-2 bg-gray-900 text-white rounded-lg hover:bg-gray-800 transition disabled:opacity-60"
           >
-            {busy ? '…' : 'Add'}
+            {busy ? '…' : 'যোগ করুন'}
           </button>
         </div>
       )}
 
       <p className="mt-2 text-[11px] text-gray-500">
-        Auto-fixed size: <span className="font-semibold text-gray-700">{sizeLabel}</span>
-        {width && height ? ` (${fit === 'contain' ? 'fit inside, trimmed' : 'cropped to fill'})` : ''}
+        স্বয়ংক্রিয় সাইজ: <span className="font-semibold text-gray-700">{sizeLabel}</span>
+        {width && height ? ` (${fit === 'contain' ? 'ভেতরে ফিট, ট্রিম করা' : 'ভরাট করতে ক্রপ'})` : ''}
       </p>
 
       {!multiple && value && (
         <div className="mt-3 relative inline-block">
           <img
             src={value}
-            alt="Preview"
+            alt="প্রিভিউ"
             className="h-24 w-24 object-contain border rounded-lg bg-white"
           />
           {onChange && (

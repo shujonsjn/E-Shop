@@ -8,7 +8,7 @@ const AdminReviews = () => {
 
   const getProductName = (productId) => {
     const product = products.find((p) => String(p.id) === String(productId))
-    return product ? product.name : 'Unknown Product'
+    return product ? product.name : 'অজানা পণ্য'
   }
 
   const renderStars = (rating) => {
@@ -29,18 +29,21 @@ const AdminReviews = () => {
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-8">Review Management</h1>
+      <div className="mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">রিভিউ ব্যবস্থাপনা</h1>
+        <p className="text-gray-500 mt-1">কাস্টমারদের দেওয়া রিভিউ দেখুন ও মুছে ফেলুন</p>
+      </div>
 
       <div className="bg-white rounded-lg shadow overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Product</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Rating</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Comment</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">পণ্য</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাস্টমার</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">রেটিং</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">মন্তব্য</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">তারিখ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাজ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -56,11 +59,12 @@ const AdminReviews = () => {
                 <td className="px-6 py-4">
                   <button
                     onClick={() => {
-                      if (confirm('Are you sure you want to delete this review?')) {
+                      if (confirm('আপনি কি নিশ্চিত এই রিভিউটি মুছে ফেলতে চান?')) {
                         deleteReview(review.id)
                       }
                     }}
                     className="text-red-600 hover:text-red-800"
+                    title="রিভিউ মুছুন"
                   >
                     <Trash2 size={18} />
                   </button>
@@ -70,7 +74,7 @@ const AdminReviews = () => {
           </tbody>
         </table>
         {reviews.length === 0 && (
-          <div className="text-center py-8 text-gray-500">No reviews yet</div>
+          <div className="text-center py-8 text-gray-500">এখনো কোনো রিভিউ নেই</div>
         )}
       </div>
     </div>

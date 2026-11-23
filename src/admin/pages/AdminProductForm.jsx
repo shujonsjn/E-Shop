@@ -123,18 +123,18 @@ const AdminProductForm = () => {
     e.preventDefault()
 
     if (formData.images.length === 0) {
-      toast.error('Please add at least one image')
+      toast.error('কমপক্ষে একটি ছবি যোগ করুন')
       return
     }
 
     if (!formData.price) {
-      toast.error('Enter the current price')
+      toast.error('বর্তমান দাম লিখুন')
       return
     }
 
     const slug = slugify(formData.slug || formData.name)
     if (!slug) {
-      toast.error('Enter a product name or slug')
+      toast.error('পণ্যের নাম বা URL স্লাগ লিখুন')
       return
     }
 
@@ -142,7 +142,7 @@ const AdminProductForm = () => {
       (p) => p.slug === slug && String(p.id) !== String(id)
     )
     if (duplicateSlug) {
-      toast.error('Another product already uses this slug')
+      toast.error('আরেকটি পণ্য ইতিমধ্যে এই URL স্লাগ ব্যবহার করছে')
       return
     }
 
@@ -179,10 +179,10 @@ const AdminProductForm = () => {
 
     if (isEditMode) {
       updateProduct(id, productData)
-      toast.success('Product updated successfully')
+      toast.success('পণ্য আপডেট হয়েছে')
     } else {
       addProduct(productData)
-      toast.success('New product added successfully')
+      toast.success('নতুন পণ্য যোগ হয়েছে')
     }
     navigate('/admin/products')
   }
@@ -198,10 +198,10 @@ const AdminProductForm = () => {
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 transition"
         >
           <ArrowLeft size={20} />
-          <span>Back</span>
+          <span>ফিরে যান</span>
         </button>
         <h1 className="text-3xl font-bold text-gray-900">
-          {isEditMode ? 'Edit Product' : 'Add New Product'}
+          {isEditMode ? 'পণ্য এডিট' : 'নতুন পণ্য যোগ করুন'}
         </h1>
       </div>
 
@@ -210,101 +210,102 @@ const AdminProductForm = () => {
           {/* Left Column - Main Info */}
           <div className="lg:col-span-2 space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Basic Information</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">মৌলিক তথ্য</h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Name (English) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">পণ্যের নাম (ইংরেজি) *</label>
                   <input
                     type="text"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                     className={fieldClass}
-                    placeholder="e.g. Ceramic Flower Vase"
+                    placeholder="যেমন Ceramic Flower Vase"
                     required
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Product Name (Bangla)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">পণ্যের নাম (বাংলা)</label>
                   <input
                     type="text"
                     value={formData.name_bn}
                     onChange={(e) => setFormData({ ...formData, name_bn: e.target.value })}
                     className={fieldClass}
-                    placeholder="e.g. ceramic flower vase"
+                    placeholder="যেমন সিরামিক ফুলদানি"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">URL Slug</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">URL স্লাগ</label>
                   <input
                     type="text"
                     value={formData.slug}
                     onChange={(e) => setFormData({ ...formData, slug: e.target.value })}
                     className={fieldClass}
-                    placeholder="Auto-generated from the name"
+                    placeholder="নাম থেকে নিজে থেকে তৈরি হবে"
                   />
                   <p className="text-xs text-gray-500 mt-1">
                     /products/{slugify(formData.slug || formData.name) || 'product-name'}
                   </p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Unit / Size</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ইউনিট / সাইজ</label>
                   <input
                     type="text"
                     value={formData.unit}
                     onChange={(e) => setFormData({ ...formData, unit: e.target.value })}
                     className={fieldClass}
-                    placeholder="e.g. Medium, 1 pc, 30 cm"
+                    placeholder="যেমন মাঝারি, ১ পিস, ৩০ সেমি"
                   />
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description (English)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">বিবরণ (ইংরেজি)</label>
                   <textarea
                     value={formData.description}
                     onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                     rows="4"
                     className={fieldClass}
-                    placeholder="Write details about the product..."
+                    placeholder="পণ্যের বিস্তারিত লিখুন..."
                   ></textarea>
                 </div>
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Description (Bangla)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">বিবরণ (বাংলা)</label>
                   <textarea
                     value={formData.description_bn}
                     onChange={(e) => setFormData({ ...formData, description_bn: e.target.value })}
                     rows="4"
                     className={fieldClass}
-                    placeholder="Product description in Bangla..."
+                    placeholder="বাংলায় পণ্যের বিবরণ লিখুন..."
                   ></textarea>
-                  <p className="text-xs text-gray-500 mt-1">Falls back to English when left empty.</p>
+                  <p className="text-xs text-gray-500 mt-1">খালি রাখলে ইংরেজি বিবরণ দেখানো হবে।</p>
                 </div>
               </div>
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Images</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">ছবি</h2>
               <ImageUpload label="" multiple width={800} height={800} onAddMultiple={handleAddImage} />
 
               {formData.images.length > 0 && (
                 <div className="mt-6">
-                  <p className="text-sm font-medium text-gray-700 mb-3">Uploaded Images ({formData.images.length})</p>
+                  <p className="text-sm font-medium text-gray-700 mb-3">আপলোড করা ছবি ({formData.images.length})</p>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     {formData.images.map((img, index) => (
                       <div key={index} className="relative group aspect-square">
                         <img
                           src={img}
-                          alt={`Product ${index + 1}`}
+                          alt={`পণ্যের ছবি ${index + 1}`}
                           className="w-full h-full object-cover rounded-lg border border-gray-200"
                         />
                         <button
                           type="button"
                           onClick={() => removeImage(index)}
                           className="absolute top-2 right-2 bg-red-500 text-white rounded-full p-1.5 opacity-0 group-hover:opacity-100 transition shadow-lg"
+                          title="ছবি মুছুন"
                         >
                           <X size={16} />
                         </button>
                         {index === 0 && (
                           <span className="absolute bottom-2 left-2 bg-gray-900 text-white text-xs px-2 py-1 rounded-md">
-                            Main Image
+                            প্রধান ছবি
                           </span>
                         )}
                       </div>
@@ -318,10 +319,10 @@ const AdminProductForm = () => {
           {/* Right Column - Pricing & Details */}
           <div className="space-y-6">
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Pricing &amp; Stock</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">দাম ও স্টক</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Current Price (৳) *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">বর্তমান দাম (৳) *</label>
                   <input
                     type="number"
                     value={formData.price}
@@ -333,7 +334,7 @@ const AdminProductForm = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Original Price (৳)</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">আগের দাম (৳)</label>
                   <input
                     type="number"
                     value={formData.oldPrice}
@@ -342,10 +343,10 @@ const AdminProductForm = () => {
                     placeholder="1500"
                     min="0"
                   />
-                  <p className="text-xs text-gray-500 mt-1">Shown crossed out when higher than the current price.</p>
+                  <p className="text-xs text-gray-500 mt-1">বর্তমান দামের চেয়ে বেশি হলে কাটা দাগসহ দেখানো হবে।</p>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Stock Quantity</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">স্টক পরিমাণ</label>
                   <input
                     type="number"
                     value={formData.stock}
@@ -359,10 +360,10 @@ const AdminProductForm = () => {
             </div>
 
             <div className="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
-              <h2 className="text-lg font-semibold text-gray-900 mb-4">Product Details</h2>
+              <h2 className="text-lg font-semibold text-gray-900 mb-4">পণ্যের বিবরণ</h2>
               <div className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Category *</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ক্যাটাগরি *</label>
                   <select
                     value={formData.category}
                     onChange={(e) =>
@@ -371,7 +372,7 @@ const AdminProductForm = () => {
                     className={`${fieldClass} bg-white`}
                     required
                   >
-                    <option value="">Select Category</option>
+                    <option value="">ক্যাটাগরি বেছে নিন</option>
                     {mergedCategories.map((category) => (
                       <option key={category.slug} value={category.slug}>
                         {category.name}
@@ -380,14 +381,14 @@ const AdminProductForm = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Subcategory</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">উপ-ক্যাটাগরি</label>
                   <select
                     value={formData.subcategory}
                     onChange={(e) => setFormData({ ...formData, subcategory: e.target.value })}
                     className={`${fieldClass} bg-white`}
                     disabled={!selectedCategory}
                   >
-                    <option value="">Select Subcategory</option>
+                    <option value="">উপ-ক্যাটাগরি বেছে নিন</option>
                     {(selectedCategory?.children || []).map((child) => (
                       <option key={child.slug} value={child.slug}>
                         {child.name}
@@ -396,13 +397,13 @@ const AdminProductForm = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Brand</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ব্র্যান্ড</label>
                   <select
                     value={formData.brand}
                     onChange={(e) => setFormData({ ...formData, brand: e.target.value })}
                     className={`${fieldClass} bg-white`}
                   >
-                    <option value="">No brand</option>
+                    <option value="">ব্র্যান্ড নেই</option>
                     {brands.map((brand) => (
                       <option key={brand.slug} value={brand.name}>
                         {brand.name}
@@ -411,7 +412,7 @@ const AdminProductForm = () => {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Badges</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">ব্যাজ</label>
                   <input
                     type="text"
                     value={formData.badges}
@@ -420,7 +421,7 @@ const AdminProductForm = () => {
                     placeholder="Best Selling, New Arrival"
                   />
                   <p className="text-xs text-gray-500 mt-1">
-                    Comma separated. Known badges: Best Selling, New Arrival, Offered, Premium.
+                    কমা দিয়ে আলাদা করুন। চেনা ব্যাজ: Best Selling, New Arrival, Offered, Premium।
                   </p>
                 </div>
                 <div className="flex flex-col gap-2 pt-1">
@@ -431,7 +432,7 @@ const AdminProductForm = () => {
                       onChange={(e) => setFormData({ ...formData, featured: e.target.checked })}
                       className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
                     />
-                    Show in Featured Products
+                    ফিচার্ড পণ্যে দেখান
                   </label>
                   <label className="inline-flex items-center gap-2 text-sm text-gray-700">
                     <input
@@ -440,7 +441,7 @@ const AdminProductForm = () => {
                       onChange={(e) => setFormData({ ...formData, top: e.target.checked })}
                       className="h-4 w-4 rounded border-gray-300 text-gray-900 focus:ring-gray-900"
                     />
-                    Show in Top Products
+                    শীর্ষ পণ্যে দেখান
                   </label>
                 </div>
               </div>
@@ -451,14 +452,14 @@ const AdminProductForm = () => {
                 type="submit"
                 className="w-full bg-gradient-to-r from-gray-900 to-gray-800 text-white py-3 rounded-lg hover:from-gray-800 hover:to-gray-700 transition font-medium shadow-md hover:shadow-lg"
               >
-                {isEditMode ? 'Update Product' : 'Add Product'}
+                {isEditMode ? 'পণ্য আপডেট করুন' : 'পণ্য যোগ করুন'}
               </button>
               <button
                 type="button"
                 onClick={() => navigate('/admin/products')}
                 className="w-full bg-gray-100 text-gray-900 py-3 rounded-lg hover:bg-gray-200 transition font-medium"
               >
-                Cancel
+                বাতিল
               </button>
             </div>
           </div>

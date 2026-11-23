@@ -10,14 +10,14 @@ const AdminPayments = () => {
 
   // SettingsContext persists the change automatically; this only confirms it.
   const notifyUpdated = () => {
-    toast.success('Payment method updated')
+    toast.success('পেমেন্ট মেথড আপডেট হয়েছে')
   }
 
   return (
     <div>
-      <h1 className="text-3xl font-bold text-gray-900 mb-3">Payment Methods</h1>
+      <h1 className="text-3xl font-bold text-gray-900 mb-3">পেমেন্ট মেথড</h1>
       <p className="mb-4 text-sm text-gray-500">
-        Enable or disable the payment options shown at checkout.
+        চেকআউটে যে পেমেন্ট অপশনগুলো দেখাবে সেগুলো এখান থেকে চালু বা বন্ধ করুন।
       </p>
       <AutoSaveNote className="mb-6" />
 
@@ -38,18 +38,18 @@ const AdminPayments = () => {
                     }}
                     className="w-5 h-5"
                   />
-                  <span className="text-sm font-medium">Enabled</span>
+                  <span className="text-sm font-medium">চালু</span>
                 </label>
               </div>
               {(key === 'bkash' || key === 'nagad' || key === 'rocket') && method.enabled && (
                 <div className="space-y-3">
                   <div>
-                    <label className="block text-sm font-medium mb-1">Account Number</label>
+                    <label className="block text-sm font-medium mb-1">অ্যাকাউন্ট নম্বর</label>
                     <input type="text" value={method.number || ''} onChange={(e) => updatePaymentMethod(key, { number: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="01XXXXXXXXX" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Instructions</label>
-                    <textarea value={method.instructions || ''} onChange={(e) => updatePaymentMethod(key, { instructions: e.target.value })} className="w-full px-3 py-2 border rounded" rows={3} placeholder="Payment instructions for customer" />
+                    <label className="block text-sm font-medium mb-1">নির্দেশনা</label>
+                    <textarea value={method.instructions || ''} onChange={(e) => updatePaymentMethod(key, { instructions: e.target.value })} className="w-full px-3 py-2 border rounded" rows={3} placeholder="কাস্টমারের জন্য পেমেন্ট নির্দেশনা" />
                   </div>
                 </div>
               )}
@@ -58,7 +58,7 @@ const AdminPayments = () => {
         })}
         {paymentMethods.length === 0 && (
           <p className="rounded-lg border border-amber-200 bg-amber-50 p-4 text-sm text-amber-800">
-            No payment methods found. Refresh the page or check your settings.
+            কোনো পেমেন্ট মেথড পাওয়া যায়নি। পেজ রিফ্রেশ করুন বা সেটিংস যাচাই করুন।
           </p>
         )}
       </div>

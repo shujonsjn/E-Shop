@@ -39,9 +39,9 @@ const AdminUsers = () => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">Customers</h1>
+        <h1 className="text-2xl font-bold text-gray-900">কাস্টমার</h1>
         <p className="text-gray-500 mt-1">
-          Customers are built from real orders and grouped by phone number.
+          অর্ডার থেকে তৈরি কাস্টমার তালিকা — ফোন নম্বর অনুযায়ী একসাথে দেখানো হচ্ছে।
         </p>
       </div>
 
@@ -49,18 +49,20 @@ const AdminUsers = () => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Mobile</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Email</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Orders</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total Spent</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Last Order</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">নাম</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">মোবাইল</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ইমেইল</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">অর্ডার</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">মোট খরচ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">শেষ অর্ডার</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {customers.map((customer) => (
               <tr key={customer.key}>
-                <td className="px-6 py-4 font-medium text-gray-900">{customer.name}</td>
+                <td className="px-6 py-4 font-medium text-gray-900">
+                  {customer.name === 'Guest' ? 'অতিথি' : customer.name}
+                </td>
                 <td className="px-6 py-4 text-gray-700">{customer.phone}</td>
                 <td className="px-6 py-4 text-gray-500">{customer.email}</td>
                 <td className="px-6 py-4 text-gray-700">{customer.orders}</td>
@@ -74,8 +76,8 @@ const AdminUsers = () => {
         </table>
         {customers.length === 0 && (
           <div className="py-12 text-center">
-            <p className="text-gray-700 font-medium">No customers yet</p>
-            <p className="mt-1 text-sm text-gray-500">Customers will appear here after the first order.</p>
+            <p className="text-gray-700 font-medium">এখনো কোনো কাস্টমার নেই</p>
+            <p className="mt-1 text-sm text-gray-500">প্রথম অর্ডার এলে এখানে কাস্টমার দেখা যাবে।</p>
           </div>
         )}
       </div>

@@ -10,24 +10,36 @@ const IMAGE_PLACEHOLDER =
     '<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="48" height="48" fill="#f3f4f6"/><path d="M14 32l7-8 5 5 4-4 4 7z" fill="#d1d5db"/><circle cx="18" cy="17" r="3" fill="#d1d5db"/></svg>'
   )
 
+// Stored status values must stay English (they are shared with the storefront
+// and the database). Only the option label is Bengali.
+const statusOptions = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled']
+
+const statusLabels = {
+  Pending: 'অপেক্ষমাণ',
+  Confirmed: 'কনফার্মড',
+  Packed: 'প্যাক করা হয়েছে',
+  Shipped: 'শিপড',
+  'Out for Delivery': 'ডেলিভারির পথে',
+  Delivered: 'ডেলিভারি সম্পন্ন',
+  Cancelled: 'বাতিল',
+}
+
 const AdminOrders = () => {
   const { orders, updateOrderStatus, deleteOrder } = useAuth()
   const [selectedOrder, setSelectedOrder] = useState(null)
-
-  const statusOptions = ['Pending', 'Confirmed', 'Packed', 'Shipped', 'Out for Delivery', 'Delivered', 'Cancelled']
 
   // Orders can arrive from older devices, from the cloud or from a migration
   // with missing optional fields. Never let one partial row blank the page.
   const paymentLabel = (order) => {
     const method = order?.paymentMethod
     if (!method) return '—'
-    return method === 'cod' ? 'COD' : String(method).toUpperCase()
+    return method === 'cod' ? 'ক্যাশ অন ডেলিভারি' : String(method).toUpperCase()
   }
 
   const paymentLabelLong = (order) => {
     const method = order?.paymentMethod
     if (!method) return '—'
-    return method === 'cod' ? 'Cash on Delivery' : String(method).toUpperCase()
+    return method === 'cod' ? 'ক্যাশ অন ডেলিভারি' : String(method).toUpperCase()
   }
 
   const formatDate = (value) => {
@@ -53,26 +65,26 @@ const AdminOrders = () => {
     <div>
       <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Orders</h1>
-          <p className="text-gray-500 mt-1">Manage and track customer orders</p>
+          <h1 className="text-2xl font-bold text-gray-900">অর্ডার</h1>
+          <p className="text-gray-500 mt-1">কাস্টমারদের অর্ডার দেখুন ও পরিচালনা করুন</p>
         </div>
       </div>
       <AutoSaveNote className="mb-6">
-        Status changes save immediately. Deleting an order cannot be undone and returns stock
-        automatically for orders that were not shipped yet.
+        স্ট্যাটাস বদলালেই সাথে সাথে সেভ হয়। অর্ডার মুছে ফেলা আর ফেরানো যায় না; শিপমেন্টের
+        আগের অর্ডার মুছলে স্টক নিজে থেকে ফিরে যায়।
       </AutoSaveNote>
 
       <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Order ID</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Payment</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">অর্ডার আইডি</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাস্টমার</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">মোট</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">পেমেন্ট</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">স্ট্যাটাস</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">তারিখ</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">কাজ</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -81,7 +93,7 @@ const AdminOrders = () => {
                 <td className="px-6 py-4 text-gray-900">#{order.id}</td>
                 <td className="px-6 py-4">
                   <div>
-                    <p className="text-gray-900">{order.userName || order.shippingAddress?.fullName || 'Guest'}</p>
+                    <p className="text-gray-900">{order.userName || order.shippingAddress?.fullName || 'অতিথি'}</p>
                     <p className="text-sm text-gray-500">
                       {order.userEmail || order.shippingAddress?.phone || order.phone || ''}
                     </p>
@@ -97,7 +109,7 @@ const AdminOrders = () => {
                   >
                     {statusOptions.map((status) => (
                       <option key={status} value={status}>
-                        {status}
+                        {statusLabels[status] || status}
                       </option>
                     ))}
                   </select>
@@ -108,7 +120,7 @@ const AdminOrders = () => {
                     <button
                       onClick={() => setSelectedOrder(order)}
                       className="text-blue-600 hover:text-blue-800"
-                      title="View order"
+                      title="অর্ডার দেখুন"
                     >
                       <Eye size={18} />
                     </button>
@@ -116,14 +128,14 @@ const AdminOrders = () => {
                       onClick={() => {
                         if (
                           confirm(
-                            `Delete order #${order.id}? This cannot be undone. Stock of orders that were not shipped yet is returned automatically.`
+                            `অর্ডার #${order.id} মুছে ফেলবেন? এটি আর ফেরানো যাবে না। শিপমেন্টের আগের অর্ডারের স্টক নিজে থেকে ফিরে যাবে।`
                           )
                         ) {
                           deleteOrder(order.id)
                         }
                       }}
                       className="text-red-600 hover:text-red-800"
-                      title="Delete order"
+                      title="অর্ডার মুছুন"
                     >
                       <Trash2 size={18} />
                     </button>
@@ -134,7 +146,7 @@ const AdminOrders = () => {
           </tbody>
         </table>
         {orders.length === 0 && (
-          <div className="text-center py-8 text-gray-500">No orders yet</div>
+          <div className="text-center py-8 text-gray-500">এখনো কোনো অর্ডার নেই</div>
         )}
       </div>
 
@@ -143,38 +155,38 @@ const AdminOrders = () => {
           <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
             <div className="p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-bold text-gray-900">Order Details - #{selectedOrder.id}</h2>
-                <button onClick={() => setSelectedOrder(null)} className="text-gray-500 hover:text-gray-700">
+                <h2 className="text-xl font-bold text-gray-900">অর্ডারের বিস্তারিত - #{selectedOrder.id}</h2>
+                <button onClick={() => setSelectedOrder(null)} className="text-gray-500 hover:text-gray-700" aria-label="বন্ধ করুন">
                   ✕
                 </button>
               </div>
               <div className="space-y-4">
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Customer Information</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">কাস্টমারের তথ্য</h3>
                   <div className="bg-gray-50 p-3 rounded space-y-1 text-sm">
-                    <p><span className="font-medium">Name:</span> {selectedOrder.shippingAddress?.fullName || selectedOrder.userName || '—'}</p>
-                    <p><span className="font-medium">Mobile:</span> {selectedOrder.shippingAddress?.phone || selectedOrder.phone || '—'}</p>
-                    {selectedOrder.shippingAddress?.division && <p><span className="font-medium">Division:</span> {selectedOrder.shippingAddress.division}</p>}
-                    {selectedOrder.shippingAddress?.district && <p><span className="font-medium">District:</span> {selectedOrder.shippingAddress.district}</p>}
-                    {selectedOrder.shippingAddress?.upazila && <p><span className="font-medium">Thana/Upazila:</span> {selectedOrder.shippingAddress.upazila}</p>}
-                    {!selectedOrder.shippingAddress?.division && selectedOrder.shippingAddress?.city && <p><span className="font-medium">City:</span> {selectedOrder.shippingAddress.city}</p>}
-                    <p><span className="font-medium">Address:</span> {selectedOrder.shippingAddress?.address || '—'}</p>
+                    <p><span className="font-medium">নাম:</span> {selectedOrder.shippingAddress?.fullName || selectedOrder.userName || '—'}</p>
+                    <p><span className="font-medium">মোবাইল:</span> {selectedOrder.shippingAddress?.phone || selectedOrder.phone || '—'}</p>
+                    {selectedOrder.shippingAddress?.division && <p><span className="font-medium">বিভাগ:</span> {selectedOrder.shippingAddress.division}</p>}
+                    {selectedOrder.shippingAddress?.district && <p><span className="font-medium">জেলা:</span> {selectedOrder.shippingAddress.district}</p>}
+                    {selectedOrder.shippingAddress?.upazila && <p><span className="font-medium">থানা/উপজেলা:</span> {selectedOrder.shippingAddress.upazila}</p>}
+                    {!selectedOrder.shippingAddress?.division && selectedOrder.shippingAddress?.city && <p><span className="font-medium">শহর:</span> {selectedOrder.shippingAddress.city}</p>}
+                    <p><span className="font-medium">ঠিকানা:</span> {selectedOrder.shippingAddress?.address || '—'}</p>
                     {selectedOrder.deliverySlot && (
-                      <p><span className="font-medium">Preferred delivery time:</span> {selectedOrder.deliverySlot}</p>
+                      <p><span className="font-medium">পছন্দের ডেলিভারি সময়:</span> {selectedOrder.deliverySlot}</p>
                     )}
                     {selectedOrder.orderNotes && (
-                      <p><span className="font-medium">Note:</span> {selectedOrder.orderNotes}</p>
+                      <p><span className="font-medium">নোট:</span> {selectedOrder.orderNotes}</p>
                     )}
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Products</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">পণ্য</h3>
                   <div className="space-y-2">
                     {(selectedOrder.items || []).map((item, index) => (
                       <div key={`${item.id ?? index}-${item.size || ''}`} className="flex gap-3 bg-gray-50 p-3 rounded">
                         <img
                           src={item.image || IMAGE_PLACEHOLDER}
-                          alt={item.name || 'Product'}
+                          alt={item.name || 'পণ্য'}
                           className="w-12 h-12 object-cover rounded"
                           onError={(event) => {
                             event.currentTarget.src = IMAGE_PLACEHOLDER
@@ -183,7 +195,7 @@ const AdminOrders = () => {
                         <div className="flex-1">
                           <p className="text-gray-900 font-medium">{item.name}</p>
                           <p className="text-sm text-gray-500">
-                            {item.size ? `Size: ${item.size} | ` : ''}Qty: {item.quantity || 1}
+                            {item.size ? `সাইজ: ${item.size} | ` : ''}পরিমাণ: {item.quantity || 1}
                           </p>
                         </div>
                         <span className="text-gray-900">
@@ -194,16 +206,16 @@ const AdminOrders = () => {
                   </div>
                 </div>
                 <div>
-                  <h3 className="font-semibold text-gray-900 mb-2">Payment Information</h3>
+                  <h3 className="font-semibold text-gray-900 mb-2">পেমেন্টের তথ্য</h3>
                   <div className="bg-gray-50 p-3 rounded space-y-1 text-sm">
-                    <p><span className="font-medium">Payment Method:</span> {paymentLabelLong(selectedOrder)}</p>
-                    <p><span className="font-medium">Subtotal:</span> ৳{selectedOrder.subtotal ?? 0}</p>
-                    <p><span className="font-medium">Delivery Charge:</span> ৳{selectedOrder.deliveryCharge ?? 0}</p>
-                    <p className="font-bold"><span className="font-medium">Total:</span> ৳{selectedOrder.total ?? 0}</p>
+                    <p><span className="font-medium">পেমেন্ট মেথড:</span> {paymentLabelLong(selectedOrder)}</p>
+                    <p><span className="font-medium">সাবটোটাল:</span> ৳{selectedOrder.subtotal ?? 0}</p>
+                    <p><span className="font-medium">ডেলিভারি চার্জ:</span> ৳{selectedOrder.deliveryCharge ?? 0}</p>
+                    <p className="font-bold"><span className="font-medium">মোট:</span> ৳{selectedOrder.total ?? 0}</p>
                     {selectedOrder.paymentMethod !== 'cod' && selectedOrder.paymentDetails && (
                       <>
-                        <p><span className="font-medium">Sender Number:</span> {selectedOrder.paymentDetails.senderNumber}</p>
-                        <p><span className="font-medium">Transaction ID:</span> {selectedOrder.paymentDetails.transactionId}</p>
+                        <p><span className="font-medium">প্রেরকের নম্বর:</span> {selectedOrder.paymentDetails.senderNumber}</p>
+                        <p><span className="font-medium">ট্রানজেকশন আইডি:</span> {selectedOrder.paymentDetails.transactionId}</p>
                       </>
                     )}
                   </div>

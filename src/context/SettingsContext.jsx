@@ -569,6 +569,22 @@ export const SettingsProvider = ({ children }) => {
       }
     })
   }
+  // Appends a new section to the end of the home page layout. Only the
+  // `productRow` and `categories` types are offered from the admin UI, but any
+  // type Home.jsx can render is accepted.
+  const addHomeSection = (section) => {
+    const id = section?.id || `${section?.type || 'section'}_${Date.now()}`
+    setSettings((prev) => {
+      const current = Array.isArray(prev.homeLayout) ? prev.homeLayout : defaultHomeLayout
+      const order =
+        current.reduce((max, item) => Math.max(max, Number(item.order) || 0), -1) + 1
+      return {
+        ...prev,
+        homeLayout: [...current, { ...section, id, order, enabled: true }],
+      }
+    })
+    return id
+  }
 
   const value = {
     settings,
@@ -605,6 +621,7 @@ export const SettingsProvider = ({ children }) => {
     toggleHomeSection,
     updateHomeSection,
     removeHomeSection,
+    addHomeSection,
   }
 
   return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>

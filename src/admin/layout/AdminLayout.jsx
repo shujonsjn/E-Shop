@@ -7,60 +7,60 @@ import { isSupabaseConfigured } from '../../lib/supabase'
 const menuGroups = [
   {
     key: 'main',
-    label: 'Main',
+    label: 'মূল',
     items: [
-      { path: '/admin', icon: LayoutDashboard, label: 'Dashboard', exact: true },
+      { path: '/admin', icon: LayoutDashboard, label: 'ড্যাশবোর্ড', exact: true },
     ],
   },
   {
     key: 'catalog',
-    label: 'Catalog',
+    label: 'ক্যাটালগ',
     items: [
-      { path: '/admin/products', icon: Package, label: 'Products' },
-      { path: '/admin/categories', icon: FolderTree, label: 'Categories' },
-      { path: '/admin/brands', icon: Star, label: 'Brands' },
-      { path: '/admin/reviews', icon: MessageSquare, label: 'Reviews' },
+      { path: '/admin/products', icon: Package, label: 'পণ্য' },
+      { path: '/admin/categories', icon: FolderTree, label: 'ক্যাটাগরি' },
+      { path: '/admin/brands', icon: Star, label: 'ব্র্যান্ড' },
+      { path: '/admin/reviews', icon: MessageSquare, label: 'রিভিউ' },
     ],
   },
   {
     key: 'sales',
-    label: 'Sales',
+    label: 'বিক্রয়',
     items: [
-      { path: '/admin/orders', icon: ShoppingBag, label: 'Orders' },
+      { path: '/admin/orders', icon: ShoppingBag, label: 'অর্ডার' },
     ],
   },
   {
     key: 'customers',
-    label: 'Customers',
+    label: 'কাস্টমার',
     items: [
-      { path: '/admin/users', icon: Users, label: 'Customers' },
-      { path: '/admin/staff', icon: UserCog, label: 'Staff' },
+      { path: '/admin/users', icon: Users, label: 'কাস্টমার' },
+      { path: '/admin/staff', icon: UserCog, label: 'স্টাফ' },
     ],
   },
   {
     key: 'website',
-    label: 'Website',
+    label: 'ওয়েবসাইট',
     items: [
-      { path: '/admin/home-layout', icon: Layout, label: 'Home Layout' },
-      { path: '/admin/pages', icon: File, label: 'Pages' },
-      { path: '/admin/site-content', icon: FileText, label: 'Site Content' },
+      { path: '/admin/home-layout', icon: Layout, label: 'হোম লেআউট' },
+      { path: '/admin/pages', icon: File, label: 'পেজ' },
+      { path: '/admin/site-content', icon: FileText, label: 'সাইট কনটেন্ট' },
     ],
   },
   {
     key: 'marketing',
-    label: 'Marketing',
+    label: 'মার্কেটিং',
     items: [
-      { path: '/admin/marketing', icon: Megaphone, label: 'Coupons' },
+      { path: '/admin/marketing', icon: Megaphone, label: 'কুপন' },
     ],
   },
   {
     key: 'config',
-    label: 'Configuration',
+    label: 'কনফিগারেশন',
     items: [
-      { path: '/admin/delivery', icon: Truck, label: 'Delivery' },
-      { path: '/admin/payments', icon: CreditCard, label: 'Payments' },
-      { path: '/admin/accounts', icon: Calculator, label: 'Accounts' },
-      { path: '/admin/reports', icon: BarChart3, label: 'Reports' },
+      { path: '/admin/delivery', icon: Truck, label: 'ডেলিভারি' },
+      { path: '/admin/payments', icon: CreditCard, label: 'পেমেন্ট' },
+      { path: '/admin/accounts', icon: Calculator, label: 'হিসাব' },
+      { path: '/admin/reports', icon: BarChart3, label: 'রিপোর্ট' },
     ],
   },
 ]
@@ -87,6 +87,8 @@ const AdminLayout = () => {
   }
 
   const query = menuQuery.trim().toLowerCase()
+  // Matches the Bengali label, the English route and the English section name so
+  // both "পণ্য" and "product" find the same page.
   const filteredGroups = menuGroups
     .map((group) => ({
       ...group,
@@ -111,8 +113,8 @@ const AdminLayout = () => {
                 <Home size={18} className="text-white" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-gray-900">Admin</h2>
-                <p className="text-xs text-gray-500">Admin Panel</p>
+                <h2 className="text-base font-bold text-gray-900">অ্যাডমিন</h2>
+                <p className="text-xs text-gray-500">কন্ট্রোল প্যানেল</p>
               </div>
             </Link>
           </div>
@@ -130,15 +132,15 @@ const AdminLayout = () => {
                 onKeyDown={(e) => {
                   if (e.key === 'Escape') setMenuQuery('')
                 }}
-                placeholder="Search menu…"
-                aria-label="Search admin menu"
+                placeholder="মেনু খুঁজুন…"
+                aria-label="অ্যাডমিন মেনু খুঁজুন"
                 className="w-full rounded-lg border border-gray-200 bg-gray-50 py-2 pl-9 pr-8 text-sm text-gray-800 placeholder:text-gray-400 focus:border-[#EF4A23] focus:bg-white focus:outline-none focus:ring-1 focus:ring-[#EF4A23]/30"
               />
               {menuQuery && (
                 <button
                   type="button"
                   onClick={() => setMenuQuery('')}
-                  aria-label="Clear search"
+                  aria-label="সার্চ মুছুন"
                   className="absolute right-2 top-1/2 -translate-y-1/2 rounded p-1 text-gray-400 hover:bg-gray-200 hover:text-gray-700"
                 >
                   <X size={13} />
@@ -150,7 +152,7 @@ const AdminLayout = () => {
           <nav className="p-3 space-y-4 flex-1 overflow-y-auto">
             {filteredGroups.map((group) => (
               <div key={group.key}>
-                <p className="px-3 mb-1 text-[11px] font-semibold text-gray-400 uppercase tracking-wider">{group.label}</p>
+                <p className="px-3 mb-1 text-[11px] font-semibold text-gray-400 tracking-wider">{group.label}</p>
                 <div className="space-y-0.5">
                   {group.items.map((item) => {
                     const Icon = item.icon
@@ -178,7 +180,7 @@ const AdminLayout = () => {
             ))}
             {filteredGroups.length === 0 && (
               <p className="px-3 py-2 text-sm text-gray-500">
-                No pages match “{menuQuery.trim()}”.
+                “{menuQuery.trim()}” নামে কোনো পেজ নেই।
               </p>
             )}
           </nav>
@@ -189,7 +191,7 @@ const AdminLayout = () => {
               className="flex items-center gap-3 px-3 py-2 rounded-lg text-gray-700 hover:bg-red-50 hover:text-red-600 w-full transition text-sm"
             >
               <LogOut size={18} />
-              <span>Logout</span>
+              <span>লগআউট</span>
             </button>
           </div>
         </aside>
@@ -199,22 +201,22 @@ const AdminLayout = () => {
           <header className="bg-white border-b border-gray-200 px-6 py-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-lg font-semibold text-gray-900">Admin Dashboard</p>
-                <p className="text-sm text-gray-500">Manage your e-commerce store</p>
+                <p className="text-lg font-semibold text-gray-900">অ্যাডমিন ড্যাশবোর্ড</p>
+                <p className="text-sm text-gray-500">আপনার অনলাইন স্টোর পরিচালনা করুন</p>
               </div>
               <div className="flex items-center gap-3">
                 <span
-                  title={isSupabaseConfigured ? 'Admin changes sync to every device through Supabase.' : 'Local only — add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY in Vercel to sync everywhere.'}
+                  title={isSupabaseConfigured ? 'অ্যাডমিনের পরিবর্তন Supabase দিয়ে সব ডিভাইসে সিঙ্ক হয়।' : 'শুধু এই ডিভাইসে — সব ডিভাইসে সিঙ্ক করতে Vercel-এ VITE_SUPABASE_URL ও VITE_SUPABASE_ANON_KEY যোগ করুন।'}
                   className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium ${
                     isSupabaseConfigured ? 'bg-green-50 text-green-700' : 'bg-amber-50 text-amber-700'
                   }`}
                 >
                   {isSupabaseConfigured ? <Cloud size={14} /> : <CloudOff size={14} />}
-                  <span>{isSupabaseConfigured ? 'Cloud sync on' : 'Local only'}</span>
+                  <span>{isSupabaseConfigured ? 'ক্লাউড সিঙ্ক চালু' : 'শুধু এই ডিভাইসে'}</span>
                 </span>
                 <a href="/" target="_blank" rel="noreferrer" className="flex items-center gap-2 px-3 py-1.5 text-sm text-gray-700 hover:bg-gray-100 rounded-lg">
                   <Globe size={16} />
-                  View Site
+                  সাইট দেখুন
                 </a>
               </div>
             </div>
