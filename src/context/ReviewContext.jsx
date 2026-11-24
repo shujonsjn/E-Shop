@@ -6,16 +6,43 @@ import { deleteReviewRemote, fetchReviewsRemote, insertReviewRemote } from '../s
 const ReviewContext = createContext()
 const STORAGE_KEY = 'gb_reviews'
 const VERSION_KEY = 'gb_reviews_version'
+// Deleted ids are kept as tombstones. Without them the boot-time cloud merge
+// treats a locally deleted review as "local only" and pushes it back up, so a
+// deleted review used to reappear on the next sync.
+const DELETED_KEY = 'gb_reviews_deleted'
 // v2 removes the bundled demo reviews that used to reappear on every device.
 const REVIEW_VERSION = 'gb-reviews-v2'
 
 const isDemoReview = (review) => String(review?.userId || '').startsWith('demo-')
 
+const loadDeletedIds = () => {
+  try {
+    const raw = localStorage.getItem(DELETED_KEY)
+    const parsed = raw ? JSON.parse(raw) : []
+    return new Set(Array.isArray(parsed) ? parsed.map((id) => String(id)) : [])
+  } catch {
+    return new Set()
+  }
+}
+
+const saveDeletedIds = (ids) => {
+  try {
+    localStorage.setItem(DELETED_KEY, JSON.stringify([...ids]))
+  } catch {
+    /* storage can be full or blocked; deleting still applies to this session */
+  }
+}
+
 const loadReviews = () => {
   try {
     const raw = localStorage.getItem(STORAGE_KEY)
     const parsed = raw ? JSON.parse(raw) : []
-    const cleaned = Array.isArray(parsed) ? parsed.filter((r) => r && !isDemoReview(r)) : []
+    const deleted = loadDeletedIds()
+    const cleaned = Array.isArray(parsed)
+      ? parsed.filter(
+          (r) => r && !isDemoReview(r) && !deleted.has(String(r.id))
+        )
+      : []
     if (localStorage.getItem(VERSION_KEY) !== REVIEW_VERSION || cleaned.length !== parsed.length) {
       localStorage.setItem(VERSION_KEY, REVIEW_VERSION)
       localStorage.setItem(STORAGE_KEY, JSON.stringify(cleaned))
@@ -40,6 +67,9 @@ export const ReviewProvider = ({ children }) => {
   // without re-running the effect on every change.
   const reviewsRef = useRef(reviews)
   reviewsRef.current = reviews
+  // Reviews deleted on this device, so neither the initial merge nor a later
+  // cloud refresh can bring them back.
+  const deletedRef = useRef(loadDeletedIds())
 
   useEffect(() => {
     let alive = true
@@ -49,15 +79,20 @@ export const ReviewProvider = ({ children }) => {
       // null = Supabase is not configured (or the migration is not run yet),
       // so the local copy stays as-is and the shop still works.
       if (!alive || remote === null) return
+      const deleted = deletedRef.current
       const remoteIds = new Set(remote.map((review) => String(review.id)))
       // Reviews written on this device before the migration are pushed once.
-      const localOnly = reviewsRef.current.filter((r) => !remoteIds.has(String(r.id)))
+      // Tombstoned ones are skipped, otherwise a delete would be undone here.
+      const localOnly = reviewsRef.current.filter(
+        (r) => !remoteIds.has(String(r.id)) && !deleted.has(String(r.id))
+      )
       if (localOnly.length > 0) {
         await Promise.all(localOnly.map((review) => insertReviewRemote(review)))
       }
-      const merged = [...localOnly, ...remote].sort(
+      const merged = [...localOnly, ...remote.filter((r) => !deleted.has(String(r.id)))].sort(
         (a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0)
       )
+      reviewsRef.current = merged
       setReviews(merged)
       saveStore('reviews', merged)
     }
@@ -96,16 +131,34 @@ export const ReviewProvider = ({ children }) => {
       createdAt: new Date().toISOString(),
     }
 
-    setReviews([newReview, ...reviews])
+    const next = [newReview, ...reviews]
+    reviewsRef.current = next
+    setReviews(next)
+    saveStore('reviews', next)
     insertReviewRemote(newReview).catch(() => {})
     toast.success('Review submitted successfully')
     return true
   }
 
-  const deleteReview = (reviewId) => {
-    setReviews(reviews.filter((r) => String(r.id) !== String(reviewId)))
-    deleteReviewRemote(reviewId).catch(() => {})
+  const deleteReview = async (reviewId) => {
+    const id = String(reviewId)
+    // Remember the deletion locally before touching the network, so a failed or
+    // slow cloud delete can never resurrect the review from the local cache.
+    deletedRef.current.add(id)
+    saveDeletedIds(deletedRef.current)
+
+    const next = reviewsRef.current.filter((r) => String(r.id) !== id)
+    reviewsRef.current = next
+    setReviews(next)
+    saveStore('reviews', next)
+
+    const result = await deleteReviewRemote(id)
+    if (result && result.ok === false) {
+      toast.error('Review could not be removed from the cloud. Check that you are signed in as an admin.')
+      return false
+    }
     toast.success('Review deleted')
+    return true
   }
 
   const getProductReviews = (productId) =>

@@ -175,7 +175,29 @@ export const insertReviewRemote = async (review) => {
 }
 
 export const deleteReviewRemote = async (reviewId) => {
-  if (!supabase) return
-  const { error } = await supabase.from('reviews').delete().eq('id', reviewId)
-  warn('could not delete review', error)
+  if (!supabase) return { ok: false, error: null }
+  // `select` makes PostgREST report the affected rows. Without it a delete that
+  // RLS silently blocks still looks successful and the review reappears later.
+  const { data, error } = await supabase
+    .from('reviews')
+    .delete()
+    .eq('id', reviewId)
+    .select('id')
+  if (error) {
+    warn('could not delete review', error)
+    return { ok: false, error }
+  }
+  if (Array.isArray(data) && data.length > 0) return { ok: true, error: null }
+
+  // No row came back: either it was already gone, or the write was blocked.
+  const { data: stillThere, error: checkError } = await supabase
+    .from('reviews')
+    .select('id')
+    .eq('id', reviewId)
+    .maybeSingle()
+  if (checkError) {
+    warn('could not verify review delete', checkError)
+    return { ok: false, error: checkError }
+  }
+  return { ok: !stillThere, error: null }
 }
