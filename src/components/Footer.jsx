@@ -14,12 +14,14 @@ import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
 import { getMergedCategories } from '../utils/mergeCategories'
 import { isRealSocialUrl } from '../utils/media'
+import { subscribeNewsletter } from '../services/newsletter'
 
 const Footer = () => {
   const { t, tx } = useLanguage()
   const { settings } = useSettings()
   const [categories, setCategories] = useState([])
   const [email, setEmail] = useState('')
+  const [subscribing, setSubscribing] = useState(false)
   const [pages, setPages] = useState({})
 
   useEffect(() => {
@@ -45,11 +47,25 @@ const Footer = () => {
     }
   }, [])
 
-  const handleSubscribe = (e) => {
+  const handleSubscribe = async (e) => {
     e.preventDefault()
+    if (subscribing) return
     if (!email.trim()) return
-    toast.success(t('footer.subscribed'))
-    setEmail('')
+    setSubscribing(true)
+    const result = await subscribeNewsletter(email)
+    setSubscribing(false)
+    if (result.ok) {
+      toast.success(
+        result.already ? t('footer.alreadySubscribed') : t('footer.subscribed')
+      )
+      setEmail('')
+      return
+    }
+    if (result.reason === 'invalid') {
+      toast.error(t('footer.invalidEmail'))
+      return
+    }
+    toast.error(t('footer.subscribeError'))
   }
 
   const information = [
@@ -81,7 +97,12 @@ const Footer = () => {
         <div className="container-gb flex flex-col gap-4 py-7 md:flex-row md:items-center md:justify-between">
           <div>
             <h3 className="text-base font-bold sm:text-lg">{t('footer.newsletterTitle')}</h3>
-            <p className="mt-1 text-xs text-white/60 sm:text-sm">{settings.siteContent?.newsletterText || t('footer.newsletterSub')}</p>
+            <p className="mt-1 text-xs text-white/60 sm:text-sm">
+              {tx(
+                settings.siteContent?.newsletterText,
+                settings.siteContent?.newsletterTextBn
+              ) || t('footer.newsletterSub')}
+            </p>
           </div>
           <form onSubmit={handleSubscribe} className="flex w-full max-w-md gap-2">
             <input
@@ -92,7 +113,7 @@ const Footer = () => {
               placeholder={t('footer.emailPlaceholder')}
               className="h-10 w-full rounded-md border border-white/15 bg-white/10 px-3 text-sm text-white placeholder:text-white/40 focus:border-brand focus:outline-none"
             />
-            <button type="submit" className="btn-primary h-10 shrink-0 px-4">
+            <button type="submit" disabled={subscribing} className="btn-primary h-10 shrink-0 px-4 disabled:opacity-60">
               <Send size={15} />
               <span className="hidden sm:inline">{t('footer.subscribe')}</span>
             </button>
@@ -235,7 +256,7 @@ const Footer = () => {
                   key={key}
                   className="rounded border border-white/15 bg-white px-2 py-1 text-[10px] font-bold text-ink"
                 >
-                  {method.name || key}
+                  {tx(method.name, method.name_bn) || key}
                 </span>
               ))}
           </div>
@@ -245,8 +266,10 @@ const Footer = () => {
       <div className="border-t border-white/10">
         <div className="container-gb flex flex-col items-center justify-between gap-2 py-4 text-[11px] text-white/60 sm:flex-row">
           <p>
-            {(settings.siteContent?.footerCopyright || `© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`)
-              .replace(/GhorerBazar/g, settings.siteName)}
+            {(
+              tx(settings.siteContent?.footerCopyright, settings.siteContent?.footerCopyrightBn) ||
+              `© ${new Date().getFullYear()} ${settings.siteName}. ${t('footer.copyright')}`
+            ).replace(/GhorerBazar/g, settings.siteName)}
           </p>
           <p>
             {tx(

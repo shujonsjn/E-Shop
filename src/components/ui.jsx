@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom'
 import { ChevronRight, Minus, Plus, Star } from 'lucide-react'
+import { useLanguage } from '../i18n/LanguageContext'
 
 export const formatTaka = (value) => `৳${Number(value || 0).toLocaleString('en-US')}`
 
@@ -70,23 +71,26 @@ export const Price = ({ price, oldPrice = 0, size = 'md', className = '' }) => {
   )
 }
 
-export const SectionHeading = ({ title, subtitle, href, linkLabel = 'View All', className = '' }) => (
-  <div className={`mb-5 flex items-end justify-between gap-4 ${className}`}>
-    <div>
-      <h2 className="section-title">{title}</h2>
-      {subtitle && <p className="mt-1 text-xs text-ink-muted sm:text-sm">{subtitle}</p>}
+export const SectionHeading = ({ title, subtitle, href, linkLabel, className = '' }) => {
+  const { t } = useLanguage()
+  return (
+    <div className={`mb-5 flex items-end justify-between gap-4 ${className}`}>
+      <div>
+        <h2 className="section-title">{title}</h2>
+        {subtitle && <p className="mt-1 text-xs text-ink-muted sm:text-sm">{subtitle}</p>}
+      </div>
+      {href && (
+        <Link
+          to={href}
+          className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-brand hover:text-brand-dark sm:text-sm"
+        >
+          {linkLabel || t('common.viewAll')}
+          <ChevronRight size={15} />
+        </Link>
+      )}
     </div>
-    {href && (
-      <Link
-        to={href}
-        className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-brand hover:text-brand-dark sm:text-sm"
-      >
-        {linkLabel}
-        <ChevronRight size={15} />
-      </Link>
-    )}
-  </div>
-)
+  )
+}
 
 export const Breadcrumbs = ({ items = [] }) => (
   <nav className="flex flex-wrap items-center gap-1.5 py-3 text-xs text-ink-muted sm:text-[13px]">

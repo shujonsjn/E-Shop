@@ -37,6 +37,7 @@ const emptyAddForm = {
   subtitleBn: '',
   href: '/shop',
   linkLabel: '',
+  linkLabelBn: '',
   filter: 'all',
   category: '',
   limit: 4,
@@ -107,9 +108,9 @@ const AdminHomeLayout = () => {
 
   const handleAddSubmit = (e) => {
     e.preventDefault()
-    const title = addForm.title.trim()
+    const title = addForm.title.trim() || addForm.titleBn.trim()
     if (!title) {
-      toast.error('ইংরেজি শিরোনাম লিখুন')
+      toast.error('শিরোনাম লিখুন')
       return
     }
     if (addForm.type === 'productRow' && addForm.filter === 'category' && !addForm.category) {
@@ -120,13 +121,15 @@ const AdminHomeLayout = () => {
     const payload = {
       type: addForm.type,
       title,
-      titleBn: addForm.titleBn.trim(),
+      titleBn: addForm.titleBn.trim() || title,
       subtitle: addForm.subtitle.trim(),
       subtitleBn: addForm.subtitleBn.trim(),
       href: addForm.href.trim() || '/shop',
     }
     const linkLabel = addForm.linkLabel.trim()
     if (linkLabel) payload.linkLabel = linkLabel
+    const linkLabelBn = addForm.linkLabelBn.trim()
+    if (linkLabelBn) payload.linkLabelBn = linkLabelBn
 
     if (addForm.type === 'productRow') {
       payload.filter = addForm.filter
@@ -355,7 +358,7 @@ const AdminHomeLayout = () => {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium mb-1">লিংক লেবেল</label>
+                  <label className="block text-sm font-medium mb-1">লিংক লেবেল (ইংরেজি)</label>
                   <input
                     type="text"
                     value={addForm.linkLabel}
@@ -364,6 +367,17 @@ const AdminHomeLayout = () => {
                     placeholder="খালি রাখলে ডিফল্ট দেখাবে"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium mb-1">লিংক লেবেল (বাংলা)</label>
+                <input
+                  type="text"
+                  value={addForm.linkLabelBn}
+                  onChange={(e) => setAddForm({ ...addForm, linkLabelBn: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  placeholder="খালি রাখলে বাংলা মোডে ইংরেজি লেবেল দেখাবে"
+                />
               </div>
 
               <div className="flex gap-2 pt-2">
@@ -412,8 +426,12 @@ const AdminHomeLayout = () => {
                 <input type="text" value={form.href || ''} onChange={(e) => setForm({ ...form, href: e.target.value })} className="w-full px-3 py-2 border rounded-lg" />
               </div>
               <div>
-                <label className="block text-sm font-medium mb-1">লিংক লেবেল</label>
+                <label className="block text-sm font-medium mb-1">লিংক লেবেল (ইংরেজি)</label>
                 <input type="text" value={form.linkLabel || ''} onChange={(e) => setForm({ ...form, linkLabel: e.target.value })} className="w-full px-3 py-2 border rounded-lg" />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">লিংক লেবেল (বাংলা)</label>
+                <input type="text" value={form.linkLabelBn || ''} onChange={(e) => setForm({ ...form, linkLabelBn: e.target.value })} className="w-full px-3 py-2 border rounded-lg" placeholder="খালি রাখলে বাংলা মোডে ইংরেজি লেবেল দেখাবে" />
               </div>
               {form.type === 'productRow' && (
                 <>

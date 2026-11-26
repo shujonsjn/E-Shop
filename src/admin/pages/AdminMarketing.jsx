@@ -1,8 +1,12 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useSettings } from '../../context/SettingsContext'
-import { Plus, Trash2, AlertTriangle } from 'lucide-react'
+import { Plus, Trash2, AlertTriangle, Download } from 'lucide-react'
 import toast from 'react-hot-toast'
 import AutoSaveNote from '../../components/admin/AutoSaveNote'
+import {
+  deleteNewsletterSubscriber,
+  fetchNewsletterSubscribers,
+} from '../../services/newsletter'
 
 const emptyCoupon = {
   code: '',
@@ -16,6 +20,50 @@ const AdminMarketing = () => {
   const { settings, addCoupon, deleteCoupon } = useSettings()
   const [showCouponModal, setShowCouponModal] = useState(false)
   const [couponForm, setCouponForm] = useState(emptyCoupon)
+  const [subscribers, setSubscribers] = useState([])
+  const [subscribersLoaded, setSubscribersLoaded] = useState(false)
+  const [subscribersError, setSubscribersError] = useState('')
+  const [deletingId, setDeletingId] = useState(null)
+
+  const loadSubscribers = async () => {
+    const result = await fetchNewsletterSubscribers()
+    setSubscribers(result.rows)
+    setSubscribersLoaded(true)
+    setSubscribersError(result.ok ? '' : 'নিউজলেটার তালিকা লোড করা যায়নি। Supabase-এ supabase/newsletter.sql চালানো হয়েছে কিনা দেখুন।')
+  }
+
+  useEffect(() => {
+    loadSubscribers()
+  }, [])
+
+  const handleDeleteSubscriber = async (row) => {
+    if (!window.confirm(`এই ইমেইলটি তালিকা থেকে মুছবেন?\n${row.email}`)) return
+    setDeletingId(row.id)
+    const result = await deleteNewsletterSubscriber(row.id)
+    setDeletingId(null)
+    if (result.ok) {
+      setSubscribers((prev) => prev.filter((item) => item.id !== row.id))
+      toast.success('সাবস্ক্রাইবার মুছে ফেলা হয়েছে')
+    } else {
+      toast.error('সাবস্ক্রাইবার মোছা যায়নি')
+    }
+  }
+
+  const downloadSubscribers = () => {
+    const header = 'email,source,created_at\n'
+    const rows = subscribers
+      .map((row) => `${row.email},${row.source || ''},${row.created_at || ''}`)
+      .join('\n')
+    const blob = new Blob([header + rows], { type: 'text/csv;charset=utf-8' })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `newsletter-subscribers-${new Date().toISOString().slice(0, 10)}.csv`
+    document.body.appendChild(link)
+    link.click()
+    link.remove()
+    URL.revokeObjectURL(url)
+  }
 
   const coupons = Array.isArray(settings.coupons) ? settings.coupons : []
 
@@ -132,6 +180,74 @@ const AdminMarketing = () => {
         <AutoSaveNote className="mt-4">
           কুপন তৈরি বা মুছে ফেলার সাথে সাথে সেভ হয়।
         </AutoSaveNote>
+      </div>
+
+      {/* Newsletter subscribers */}
+      <div className="mt-10">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">নিউজলেটার সাবস্ক্রাইবার</h2>
+            <p className="mt-1 text-sm text-gray-500">
+              যারা ফুটারের সাবস্ক্রাইব ফর্মে ইমেইল দিয়েছেন তাঁদের তালিকা।
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={downloadSubscribers}
+            disabled={subscribers.length === 0}
+            className="flex items-center gap-2 rounded bg-gray-800 px-4 py-2 text-white hover:bg-gray-900 disabled:opacity-50"
+          >
+            <Download size={18} /> CSV ডাউনলোড
+          </button>
+        </div>
+
+        {subscribersError && (
+          <p className="mb-3 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            {subscribersError}
+          </p>
+        )}
+
+        <div className="overflow-hidden rounded-lg bg-white shadow">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">ইমেইল</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">তারিখ</th>
+                <th className="px-6 py-3 text-left text-xs font-medium uppercase text-gray-500">কাজ</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200">
+              {subscribers.map((row) => (
+                <tr key={row.id}>
+                  <td className="px-6 py-3 font-medium text-gray-800">{row.email}</td>
+                  <td className="px-6 py-3 text-sm text-gray-500">
+                    {row.created_at ? new Date(row.created_at).toLocaleString('en-GB') : '-'}
+                  </td>
+                  <td className="px-6 py-3">
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteSubscriber(row)}
+                      disabled={deletingId === row.id}
+                      className="text-red-600 hover:text-red-800 disabled:opacity-50"
+                      title="সাবস্ক্রাইবার মুছুন"
+                    >
+                      <Trash2 size={18} />
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          {subscribersLoaded && subscribers.length === 0 && (
+            <div className="py-10 text-center">
+              <p className="font-medium text-gray-700">কোনো সাবস্ক্রাইবার নেই</p>
+              <p className="mt-1 text-sm text-gray-500">কেউ এখনো ফুটার ফর্মে ইমেইল দেয়নি।</p>
+            </div>
+          )}
+          {!subscribersLoaded && (
+            <div className="py-10 text-center text-sm text-gray-500">লোড হচ্ছে…</div>
+          )}
+        </div>
       </div>
 
       {/* Coupon Modal */}

@@ -167,8 +167,10 @@ export const AdminLanguageProvider = ({ children }) => {
     const observer = new MutationObserver(() => {
       if (queued) return
       queued = true
-      if (typeof requestAnimationFrame === 'function') requestAnimationFrame(flush)
-      else setTimeout(flush, 16)
+      // setTimeout (not requestAnimationFrame) so translation still runs when the
+      // admin tab is in the background; rAF is paused in hidden tabs and the
+      // panel would stay half-Bengali the moment the user switches back.
+      setTimeout(flush, 0)
     })
 
     observer.observe(root, {

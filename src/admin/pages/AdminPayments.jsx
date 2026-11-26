@@ -48,8 +48,13 @@ const AdminPayments = () => {
                     <input type="text" value={method.number || ''} onChange={(e) => updatePaymentMethod(key, { number: e.target.value })} className="w-full px-3 py-2 border rounded" placeholder="01XXXXXXXXX" />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">নির্দেশনা</label>
-                    <textarea value={method.instructions || ''} onChange={(e) => updatePaymentMethod(key, { instructions: e.target.value })} className="w-full px-3 py-2 border rounded" rows={3} placeholder="কাস্টমারের জন্য পেমেন্ট নির্দেশনা" />
+                    <label className="block text-sm font-medium mb-1">নির্দেশনা (ইংরেজি)</label>
+                    <textarea value={method.instructions || ''} onChange={(e) => updatePaymentMethod(key, { instructions: e.target.value })} className="w-full px-3 py-2 border rounded" rows={3} placeholder="Instructions shown in English mode" />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium mb-1">নির্দেশনা (বাংলা)</label>
+                    <textarea value={method.instructions_bn || ''} onChange={(e) => updatePaymentMethod(key, { instructions_bn: e.target.value })} className="w-full px-3 py-2 border rounded" rows={3} placeholder="কাস্টমারের জন্য বাংলা পেমেন্ট নির্দেশনা" />
+                    <p className="mt-1 text-xs text-gray-500">খালি রাখলে বাংলা মোডে ইংরেজি নির্দেশনাটাই দেখাবে।</p>
                   </div>
                 </div>
               )}

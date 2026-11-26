@@ -11,11 +11,11 @@ import { heroSlides as defaultHeroSlides, sideBanners as defaultSideBanners, pro
 export const defaultHomeLayout = [
   { id: 'hero', type: 'hero', enabled: true, order: 0 },
   { id: 'trust', type: 'trust', enabled: true, order: 1 },
-  { id: 'categories', type: 'categories', enabled: true, order: 2, title: 'Featured Categories', subtitle: 'Shop by your favorite category', href: '/shop', linkLabel: 'View All Categories' },
+  { id: 'categories', type: 'categories', enabled: true, order: 2, title: 'Featured Categories', titleBn: 'ফিচার্ড ক্যাটাগরি', subtitle: 'Shop by your favorite category', subtitleBn: 'আপনার পছন্দের ক্যাটাগরি অনুযায়ী কিনুন', href: '/shop', linkLabel: 'View All Categories', linkLabelBn: 'সব ক্যাটাগরি দেখুন' },
   { id: 'flash', type: 'flash', enabled: true, order: 3 },
-  { id: 'top', type: 'productRow', enabled: true, order: 4, title: 'Top Selling Products', subtitle: 'Most popular items this week', titleBn: 'সর্বাধিক বিক্রিত পণ্য', subtitleBn: 'এই সপ্তাহের সবচেয়ে জনপ্রিয় পণ্য', href: '/shop?sort=best', linkLabel: 'View All', filter: 'topSelling', limit: 4 },
+  { id: 'top', type: 'productRow', enabled: true, order: 4, title: 'Top Selling Products', subtitle: 'Most popular items this week', titleBn: 'সর্বাধিক বিক্রিত পণ্য', subtitleBn: 'এই সপ্তাহের সবচেয়ে জনপ্রিয় পণ্য', href: '/shop?sort=best', linkLabel: 'View All', linkLabelBn: 'সব দেখুন', filter: 'topSelling', limit: 4 },
   { id: 'brands', type: 'brands', enabled: true, order: 5 },
-  { id: 'row_new', type: 'productRow', enabled: true, order: 6, title: 'New Arrivals', titleBn: 'নতুন সংগ্রহ', subtitle: 'Fresh picks added to the collection', subtitleBn: 'সংগ্রহে নতুন যোগ হওয়া পণ্য', href: '/shop', linkLabel: 'View All', filter: 'featured', limit: 5 },
+  { id: 'row_new', type: 'productRow', enabled: true, order: 6, title: 'New Arrivals', titleBn: 'নতুন সংগ্রহ', subtitle: 'Fresh picks added to the collection', subtitleBn: 'সংগ্রহে নতুন যোগ হওয়া পণ্য', href: '/shop', linkLabel: 'View All', linkLabelBn: 'সব দেখুন', filter: 'featured', limit: 5 },
   { id: 'promo', type: 'promo', enabled: true, order: 11 },
   { id: 'testimonials', type: 'testimonials', enabled: true, order: 12 },
   { id: 'cta', type: 'cta', enabled: true, order: 13 },
@@ -68,12 +68,14 @@ const defaultSettings = {
     footerAbout: 'Gift Shop is your trusted online gift & showpiece store in Bangladesh. We deliver carefully selected gifts, showpieces and home décor to your doorstep.',
     footerAbout_bn: 'গিফট শপ বাংলাদেশের বিশ্বস্ত অনলাইন গিফট ও শোপিস স্টোর। আমরা যত্নে বাছাই করা উপহার, শোপিস ও হোম ডেকোর আপনার দরজায় পৌঁছে দিই।',
     footerCopyright: `© ${new Date().getFullYear()} Gift Shop. All rights reserved.`,
+    footerCopyrightBn: `© ${new Date().getFullYear()} গিফট শপ। সর্বস্বত্ব সংরক্ষিত।`,
     homeSectionTitle: 'Our Products',
     newsletterText: 'Subscribe to get updates on offers and new products',
+    newsletterTextBn: 'নতুন অফার ও পণ্যের খবর পেতে সাবস্ক্রাইব করুন',
     ctaTitle: 'Find the perfect gift today',
     ctaTitleBn: 'আজই নিখুঁত উপহার খুঁজে নিন',
-    ctaSubtitle: 'Free delivery on orders above ৳1,000 · Cash on delivery available',
-    ctaSubtitleBn: '৳১,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে',
+    ctaSubtitle: 'Free delivery on orders above ৳2,000 · Cash on delivery available',
+    ctaSubtitleBn: '৳২,০০০ টাকার বেশি অর্ডারে ফ্রি ডেলিভারি · ক্যাশ অন ডেলিভারি আছে',
     ctaButton: 'Shop Now',
     ctaButtonBn: 'এখনই কিনুন',
     ctaHref: '/shop',
@@ -85,7 +87,7 @@ const defaultSettings = {
     { id: 2, area: 'Outside Dhaka', charge: 120 },
   ],
   // Orders at or above this amount ship free. 0 disables the offer.
-  freeDeliveryThreshold: 1000,
+  freeDeliveryThreshold: 2000,
   deliverySlots: [
     { id: 1, label: 'সকাল ১০টা - ১২টা', enabled: true },
     { id: 2, label: 'দুপুর ১২টা - ২টা', enabled: true },
@@ -95,21 +97,25 @@ const defaultSettings = {
   
   // Payment
   paymentMethods: {
-    cod: { enabled: true, name: 'Cash on Delivery' },
+    cod: { enabled: true, name: 'Cash on Delivery', name_bn: 'ক্যাশ অন ডেলিভারি' },
     bkash: {
       enabled: true,
       name: 'bKash',
+      name_bn: 'বিকাশ',
       number: '01321208940',
       instructions: 'Send money to this bKash number, then enter your sender number and transaction ID below.',
+      instructions_bn: 'এই বিকাশ নম্বরে টাকা পাঠিয়ে নিচে আপনার পাঠানো নম্বর ও ট্রানজেকশন আইডি দিন।',
     },
     nagad: {
       enabled: true,
       name: 'Nagad',
+      name_bn: 'নগদ',
       number: '01321208940',
       instructions: 'Send money to this Nagad number, then enter your sender number and transaction ID below.',
+      instructions_bn: 'এই নগদ নম্বরে টাকা পাঠিয়ে নিচে আপনার পাঠানো নম্বর ও ট্রানজেকশন আইডি দিন।',
     },
-    rocket: { enabled: true, name: 'Rocket', number: '', instructions: '' },
-    card: { enabled: false, name: 'Debit/Credit Card' },
+    rocket: { enabled: true, name: 'Rocket', name_bn: 'রকেট', number: '', instructions: '', instructions_bn: '' },
+    card: { enabled: false, name: 'Debit/Credit Card', name_bn: 'ডেবিট/ক্রেডিট কার্ড' },
   },
   
   // Coupons
@@ -196,6 +202,40 @@ const mergeSavedSettings = (parsed) => {
     merged.homeLayout = cleaned.length
       ? cleaned.map((item, idx) => ({ order: idx, enabled: true, ...item }))
       : JSON.parse(JSON.stringify(defaultHomeLayout))
+  }
+  // Older saved layouts predate the Bengali heading fields. Fill the blanks
+  // from the built-in copy when the English text still matches the default, so
+  // Bengali mode never falls back to English headings.
+  merged.homeLayout = merged.homeLayout.map((item) => {
+    const fallback = defaultHomeLayout.find((def) => def.id === item.id)
+    if (!fallback) return item
+    const next = { ...item }
+    ;[
+      ['title', 'titleBn'],
+      ['subtitle', 'subtitleBn'],
+      ['linkLabel', 'linkLabelBn'],
+    ].forEach(([enKey, bnKey]) => {
+      if (!next[bnKey] && fallback[bnKey] && (!next[enKey] || next[enKey] === fallback[enKey])) {
+        next[bnKey] = fallback[bnKey]
+      }
+    })
+    return next
+  })
+  // Same for footer copy saved before the bilingual fields existed.
+  const savedContent = parsed.siteContent || {}
+  if (
+    !merged.siteContent.newsletterTextBn &&
+    (!savedContent.newsletterText ||
+      savedContent.newsletterText === defaultSettings.siteContent.newsletterText)
+  ) {
+    merged.siteContent.newsletterTextBn = defaultSettings.siteContent.newsletterTextBn
+  }
+  if (
+    !merged.siteContent.footerCopyrightBn &&
+    (!savedContent.footerCopyright ||
+      savedContent.footerCopyright === defaultSettings.siteContent.footerCopyright)
+  ) {
+    merged.siteContent.footerCopyrightBn = defaultSettings.siteContent.footerCopyrightBn
   }
   return merged
 }

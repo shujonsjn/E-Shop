@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
 import toast from 'react-hot-toast'
 import { useSettings } from './SettingsContext'
+import { useLanguage } from '../i18n/LanguageContext'
 
 const CartContext = createContext()
 const STORAGE_KEY = 'gb_cart'
@@ -25,6 +26,7 @@ export const useCart = () => {
 
 export const CartProvider = ({ children }) => {
   const { settings } = useSettings()
+  const { t } = useLanguage()
   const [cartItems, setCartItems] = useState(() => {
     const saved = readJSON(STORAGE_KEY, [])
     return Array.isArray(saved) ? saved : []
@@ -119,17 +121,20 @@ export const CartProvider = ({ children }) => {
     const normalized = String(code || '').trim().toUpperCase()
     const allCoupons = Array.isArray(settings?.coupons) ? settings.coupons : []
     const found = allCoupons.find((c) => String(c.code || '').toUpperCase() === normalized)
-    if (!found) return { ok: false, message: 'Invalid coupon code' }
+    if (!found) return { ok: false, message: t('cart.invalidCoupon') }
     if (found.expiryDate) {
       const today = new Date()
       const exp = new Date(found.expiryDate)
       if (exp < new Date(today.toDateString())) {
-        return { ok: false, message: 'Coupon expired' }
+        return { ok: false, message: t('cart.couponExpired') }
       }
     }
     const minOrder = found.minOrder || found.min || 0
     if (subtotal < minOrder) {
-      return { ok: false, message: `Minimum order ৳${minOrder.toLocaleString()} required` }
+      return {
+        ok: false,
+        message: t('cart.couponMinOrder', { amount: Number(minOrder).toLocaleString('en-US') }),
+      }
     }
     const normalizedCoupon = {
       code: found.code,
@@ -139,7 +144,7 @@ export const CartProvider = ({ children }) => {
       label: found.label || (found.discountType === 'percent' ? `${found.discountValue}% off` : `৳${found.discountValue} off`),
     }
     setCoupon(normalizedCoupon)
-    return { ok: true, message: `${found.code} applied - ${normalizedCoupon.label}`, coupon: normalizedCoupon }
+    return { ok: true, message: `${found.code} — ${t('cart.couponApplied')}`, coupon: normalizedCoupon }
   }
 
   const removeCoupon = () => setCoupon(null)

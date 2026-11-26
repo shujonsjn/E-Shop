@@ -1,6 +1,7 @@
 import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { saveStore, setAdminSignedIn } from '../services/store'
+import { useLanguage } from '../i18n/LanguageContext'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import {
   cancelOrderRemote,
@@ -25,6 +26,12 @@ export const useAuth = () => {
 // No built-in accounts. A live store must not ship with a known password, and
 // the demo customer box used to advertise one right on the login page.
 export const AuthProvider = ({ children }) => {
+  const { tx } = useLanguage()
+  // Admin pages translate Bengali at runtime, so keep those toasts Bengali and
+  // let the storefront pick the visitor's language.
+  const tr = (en, bn) =>
+    typeof window !== 'undefined' && window.location.pathname.startsWith('/admin') ? bn : tx(en, bn)
+
   const [user, setUser] = useState(() => {
     try {
       const savedUser = localStorage.getItem('shoeshop_user')
@@ -208,7 +215,7 @@ export const AuthProvider = ({ children }) => {
     const normalizedEmail = String(email).trim().toLowerCase()
     const existingUser = users.find((u) => u.email.toLowerCase() === normalizedEmail)
     if (existingUser) {
-      toast.error('An account with this email already exists')
+      toast.error(tr('An account with this email already exists', 'এই ইমেইল দিয়ে অ্যাকাউন্ট আগে থেকেই আছে'))
       return false
     }
     const newUser = {
@@ -223,7 +230,7 @@ export const AuthProvider = ({ children }) => {
     }
     setUsers([...users, newUser])
     setUser(newUser)
-    toast.success('Registration successful')
+    toast.success(tr('Registration successful', 'রেজিস্ট্রেশন সফল হয়েছে'))
     return true
   }
 
@@ -250,7 +257,7 @@ export const AuthProvider = ({ children }) => {
           }
           setAdminSignedIn(role === 'admin')
           setUser(secureUser)
-          toast.success(`Welcome back, ${secureUser.name.split(' ')[0]}`)
+          toast.success(tr(`Welcome back, ${secureUser.name.split(' ')[0]}`, `স্বাগতম, ${secureUser.name.split(' ')[0]}`))
           return secureUser
         }
       } catch {
@@ -265,7 +272,12 @@ export const AuthProvider = ({ children }) => {
           (u.role === 'admin' || u.role === 'staff')
       )
       if (privileged) {
-        toast.error('This admin account uses the secure password. Please use the Supabase login.')
+        toast.error(
+          tr(
+            'This admin account uses the secure password. Please use the Supabase login.',
+            'এই অ্যাডমিন অ্যাকাউন্টটি সুরক্ষিত পাসওয়ার্ড ব্যবহার করে। Supabase লগইন ব্যবহার করুন।'
+          )
+        )
         return null
       }
     }
@@ -276,10 +288,10 @@ export const AuthProvider = ({ children }) => {
     if (foundUser) {
       setAdminSignedIn(false)
       setUser(foundUser)
-      toast.success(`Welcome back, ${foundUser.name.split(' ')[0]}`)
+      toast.success(tr(`Welcome back, ${foundUser.name.split(' ')[0]}`, `স্বাগতম, ${foundUser.name.split(' ')[0]}`))
       return foundUser
     }
-    toast.error('Incorrect email or password')
+    toast.error(tr('Incorrect email or password', 'ইমেইল বা পাসওয়ার্ড সঠিক নয়'))
     return null
   }
 
@@ -290,7 +302,7 @@ export const AuthProvider = ({ children }) => {
     setAdminSignedIn(false)
     setUser(null)
     localStorage.removeItem('shoeshop_user')
-    toast.success('Logged out successfully')
+    toast.success(tr('Logged out successfully', 'লগআউট হয়েছে'))
   }
 
   const updateProfile = (updates) => {
@@ -300,7 +312,7 @@ export const AuthProvider = ({ children }) => {
     setUsers((prev) =>
       prev.map((u) => (String(u.id) === String(user.id) ? { ...u, ...updates } : u))
     )
-    toast.success('Profile updated')
+    toast.success(tr('Profile updated', 'প্রোফাইল আপডেট হয়েছে'))
     return true
   }
 
@@ -325,7 +337,7 @@ export const AuthProvider = ({ children }) => {
         if (result.ok) decrementStockRemote(newOrder.items)
       })
       .catch(() => {})
-    toast.success('Order placed successfully')
+    toast.success(tr('Order placed successfully', 'অর্ডার সফলভাবে দেওয়া হয়েছে'))
     return newOrder
   }
 
@@ -351,14 +363,14 @@ export const AuthProvider = ({ children }) => {
     }
     setOrders(orders.map((order) => (String(order.id) === String(orderId) ? updated : order)))
     pushOrderUpdate(updated).catch(() => {})
-    toast.success('Order status updated')
+    toast.success(tr('Order status updated', 'অর্ডার স্ট্যাটাস আপডেট হয়েছে'))
   }
 
   const cancelOrder = (orderId) => {
     const order = orders.find((o) => String(o.id) === String(orderId))
     if (!order) return false
     if (['Shipped', 'Out for Delivery', 'Delivered'].includes(order.status)) {
-      toast.error('This order can no longer be cancelled')
+      toast.error(tr('This order can no longer be cancelled', 'এই অর্ডারটি আর বাতিল করা যাবে না'))
       return false
     }
     const cancelled = {
@@ -377,7 +389,7 @@ export const AuthProvider = ({ children }) => {
     } else if (cancelled.shippingAddress?.phone) {
       cancelOrderRemote(cancelled.id, cancelled.shippingAddress.phone).catch(() => {})
     }
-    toast.success('Order cancelled')
+    toast.success(tr('Order cancelled', 'অর্ডার বাতিল করা হয়েছে'))
     return true
   }
 
@@ -391,10 +403,10 @@ export const AuthProvider = ({ children }) => {
           String(o.id) === String(orderId) ? { ...o, status: 'Cancelled' } : o
         )
       )
-      toast.success('Order cancelled')
+      toast.success(tr('Order cancelled', 'অর্ডার বাতিল করা হয়েছে'))
       return true
     }
-    if (result === 'locked') toast.error('This order can no longer be cancelled')
+    if (result === 'locked') toast.error(tr('This order can no longer be cancelled', 'এই অর্ডারটি আর বাতিল করা যাবে না'))
     return false
   }
 
@@ -423,7 +435,7 @@ export const AuthProvider = ({ children }) => {
   // never leaves the inventory short.
   const deleteOrder = async (orderId) => {
     if (user?.role !== 'admin') {
-      toast.error('Only an admin can delete an order')
+      toast.error(tr('Only an admin can delete an order', 'শুধু অ্যাডমিন অর্ডার মুছতে পারেন'))
       return false
     }
     const order = orders.find((o) => String(o.id) === String(orderId))
@@ -431,12 +443,12 @@ export const AuthProvider = ({ children }) => {
     setOrders((prev) => prev.filter((o) => String(o.id) !== String(orderId)))
     const ok = await deleteOrderRemote(order.id)
     if (ok) {
-      toast.success('Order deleted')
+      toast.success(tr('Order deleted', 'অর্ডার মুছে ফেলা হয়েছে'))
       return true
     }
     // Put the row back so the panel never lies about what still exists.
     setOrders((prev) => [order, ...prev])
-    toast.error('Could not delete the order')
+    toast.error(tr('Could not delete the order', 'অর্ডার মোছা যায়নি'))
     return false
   }
 

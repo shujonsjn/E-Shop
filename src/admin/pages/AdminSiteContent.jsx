@@ -200,7 +200,7 @@ const AdminSiteContent = () => {
                 type="text"
                 value={settings.topBarText ?? ''}
                 onChange={(e) => updateSettings({ topBarText: e.target.value })}
-                placeholder="Free delivery on orders above ৳1,000"
+                placeholder="Free delivery on orders above ৳2,000"
                 className="w-full px-3 py-2 border rounded"
               />
               <p className="mt-1 text-xs text-gray-500">
@@ -254,7 +254,7 @@ const AdminSiteContent = () => {
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">CTA উপ-শিরোনাম (ইংরেজি)</label>
-              <input type="text" value={settings.siteContent?.ctaSubtitle ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitle: e.target.value })} placeholder="Free delivery on orders above ৳1,000 · Cash on delivery available" className="w-full px-3 py-2 border rounded" />
+              <input type="text" value={settings.siteContent?.ctaSubtitle ?? ''} onChange={(e) => updateSiteContent({ ctaSubtitle: e.target.value })} placeholder="Free delivery on orders above ৳2,000 · Cash on delivery available" className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
               <label className="block text-sm font-medium mb-1">CTA উপ-শিরোনাম (বাংলা)</label>
@@ -470,12 +470,22 @@ const AdminSiteContent = () => {
               <p className="mt-1 text-xs text-gray-500">খালি রাখলে বাংলা মোডে ইংরেজি লেখাটাই দেখাবে।</p>
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">কপিরাইট লেখা</label>
+              <label className="block text-sm font-medium mb-1">কপিরাইট লেখা (ইংরেজি)</label>
               <input type="text" value={settings.siteContent?.footerCopyright || ''} onChange={(e) => updateSiteContent({ footerCopyright: e.target.value })} placeholder="© 2026 Gift Shop. All rights reserved." className="w-full px-3 py-2 border rounded" />
             </div>
             <div>
-              <label className="block text-sm font-medium mb-1">নিউজলেটার লেখা</label>
+              <label className="block text-sm font-medium mb-1">কপিরাইট লেখা (বাংলা)</label>
+              <input type="text" value={settings.siteContent?.footerCopyrightBn || ''} onChange={(e) => updateSiteContent({ footerCopyrightBn: e.target.value })} placeholder="© ২০২৬ গিফট শপ। সর্বস্বত্ব সংরক্ষিত।" className="w-full px-3 py-2 border rounded" />
+              <p className="mt-1 text-xs text-gray-500">খালি রাখলে বাংলা মোডে ইংরেজি লেখাটাই দেখাবে।</p>
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">নিউজলেটার লেখা (ইংরেজি)</label>
               <input type="text" value={settings.siteContent?.newsletterText || ''} onChange={(e) => updateSiteContent({ newsletterText: e.target.value })} className="w-full px-3 py-2 border rounded" />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">নিউজলেটার লেখা (বাংলা)</label>
+              <input type="text" value={settings.siteContent?.newsletterTextBn || ''} onChange={(e) => updateSiteContent({ newsletterTextBn: e.target.value })} placeholder="নতুন অফার ও পণ্যের খবর পেতে সাবস্ক্রাইব করুন" className="w-full px-3 py-2 border rounded" />
+              <p className="mt-1 text-xs text-gray-500">খালি রাখলে বাংলা মোডে ইংরেজি লেখাটাই দেখাবে।</p>
             </div>
           </div>
           <AutoSaveNote className="mt-4" />

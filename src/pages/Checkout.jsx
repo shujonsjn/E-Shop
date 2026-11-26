@@ -471,7 +471,9 @@ const Checkout = () => {
                     <p className="text-base font-bold text-ink">{activeNumber || '—'}</p>
                   </div>
                   {activePayment.instructions && (
-                    <p className="mt-2 text-[11px] leading-5 text-ink-muted">{activePayment.instructions}</p>
+                    <p className="mt-2 text-[11px] leading-5 text-ink-muted">
+                      {tx(activePayment.instructions, activePayment.instructions_bn)}
+                    </p>
                   )}
                   <div className="mt-3 grid gap-2.5 sm:grid-cols-2">
                     <div>

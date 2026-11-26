@@ -53,6 +53,17 @@ const Home = () => {
     .sort((a, b) => (a.order || 0) - (b.order || 0))
     .filter((s) => s.enabled !== false)
 
+  // Section link labels saved before the bilingual field existed fall back to
+  // the built-in translations instead of showing English in Bangla mode.
+  const sectionLinkLabel = (section) => {
+    if (section.linkLabelBn) return tx(section.linkLabel, section.linkLabelBn)
+    const label = String(section.linkLabel || '').trim()
+    if (!label) return null
+    if (/^view all categories$/i.test(label)) return t('home.viewAllCategories')
+    if (/^view all$/i.test(label)) return t('common.viewAll')
+    return label
+  }
+
   useEffect(() => {
     const load = () => {
       setCategories(getMergedCategories())
@@ -173,7 +184,7 @@ const Home = () => {
               title={section.titleBn ? tx(section.title, section.titleBn) : section.title || t('home.featuredCategories')}
               subtitle={section.subtitleBn ? tx(section.subtitle, section.subtitleBn) : section.subtitle || t('home.featuredCategoriesSub')}
               href={section.href || '/shop'}
-              linkLabel={section.linkLabel || t('home.viewAllCategories')}
+              linkLabel={sectionLinkLabel(section) || t('home.viewAllCategories')}
             />
             <div className="grid grid-cols-5 gap-2 sm:gap-3 lg:grid-cols-10">
               {categories.slice(0, 10).map((category) => (
@@ -243,7 +254,7 @@ const Home = () => {
               title={section.titleBn ? tx(section.title, section.titleBn) : section.title || t('home.topSelling')}
               subtitle={section.subtitleBn ? tx(section.subtitle, section.subtitleBn) : section.subtitle || ''}
               href={section.href || '/shop'}
-              linkLabel={section.linkLabel}
+              linkLabel={sectionLinkLabel(section)}
             />
             <div className="grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-5">
               {items.map((product) => (
