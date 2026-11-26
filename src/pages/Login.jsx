@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Lock, Mail } from 'lucide-react'
+import { Eye, EyeOff, Lock, Phone } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
@@ -13,7 +13,7 @@ const Login = () => {
   const location = useLocation()
   const from = location.state?.from
 
-  const [email, setEmail] = useState('')
+  const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -21,7 +21,7 @@ const Login = () => {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setBusy(true)
-    const user = await login(email, password)
+    const user = await login(identifier, password)
     setBusy(false)
     if (!user) return
     if (user.role === 'admin') {
@@ -50,22 +50,24 @@ const Login = () => {
 
             <form onSubmit={handleSubmit} className="space-y-3.5 p-5 sm:p-6">
               <div>
-                <label htmlFor="email" className="label">
-                  {t('auth.email')}
+                <label htmlFor="identifier" className="label">
+                  {t('auth.loginId')}
                 </label>
                 <div className="relative">
-                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                   <input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    id="identifier"
+                    type="text"
+                    inputMode="tel"
+                    value={identifier}
+                    onChange={(e) => setIdentifier(e.target.value)}
                     required
-                    autoComplete="email"
+                    autoComplete="username"
                     className="input pl-9"
-                    placeholder="you@example.com"
+                    placeholder={t('auth.loginIdPlaceholder')}
                   />
                 </div>
+                <p className="mt-1.5 text-[10.5px] leading-4 text-ink-muted">{t('auth.loginHint')}</p>
               </div>
 
               <div>
@@ -98,7 +100,7 @@ const Login = () => {
               </div>
 
               <button type="submit" disabled={busy} className="btn-primary w-full py-2.5 disabled:opacity-60">
-                {busy ? 'Signing in…' : t('auth.login')}
+                {busy ? tx('Signing in…', 'সাইন ইন হচ্ছে…') : t('auth.login')}
               </button>
 
               <p className="text-center text-xs text-ink-muted">

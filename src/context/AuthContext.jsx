@@ -2,6 +2,7 @@ import { createContext, useContext, useEffect, useRef, useState } from 'react'
 import toast from 'react-hot-toast'
 import { saveStore, setAdminSignedIn } from '../services/store'
 import { useLanguage } from '../i18n/LanguageContext'
+import { normalizePhone, isValidBdPhone } from '../utils/phone'
 import { supabase, isSupabaseConfigured } from '../lib/supabase'
 import {
   cancelOrderRemote,
@@ -211,19 +212,35 @@ export const AuthProvider = ({ children }) => {
     }
   }, [user?.role])
 
-  const register = (name, email, password, phone = '') => {
-    const normalizedEmail = String(email).trim().toLowerCase()
-    const existingUser = users.find((u) => u.email.toLowerCase() === normalizedEmail)
+  const register = (name, phone, password) => {
+    const normalizedPhone = normalizePhone(phone)
+    if (!isValidBdPhone(normalizedPhone)) {
+      toast.error(
+        tr(
+          'Enter a valid mobile number (01XXXXXXXXX)',
+          'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)'
+        )
+      )
+      return false
+    }
+    const existingUser = users.find(
+      (u) => u.phone && normalizePhone(u.phone) === normalizedPhone
+    )
     if (existingUser) {
-      toast.error(tr('An account with this email already exists', 'এই ইমেইল দিয়ে অ্যাকাউন্ট আগে থেকেই আছে'))
+      toast.error(
+        tr(
+          'An account with this mobile number already exists',
+          'এই মোবাইল নম্বর দিয়ে অ্যাকাউন্ট আগে থেকেই আছে'
+        )
+      )
       return false
     }
     const newUser = {
       id: Date.now(),
-      name,
-      email: normalizedEmail,
+      name: String(name || '').trim(),
+      phone: normalizedPhone,
+      email: '',
       password,
-      phone,
       address: '',
       role: 'user',
       createdAt: new Date().toISOString(),
@@ -234,11 +251,44 @@ export const AuthProvider = ({ children }) => {
     return true
   }
 
-  const login = async (email, password) => {
-    const normalizedEmail = String(email).trim().toLowerCase()
+  const login = async (identifier, password) => {
+    const raw = String(identifier || '').trim()
+    const isEmail = raw.includes('@')
 
-    // Secure path: admins authenticate against Supabase Auth, and the session
-    // JWT is what allows their RLS-protected writes.
+    // Customers sign in with their mobile number. This path never touches
+    // Supabase Auth, so an ordinary account cannot become an admin by logging in.
+    if (!isEmail) {
+      const normalizedPhone = normalizePhone(raw)
+      if (!isValidBdPhone(normalizedPhone)) {
+        toast.error(
+          tr(
+            'Enter a valid mobile number (01XXXXXXXXX)',
+            'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)'
+          )
+        )
+        return null
+      }
+      const foundUser = users.find(
+        (u) =>
+          u.phone &&
+          normalizePhone(u.phone) === normalizedPhone &&
+          u.password === password
+      )
+      if (foundUser) {
+        setAdminSignedIn(false)
+        setUser(foundUser)
+        toast.success(tr(`Welcome back, ${foundUser.name.split(' ')[0]}`, `স্বাগতম, ${foundUser.name.split(' ')[0]}`))
+        return foundUser
+      }
+      toast.error(
+        tr('Incorrect mobile number or password', 'মোবাইল নম্বর বা পাসওয়ার্ড সঠিক নয়')
+      )
+      return null
+    }
+
+    // Email sign-in is only for admin/staff accounts backed by Supabase Auth.
+    const normalizedEmail = raw.toLowerCase()
+
     if (isSupabaseConfigured && supabase) {
       try {
         const { data, error } = await supabase.auth.signInWithPassword({
@@ -261,13 +311,14 @@ export const AuthProvider = ({ children }) => {
           return secureUser
         }
       } catch {
-        /* fall through to the local customer accounts */
+        /* fall through to the local admin check below */
       }
 
       // A local admin/staff record must never be enough to sign in when the
       // backend is connected — that would only produce silent write failures.
       const privileged = users.find(
         (u) =>
+          u.email &&
           u.email.toLowerCase() === normalizedEmail &&
           (u.role === 'admin' || u.role === 'staff')
       )
@@ -280,16 +331,28 @@ export const AuthProvider = ({ children }) => {
         )
         return null
       }
+      toast.error(
+        tr(
+          'Only admin accounts can sign in with an email address',
+          'শুধু অ্যাডমিন অ্যাকাউন্ট ইমেইল দিয়ে সাইন ইন করতে পারে'
+        )
+      )
+      return null
     }
 
-    const foundUser = users.find(
-      (u) => u.email.toLowerCase() === normalizedEmail && u.password === password
+    // Offline/local development without Supabase: allow a local admin only.
+    const localAdmin = users.find(
+      (u) =>
+        u.email &&
+        u.email.toLowerCase() === normalizedEmail &&
+        u.password === password &&
+        (u.role === 'admin' || u.role === 'staff')
     )
-    if (foundUser) {
-      setAdminSignedIn(false)
-      setUser(foundUser)
-      toast.success(tr(`Welcome back, ${foundUser.name.split(' ')[0]}`, `স্বাগতম, ${foundUser.name.split(' ')[0]}`))
-      return foundUser
+    if (localAdmin) {
+      setAdminSignedIn(true)
+      setUser(localAdmin)
+      toast.success(tr(`Welcome back, ${localAdmin.name.split(' ')[0]}`, `স্বাগতম, ${localAdmin.name.split(' ')[0]}`))
+      return localAdmin
     }
     toast.error(tr('Incorrect email or password', 'ইমেইল বা পাসওয়ার্ড সঠিক নয়'))
     return null
@@ -307,10 +370,41 @@ export const AuthProvider = ({ children }) => {
 
   const updateProfile = (updates) => {
     if (!user) return false
-    const updatedUser = { ...user, ...updates }
+    const next = { ...updates }
+
+    if (Object.prototype.hasOwnProperty.call(updates, 'phone')) {
+      const normalizedPhone = normalizePhone(updates.phone)
+      if (!isValidBdPhone(normalizedPhone)) {
+        toast.error(
+          tr(
+            'Enter a valid mobile number (01XXXXXXXXX)',
+            'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)'
+          )
+        )
+        return false
+      }
+      const duplicate = users.find(
+        (u) =>
+          String(u.id) !== String(user.id) &&
+          u.phone &&
+          normalizePhone(u.phone) === normalizedPhone
+      )
+      if (duplicate) {
+        toast.error(
+          tr(
+            'Another account already uses this mobile number',
+            'এই মোবাইল নম্বর দিয়ে অন্য একটি অ্যাকাউন্ট আছে'
+          )
+        )
+        return false
+      }
+      next.phone = normalizedPhone
+    }
+
+    const updatedUser = { ...user, ...next }
     setUser(updatedUser)
     setUsers((prev) =>
-      prev.map((u) => (String(u.id) === String(user.id) ? { ...u, ...updates } : u))
+      prev.map((u) => (String(u.id) === String(user.id) ? { ...u, ...next } : u))
     )
     toast.success(tr('Profile updated', 'প্রোফাইল আপডেট হয়েছে'))
     return true
@@ -322,7 +416,8 @@ export const AuthProvider = ({ children }) => {
       ...orderData,
       userId: user?.id,
       userName: orderData.fullName || user?.name,
-      userEmail: user?.email,
+      userEmail: user?.email || '',
+      userPhone: user?.phone || orderData.phone || '',
       status: 'Pending',
       createdAt: new Date().toISOString(),
       statusHistory: [

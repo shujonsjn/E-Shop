@@ -1,10 +1,11 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Lock, Mail, Phone, ShieldCheck, User } from 'lucide-react'
+import { Eye, EyeOff, Lock, Phone, ShieldCheck, User } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { useAuth } from '../context/AuthContext'
 import { useSettings } from '../context/SettingsContext'
 import { useLanguage } from '../i18n/LanguageContext'
+import { isValidBdPhone } from '../utils/phone'
 
 const Register = () => {
   const { register } = useAuth()
@@ -16,7 +17,6 @@ const Register = () => {
 
   const [form, setForm] = useState({
     name: '',
-    email: '',
     phone: '',
     password: '',
     confirmPassword: '',
@@ -31,8 +31,17 @@ const Register = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    if (!form.name.trim() || !form.email.trim() || !form.password) {
+    if (!form.name.trim() || !form.phone.trim() || !form.password) {
       toast.error(t('auth.fillAll'))
+      return
+    }
+    if (!isValidBdPhone(form.phone)) {
+      toast.error(
+        tx(
+          'Enter a valid mobile number (01XXXXXXXXX)',
+          'সঠিক মোবাইল নম্বর দিন (01XXXXXXXXX)'
+        )
+      )
       return
     }
     if (form.password.length < 6) {
@@ -47,7 +56,7 @@ const Register = () => {
       toast.error(tx('Please accept the terms to continue', 'চালিয়ে যেতে শর্তাবলিতে সম্মত হোন'))
       return
     }
-    const ok = register(form.name.trim(), form.email.trim(), form.password, form.phone.trim())
+    const ok = register(form.name.trim(), form.phone.trim(), form.password)
     if (ok) navigate(from || '/account')
   }
 
@@ -91,28 +100,8 @@ const Register = () => {
               </div>
 
               <div>
-                <label htmlFor="email" className="label">
-                  {t('auth.email')}
-                </label>
-                <div className="relative">
-                  <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-                  <input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={form.email}
-                    onChange={handleChange}
-                    required
-                    className="input pl-9"
-                    placeholder="you@example.com"
-                    autoComplete="email"
-                  />
-                </div>
-              </div>
-
-              <div>
                 <label htmlFor="phone" className="label">
-                  {t('auth.phone')}
+                  {t('auth.phone')} <span className="text-red-500">*</span>
                 </label>
                 <div className="relative">
                   <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
@@ -120,13 +109,18 @@ const Register = () => {
                     id="phone"
                     name="phone"
                     type="tel"
+                    inputMode="tel"
                     value={form.phone}
                     onChange={handleChange}
+                    required
                     className="input pl-9"
                     placeholder="01XXXXXXXXX"
                     autoComplete="tel"
                   />
                 </div>
+                <p className="mt-1.5 text-[10.5px] leading-4 text-ink-muted">
+                  {t('auth.phoneNote')}
+                </p>
               </div>
 
               <div>

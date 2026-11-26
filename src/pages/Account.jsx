@@ -101,7 +101,7 @@ const Account = () => {
             </span>
             <div className="min-w-0">
               <p className="truncate text-[13px] font-bold text-ink">{user.name}</p>
-              <p className="truncate text-[10.5px] text-ink-muted">{user.email}</p>
+              <p className="truncate text-[10.5px] text-ink-muted">{user.phone || user.email}</p>
             </div>
           </div>
 
@@ -247,26 +247,35 @@ const Account = () => {
                   />
                 </div>
                 <div>
-                  <label htmlFor="email" className="label">
-                    {t('auth.email')}
-                  </label>
-                  <input id="email" value={user.email} className="input bg-gray-50" disabled />
-                </div>
-                <div>
                   <label htmlFor="phone" className="label">
-                    {t('auth.phone')}
+                    {t('auth.phone')} <span className="text-red-500">*</span>
                   </label>
                   <div className="relative">
                     <Phone size={15} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
                     <input
                       id="phone"
+                      type="tel"
+                      inputMode="tel"
                       value={form.phone}
                       onChange={(e) => setForm((prev) => ({ ...prev, phone: e.target.value }))}
                       className="input pl-9"
                       placeholder="01XXXXXXXXX"
+                      required
+                      autoComplete="tel"
                     />
                   </div>
+                  <p className="mt-1.5 text-[10.5px] leading-4 text-ink-muted">
+                    {t('auth.phoneNote')}
+                  </p>
                 </div>
+                {user.email && (
+                  <div>
+                    <label htmlFor="email" className="label">
+                      {t('auth.email')}
+                    </label>
+                    <input id="email" value={user.email} className="input bg-gray-50" disabled />
+                  </div>
+                )}
                 <div className="sm:col-span-2">
                   <label htmlFor="address" className="label">
                     {t('checkout.address')}

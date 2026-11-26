@@ -8,7 +8,9 @@ const AdminUsers = () => {
   // build the list from orders and aggregate per phone number.
   const byKey = new Map()
   orders.forEach((order) => {
-    const phone = String(order.shippingAddress?.phone || order.phone || '').trim()
+    const phone = String(
+      order.shippingAddress?.phone || order.phone || order.userPhone || ''
+    ).trim()
     const email = String(order.userEmail || '').trim()
     const name =
       order.shippingAddress?.fullName || order.userName || (email ? email.split('@')[0] : '')
