@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
-import { Eye, EyeOff, Lock, Phone } from 'lucide-react'
+import { Eye, EyeOff, Lock, Mail, Phone } from 'lucide-react'
 import { useAuth } from '../context/AuthContext'
 import { useLanguage } from '../i18n/LanguageContext'
 import { useSettings } from '../context/SettingsContext'
@@ -13,6 +13,13 @@ const Login = () => {
   const location = useLocation()
   const from = location.state?.from
 
+  // Customers sign in with a mobile number. Email sign-in exists only for the
+  // admin panel, and it is revealed when the panel sends a visitor here.
+  const [adminMode, setAdminMode] = useState(
+    () =>
+      new URLSearchParams(location.search).get('admin') === '1' ||
+      location.state?.from === '/admin'
+  )
   const [identifier, setIdentifier] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -31,6 +38,11 @@ const Login = () => {
     }
   }
 
+  const toggleAdminMode = () => {
+    setAdminMode((value) => !value)
+    setIdentifier('')
+  }
+
   return (
     <div className="bg-cream/60">
       <div className="container-gb flex min-h-[70vh] items-center justify-center py-8 sm:py-12">
@@ -45,29 +57,37 @@ const Login = () => {
                 )}
               </Link>
               <h1 className="mt-3 text-lg font-bold text-ink sm:text-xl">{t('auth.welcomeBack')}</h1>
-              <p className="mt-1 text-xs text-ink-muted sm:text-sm">{t('auth.loginSubtitle')}</p>
+              <p className="mt-1 text-xs text-ink-muted sm:text-sm">
+                {adminMode ? t('auth.adminLoginSubtitle') : t('auth.loginSubtitle')}
+              </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-3.5 p-5 sm:p-6">
               <div>
                 <label htmlFor="identifier" className="label">
-                  {t('auth.loginId')}
+                  {adminMode ? t('auth.email') : t('auth.phone')}
                 </label>
                 <div className="relative">
-                  <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  {adminMode ? (
+                    <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  ) : (
+                    <Phone size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                  )}
                   <input
                     id="identifier"
-                    type="text"
-                    inputMode="tel"
+                    type={adminMode ? 'email' : 'text'}
+                    inputMode={adminMode ? 'email' : 'tel'}
                     value={identifier}
                     onChange={(e) => setIdentifier(e.target.value)}
                     required
-                    autoComplete="username"
+                    autoComplete={adminMode ? 'email' : 'username'}
                     className="input pl-9"
-                    placeholder={t('auth.loginIdPlaceholder')}
+                    placeholder={adminMode ? 'admin@example.com' : '01XXXXXXXXX'}
                   />
                 </div>
-                <p className="mt-1.5 text-[10.5px] leading-4 text-ink-muted">{t('auth.loginHint')}</p>
+                <p className="mt-1.5 text-[10.5px] leading-4 text-ink-muted">
+                  {adminMode ? t('auth.adminLoginHint') : t('auth.phoneNote')}
+                </p>
               </div>
 
               <div>
@@ -103,16 +123,26 @@ const Login = () => {
                 {busy ? tx('Signing in…', 'সাইন ইন হচ্ছে…') : t('auth.login')}
               </button>
 
-              <p className="text-center text-xs text-ink-muted">
-                {t('auth.noAccount')}{' '}
-                <Link
-                  to="/register"
-                  state={from ? { from } : undefined}
-                  className="font-bold text-brand hover:underline"
-                >
-                  {t('auth.register')}
-                </Link>
-              </p>
+              {!adminMode && (
+                <p className="text-center text-xs text-ink-muted">
+                  {t('auth.noAccount')}{' '}
+                  <Link
+                    to="/register"
+                    state={from ? { from } : undefined}
+                    className="font-bold text-brand hover:underline"
+                  >
+                    {t('auth.register')}
+                  </Link>
+                </p>
+              )}
+
+              <button
+                type="button"
+                onClick={toggleAdminMode}
+                className="mx-auto block text-[11px] font-semibold text-ink-muted underline-offset-2 hover:text-brand hover:underline"
+              >
+                {adminMode ? t('auth.customerLogin') : t('auth.adminLogin')}
+              </button>
             </form>
           </div>
         </div>

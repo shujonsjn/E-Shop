@@ -82,7 +82,7 @@ const AdminShell = () => {
 
   useEffect(() => {
     if (!user || user.role !== 'admin') {
-      navigate('/login')
+      navigate('/login?admin=1')
     }
   }, [user, navigate])
 
